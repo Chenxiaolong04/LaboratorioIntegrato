@@ -1,4 +1,6 @@
 # Immobiliaris - Frontend
+[![Apri in Figma](https://img.shields.io/badge/Apri%20in-Figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white)](https://www.figma.com/design/TNmhYNmC9YypnMfI8A0aMB/Immobiliaris?node-id=0-1&p=f&t=unnUuIEwlmUX1z64-0)
+
 
 ## Struttura del progetto
 
