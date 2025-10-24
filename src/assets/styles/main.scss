@@ -1,0 +1,22 @@
+// Variables
+$primary-color: #007bff;
+$secondary-color: #6c757d;
+$font-stack: 'Poppins', sans-serif;
+
+// Global resets
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: $font-stack;
+  color: $secondary-color;
+  background-color: #f8f9fa;
+}
+
+// Example class
+.text-primary {
+  color: $primary-color;
+}
