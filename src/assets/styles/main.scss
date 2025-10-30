@@ -1,7 +1,9 @@
 @use './variables';
 @use './navbar';
-@use './footer';
 @use './header';
+@use './stats';
+@use './steps';
+@use './footer';
 
 
 // Global resets
@@ -22,8 +24,11 @@ ul {
 
 body {
   font-family:'Outfit', sans-serif;
-  color: variables.$secondary-color;
   padding: 0 1rem;
+}
+
+section, header {
+  padding: 3rem 0;
 }
 
 // Example class

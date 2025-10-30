@@ -7,7 +7,7 @@
 ```
 src/
 ├── assets/
-|   |── images            # Immagini usate nei componenti (logo, icone comuni vanno in public/images)
+|   |── img               # Immagini usate nei componenti (logo, icone comuni vanno in public/images)
 │   └── styles/           # SCSS va tutto nel main, volendo si divide tutto poi in moduli e importa in main
 ├── components/           
 │   ├── common/           # Button, Modal, Input, ecc.
@@ -30,23 +30,22 @@ src/
 ### Public
 - Home
 - Onboarding proprietario (multi-step)
-- Valutazione inviata
-- Contratto in esclusiva
 - Chi siamo
 - Contatti
 
 ### Backoffice
-- Login admin
+- Login admin / agente immobiliare
 - Dashboard
-- Dettaglio immobile
-- Profilo utente/admin
+- Valutazioni AI
+- Incarichi
+- Vendite
 
 ---
 
 ## Componenti principali
 
 - Navbar (public/admin)
-- ecc...
+- Header
 
 ---
 

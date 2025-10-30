@@ -1,0 +1,49 @@
+@use "variables" as var;
+.steps {
+  h2 {
+    font-size: var.$h2-font-size;
+  }
+
+  h3 {
+    font-size: var.$h3-font-size;
+    font-weight: 400;
+  }
+
+  .step {
+    padding: 2rem 0;
+
+    .step-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+
+      .step-number {
+        width: 3rem;
+        height: 3rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: gray;
+        font-size: var.$h2-font-size;
+        font-weight: 600;
+        border: 2px solid black;
+        border-radius: 50%;
+        padding: 0 1rem;
+      }
+
+      .step-name {
+        font-size: var.$h3-font-size;
+        font-weight: 600;
+      }
+    }
+    .step-content {
+      padding: 1rem 0;
+    }
+
+    img {
+        width: 100%;
+        object-fit: cover;
+        object-position: center;
+    }
+  }
+}
