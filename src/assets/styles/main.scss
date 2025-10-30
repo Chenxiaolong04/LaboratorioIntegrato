@@ -1,7 +1,8 @@
-// Variables
-$primary-color: #007bff;
-$secondary-color: #6c757d;
-$font-stack: 'Poppins', sans-serif;
+@use './variables';
+@use './navbar';
+@use './footer';
+@use './header';
+
 
 // Global resets
 * {
@@ -10,13 +11,58 @@ $font-stack: 'Poppins', sans-serif;
   box-sizing: border-box;
 }
 
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+ul {
+  list-style: none;
+}
+
 body {
-  font-family: $font-stack;
-  color: $secondary-color;
-  background-color: #f8f9fa;
+  font-family:'Outfit', sans-serif;
+  color: variables.$secondary-color;
+  padding: 0 1rem;
 }
 
 // Example class
 .text-primary {
-  color: $primary-color;
+  color: variables.$primary-color;
 }
+
+.container {
+  width: 100%;
+  margin: 0 auto;
+
+  // Extra small (xs)
+  @media (min-width: 0) {
+    max-width: 100%;
+  }
+
+  // Small (sm)
+  @media (min-width: 576px) {
+    max-width: 540px;
+  }
+
+  // Medium (md)
+  @media (min-width: 768px) {
+    max-width: 720px;
+  }
+
+  // Large (lg)
+  @media (min-width: 992px) {
+    max-width: 960px;
+  }
+
+  // Extra large (xl)
+  @media (min-width: 1200px) {
+    max-width: 1140px;
+  }
+
+  // Extra extra large (xxl)
+  @media (min-width: 1400px) {
+    max-width: 1320px;
+  }
+}
+

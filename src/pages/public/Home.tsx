@@ -1,7 +1,11 @@
+import Navbar from '../../components/Navbar';
+import Header from '../../components/Header';
+
 export default function Home() {
   return (
-    <div>
-      <h1 className="text-primary">Welcome to Immobiliaris!</h1>
-    </div>
+    <>
+      <Navbar />
+      <Header />
+    </>
   );
 }
