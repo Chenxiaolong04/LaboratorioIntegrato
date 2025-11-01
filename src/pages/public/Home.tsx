@@ -1,4 +1,4 @@
-import Navbar from '../../components/Navbar';
+import PublicLayout from '../../layouts/PublicLayout';
 import Header from '../../components/Header';
 import Steps from '../../components/Steps';
 import Stats from '../../components/Stats';
@@ -6,10 +6,47 @@ import Stats from '../../components/Stats';
 export default function Home() {
   return (
     <>
-      <Navbar />
-      <Header />
-      <Stats />
-      <Steps />
+      <PublicLayout>
+        <Header />
+        <Stats />
+        <Steps />
+      </PublicLayout>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      
     </>
   );
 }

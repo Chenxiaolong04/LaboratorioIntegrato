@@ -3,6 +3,7 @@ import { useState } from "react";
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
 
+  // funzione provvisoria tanto userò React Router
   const handleLinkClick = () => {
     setMenuOpen(false); // Chiude il menu quando clicchi un link
   };
