@@ -44,8 +44,13 @@ src/
 
 ## Componenti principali
 
+- Button
 - Navbar (public/admin)
 - Header
+- Stats
+- Steps
+- Reasons
+- Footer
 
 ---
 
@@ -85,6 +90,7 @@ src/
 
 - React + TypeScript
 - React Router DOM
+- React Icons
 - SCSS / CSS Modules
 - Fetch API / Axios (per chiamate HTTP)
 - Context + Hooks per gestione stato globale

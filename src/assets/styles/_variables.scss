@@ -1,10 +1,16 @@
 // VARIABLES
 
-$primary-color: #007bff;
-$secondary-color: #6c757d;
-$font-stack: 'Poppins', sans-serif;
-$h2-font-size: 2rem;
-$h3-font-size: 1.2rem;
+// font sizes mobile
+$fs-mb-title: 2.5rem;
+$fs-mb-subtitle: 1.5rem;
+$fs-mb-section-title: 2rem;
+$fs-mb-section-subtitle: 1.2rem;
+
+// font sizes desktop
+$fs-dk-title: 3rem;
+$fs-dk-subtitle: 1.8rem;
+$fs-dk-section-title: 2.5rem;
+$fs-dk-section-subtitle: 1.5rem;
 
 // PALETTE
 $palette-green: #002500;

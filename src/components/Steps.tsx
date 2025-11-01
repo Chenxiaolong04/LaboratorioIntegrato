@@ -1,4 +1,5 @@
 import Step1Image from "../assets/img/test-image.jpg";
+import { FaLongArrowAltRight } from "react-icons/fa";
 import Button from "./Button";
 
 export default function Steps() {
@@ -73,7 +74,7 @@ export default function Steps() {
         </div>
       </div>
       <div className="steps-button">
-        <Button className="lightblu">Valuta ora</Button>
+        <Button className="lightblu">Valuta ora <FaLongArrowAltRight /></Button>
       </div>
     </section>
   );

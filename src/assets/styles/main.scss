@@ -4,6 +4,8 @@
 @use './header';
 @use './stats';
 @use './steps';
+@use './reasons';
+@use './faq';
 @use './footer';
 
 
@@ -24,17 +26,13 @@ ul {
 }
 
 body {
-  font-family:'Outfit', sans-serif;
+  font-family: 'Outfit', sans-serif;
   padding: 0 1rem;
 }
 
-section, header {
+section,
+header {
   padding: 3rem 0;
-}
-
-// Example class
-.text-primary {
-  color: var.$primary-color;
 }
 
 .container {
@@ -72,3 +70,8 @@ section, header {
   }
 }
 
+img {
+  width: 100%;
+  object-fit: cover;
+  object-position: center;
+}

@@ -2,11 +2,11 @@
 
 .steps {
   h2 {
-    font-size: var.$h2-font-size;
+    font-size: var.$fs-mb-section-title;
   }
 
   h3 {
-    font-size: var.$h3-font-size;
+    font-size: var.$fs-mb-section-subtitle;
     font-weight: 400;
   }
 
@@ -26,26 +26,20 @@
         justify-content: center;
         background-color: var.$palette-lightblu;
         color: white;
-        font-size: var.$h2-font-size;
+        font-size: var.$fs-mb-section-title;
         font-weight: 600;
         border-radius: 50%;
         padding: 0 1rem;
       }
 
       .step-name {
-        font-size: var.$h3-font-size;
+        font-size: var.$fs-mb-section-subtitle;
         font-weight: 600;
       }
     }
 
     .step-content {
       padding: 1rem 0;
-    }
-
-    img {
-      width: 100%;
-      object-fit: cover;
-      object-position: center;
     }
   }
 
@@ -58,11 +52,11 @@
 @media (min-width: 768px) {
   .steps {
     h2 {
-      font-size: 2rem;
+      font-size: var.$fs-dk-section-title;
     }
 
     h3 {
-      font-size: 1.7rem;
+      font-size: var.$fs-dk-section-subtitle;
       padding-bottom: 3rem;
     }
 
@@ -97,7 +91,6 @@
       }
 
       img {
-        width: 100%;
         height: 20rem;
       }
     }
