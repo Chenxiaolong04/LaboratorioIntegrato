@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Button from "./Button";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -18,20 +19,19 @@ export default function Navbar() {
           <li><a href="#">Home</a></li>
           <li><a href="#">Chi siamo</a></li>
           <li><a href="#">Contatti</a></li>
-          <li><button className="btn-cta-navbar">Valuta la tua casa</button></li>
+          <li><Button className="btn-cta-navbar">Valuta la tua casa</Button></li>
         </ul>
       </div>
 
       {/* Hamburger button mobile */}
-      <button
+      <Button
         className={`menu-btn ${menuOpen ? "open" : ""}`}
         onClick={() => setMenuOpen(!menuOpen)}
-        aria-label="Menu"
       >
         <span className="span-hamburger"></span>
         <span className="span-hamburger"></span>
         <span className="span-hamburger"></span>
-      </button>
+      </Button>
 
       {/* Overlay menu mobile */}
       <div className={`menu-overlay ${menuOpen ? "active" : ""}`}>
@@ -40,9 +40,9 @@ export default function Navbar() {
           <li><a href="#" onClick={handleLinkClick}>Chi siamo</a></li>
           <li><a href="#" onClick={handleLinkClick}>Contatti</a></li>
           <li>
-            <button className="btn-cta-navbar" onClick={handleLinkClick}>
+            <Button className="btn-cta-navbar" onClick={handleLinkClick}>
               Valuta la tua casa
-            </button>
+            </Button>
           </li>
         </ul>
       </div>

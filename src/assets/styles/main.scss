@@ -1,4 +1,5 @@
-@use './variables';
+@use './variables' as var;
+@use './button';
 @use './navbar';
 @use './header';
 @use './stats';
@@ -33,7 +34,7 @@ section, header {
 
 // Example class
 .text-primary {
-  color: variables.$primary-color;
+  color: var.$primary-color;
 }
 
 .container {
