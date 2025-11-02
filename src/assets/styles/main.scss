@@ -1,13 +1,24 @@
 @use './variables' as var;
+
+// components global styles
 @use './button';
+@use './input';
+@use './inputGroup';
+
+// layout
 @use './navbar';
+@use './footer';
+
+// homepage sections
 @use './header';
 @use './stats';
 @use './steps';
 @use './reasons';
 @use './faq';
 @use './cta';
-@use './footer';
+
+// Form
+@use './stepForm';
 
 
 // Global resets

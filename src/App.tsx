@@ -1,10 +1,21 @@
-import './assets/styles/main.scss';
-import Home from './pages/public/Home';
+import "./assets/styles/main.scss";
+import Home from "./pages/public/Home";
+import { Route, Routes } from "react-router-dom";
+import AboutUs from "./pages/public/AboutUs";
+import Contact from "./pages/public/Contact";
+import MultiStepForm from "./pages/public/MultiStepForm";
 
 function App() {
   return (
-    <Home />
-  )
+    <>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/form" element={<MultiStepForm />} />
+        <Route path="/about" element={<AboutUs />} />
+        <Route path="/contact" element={<Contact />} />
+      </Routes>
+    </>
+  );
 }
 
-export default App
+export default App;

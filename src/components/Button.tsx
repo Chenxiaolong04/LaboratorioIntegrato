@@ -12,7 +12,7 @@ export default function Button({
     children,
 }: ButtonProps) {
   return (
-    <button className={`btn ${className || ''}`} onClick={onClick}>
+    <button type="button" className={`btn ${className || ''}`} onClick={onClick}>
       {children}
     </button>
   );

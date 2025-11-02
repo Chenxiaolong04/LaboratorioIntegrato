@@ -1,6 +1,6 @@
 import PublicLayout from '../../layouts/PublicLayout';
 import Header from '../../components/Header';
-import Steps from '../../components/Steps';
+import StepsHome from '../../components/StepsHome';
 import Stats from '../../components/Stats';
 import Reasons from '../../components/Reasons';
 import FAQ from '../../components/FAQ';
@@ -12,7 +12,7 @@ export default function Home() {
       <PublicLayout>
         <Header />
         <Stats />
-        <Steps />
+        <StepsHome />
         <Reasons />
         <FAQ />
         <CTA />
