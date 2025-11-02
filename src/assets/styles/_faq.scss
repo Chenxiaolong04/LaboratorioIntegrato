@@ -22,6 +22,7 @@
             background-color: var.$palette-gray;
             border-radius: 10px;
             padding: 1rem;
+            cursor: pointer;
 
             .faq-question {
                 display: flex;
@@ -37,7 +38,6 @@
                 svg {
                     padding-left: .5rem;
                     width: 10%;
-                    cursor: pointer;
                 }
             }
 

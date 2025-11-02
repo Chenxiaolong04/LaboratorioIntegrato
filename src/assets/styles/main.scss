@@ -6,6 +6,7 @@
 @use './steps';
 @use './reasons';
 @use './faq';
+@use './cta';
 @use './footer';
 
 
@@ -27,15 +28,12 @@ ul {
 
 body {
   font-family: 'Outfit', sans-serif;
-  padding: 0 1rem;
 }
 
 section,
-header {
-  padding: 3rem 0;
-}
-
-.container {
+header,
+.navbar, footer {
+  padding: 3rem 1rem;
   width: 100%;
   margin: 0 auto;
 

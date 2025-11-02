@@ -1,0 +1,19 @@
+@use './variables' as var;
+
+.cta-section {
+    background-image: url('../img/test-image.jpg');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin: 0;
+    max-width: 100vw;
+
+    h2 {
+        font-size: var.$fs-mb-section-title;
+    }
+}

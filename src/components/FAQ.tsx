@@ -36,7 +36,7 @@ const faqs: FAQ[] = [
 ];
 
 export default function FAQ() {
-    const [activeIndex, setActiveIndex] = useState<number | null>(0);
+    const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
     const toggleFAQ = (index: number) => {
         setActiveIndex(activeIndex === index ? null : index);
@@ -56,7 +56,7 @@ export default function FAQ() {
                         >
                             <div className="faq-question">
                                 <h4>{item.question}</h4>
-                                {activeIndex === index ? <FaChevronUp /> : <FaChevronDown />}
+                                {activeIndex === index ? <FaChevronUp size={20}/> : <FaChevronDown size={20}/>}
                             </div>
                             {activeIndex === index && (
                                 <p className="faq-answer">{item.answer}</p>
