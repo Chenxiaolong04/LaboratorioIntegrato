@@ -62,7 +62,7 @@ src/
   - 
   - 
 
-- **Admin routes**: gestite tramite `AdminLayout`
+- **Admin routes**: gestite tramite `PrivateLayout`
 
   -
   - 
@@ -72,7 +72,7 @@ src/
 
 ## SCSS
 - `main.scss` importa tutto ed è incluso in `main.tsx`
-- Moduli SCSS (`*.module.scss`) per componenti isolati
+- Partial SCSS (`_nomeFile.scss`) per componenti isolati
 
 ---
 
@@ -91,11 +91,10 @@ src/
 - React + TypeScript
 - React Router DOM
 - React Icons
-- SCSS / CSS Modules
-- Fetch API / Axios (per chiamate HTTP)
+- SCSS per stile
+- Fetch API (per chiamate HTTP)
 - Context + Hooks per gestione stato globale
 - Git + GitHub per versionamento
-- Strumenti di linting e formatting consigliati: ESLint + Prettier
 
 ---
 
