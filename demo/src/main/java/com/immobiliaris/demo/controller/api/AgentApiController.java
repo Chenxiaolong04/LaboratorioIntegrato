@@ -18,13 +18,6 @@ public class AgentApiController {
         response.put("user", authentication.getName());
         response.put("role", "AGENT");
         
-        // Qui puoi aggiungere dati specifici per l'agente
-        response.put("assignments", Map.of(
-            "activeProperties", 0,
-            "pendingValuations", 0,
-            "scheduledVisits", 0
-        ));
-        
         return ResponseEntity.ok(response);
     }
 }

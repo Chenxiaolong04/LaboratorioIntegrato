@@ -18,13 +18,6 @@ public class AdminApiController {
         response.put("user", authentication.getName());
         response.put("role", "ADMIN");
         
-        // Qui puoi aggiungere statistiche, dati dashboard, ecc.
-        response.put("stats", Map.of(
-            "totalUsers", 0,
-            "totalProperties", 0,
-            "pendingRequests", 0
-        ));
-        
         return ResponseEntity.ok(response);
     }
 }
