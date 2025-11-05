@@ -1,5 +1,6 @@
 import React, { useState, useImperativeHandle, forwardRef } from "react";
 import InputGroup from "../InputGroup";
+import TestImage from "../../assets/img/test-image.jpg"
 
 const indirizzoRegex =
   /^(via|viale|corso|piazza|largo)\s+[a-zàèéìòù'\s]+[\s,]*\d+[a-zA-Z]?$/i;
@@ -11,11 +12,10 @@ export interface StepLocationRef {
 interface StepLocationProps {
   error: string;
   setError: React.Dispatch<React.SetStateAction<string>>;
-  setIsValid: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const StepLocation = forwardRef<StepLocationRef, StepLocationProps>(
-  ({ error, setError, setIsValid }, ref) => {
+  ({ error, setError }, ref) => {
     const [address, setAddress] = useState("");
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -27,11 +27,9 @@ const StepLocation = forwardRef<StepLocationRef, StepLocationProps>(
       validate: () => {
         if (!indirizzoRegex.test(address)) {
           setError("Inserisci un indirizzo valido (es: Via Roma 10)");
-          setIsValid(false);
           return false;
         }
         setError("");
-        setIsValid(true);
         return true;
       },
     }));
@@ -53,6 +51,8 @@ const StepLocation = forwardRef<StepLocationRef, StepLocationProps>(
 
         {/* Mostra l'errore solo dopo che l'utente ha cliccato Avanti */}
         {error && <p className="error-message">{error}</p>}
+
+        <img className="map" src={TestImage} alt="" />
       </div>
     );
   }

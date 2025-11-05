@@ -1,4 +1,11 @@
+@use './variables' as var;
+
 .input-group {
     display: flex;
     flex-direction: column;
+
+    label {
+        font-size: var.$fs-mb-section-subtitle;
+        margin-bottom: .3rem;
+    }
 }

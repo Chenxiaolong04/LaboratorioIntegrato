@@ -6,10 +6,24 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
+        gap: 2rem;
 
         h2 {
             font-size: var.$fs-mb-section-title;
             text-align: center;
+        }
+
+        .subtitle {
+            font-size: var.$fs-mb-section-subtitle;
+        }
+
+        h4 {
+            font-weight: 400;
+        }
+
+        .steps-list {
+            list-style-type: disc;
+            list-style-position: inside;
         }
     }
 }

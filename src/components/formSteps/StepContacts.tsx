@@ -13,7 +13,7 @@ const StepContacts: React.FC = () => {
   };
 
   return (
-    <div className="step">
+    <div className="step step-contact">
       <h2>Dati di contatto</h2>
 
       <InputGroup
@@ -57,6 +57,9 @@ const StepContacts: React.FC = () => {
         required
         onChange={handleChange}
       />
+
+      <h3>Teniamo molto alla tua privacy e odiamo lo spam. Custodiremo con cura il tuo numero di telefono e non lo condivideremo con nessuno. Garantito.</h3>
+      <h3>Con l'invio dei miei dati autorizzo il loro trattamento secondo la normativa GDPR e accetto la privacy policy e le condizioni di servizio</h3>
     </div>
   );
 };

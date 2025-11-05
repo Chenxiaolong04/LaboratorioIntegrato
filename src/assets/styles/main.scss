@@ -20,6 +20,7 @@
 // Form
 @use './stepForm';
 @use './stepSuccess';
+@use './stepContacts';
 
 
 // Global resets
@@ -44,8 +45,9 @@ body {
 
 section,
 header,
-.navbar, footer {
-  padding: 3rem 1rem;
+.navbar, 
+footer {
+  padding: 1rem;
   width: 100%;
   margin: 0 auto;
 
@@ -62,6 +64,7 @@ header,
   // Medium (md)
   @media (min-width: 768px) {
     max-width: 720px;
+    padding: 3rem 1rem;
   }
 
   // Large (lg)

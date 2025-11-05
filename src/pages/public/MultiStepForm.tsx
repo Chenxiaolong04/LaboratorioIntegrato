@@ -1,6 +1,9 @@
 import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import StepLocation, { type StepLocationRef } from "../../components/formSteps/StepLocation";
+import TestImage from "../../assets/img/test-image.jpg";
+import StepLocation, {
+  type StepLocationRef,
+} from "../../components/formSteps/StepLocation";
 import StepContacts from "../../components/formSteps/StepContacts";
 import StepSuccess from "../../components/formSteps/StepSuccess";
 import Button from "../../components/Button";
@@ -8,11 +11,10 @@ import { FormProvider } from "../../context/FormContext";
 
 export default function MultiStepForm() {
   const [error, setError] = useState("");
-  const [isValid, setIsValid] = useState(false);
   const [step, setStep] = useState(0);
 
   const stepLocationRef = useRef<StepLocationRef>(null);
-  const totalSteps = 3; // ✅ aggiungiamo 1 step per la schermata finale
+  const totalSteps = 3;
 
   const handleNext = () => {
     if (step === 0) {
@@ -29,16 +31,17 @@ export default function MultiStepForm() {
 
   const handleSubmit = () => {
     console.log("Invio dati al backend...");
-    // simuliamo l’invio → poi mostriamo la schermata finale
     setStep(2);
   };
 
   return (
     <FormProvider>
       <section className="form-container">
-        <h1 className="brand">
-          <Link to="/">Immobiliaris</Link>
-        </h1>
+        <div className="brand">
+          <Link to="/">
+            <img className="logo" src={TestImage} alt="" />
+          </Link>
+        </div>
 
         {step < totalSteps - 1 && (
           <div className="progress">
@@ -61,16 +64,13 @@ export default function MultiStepForm() {
               ref={stepLocationRef}
               error={error}
               setError={setError}
-              setIsValid={setIsValid}
             />
           )}
 
           {step === 1 && <StepContacts />}
 
-          {/* Step finale di successo */}
           {step === 2 && <StepSuccess />}
 
-          {/* Nascondi i bottoni quando siamo nello step di successo */}
           {step < totalSteps - 1 && (
             <div className="step-control">
               {step > 0 && (
