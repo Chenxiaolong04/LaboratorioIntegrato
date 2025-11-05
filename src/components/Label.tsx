@@ -1,12 +1,17 @@
+import type { FC } from "react";
+
 interface LabelProps {
   text: string;
+  htmlFor?: string;
   className?: string;
 }
 
-export default function Label({ text, className }: LabelProps) {
+const Label: FC<LabelProps> = ({ text, htmlFor, className = "" }) => {
   return (
-    <label className={className}>
+    <label htmlFor={htmlFor} className={className}>
       {text}
     </label>
   );
-}
+};
+
+export default Label;

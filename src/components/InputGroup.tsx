@@ -1,29 +1,45 @@
 import Label from "./Label";
 import Input from "./Input";
+import type { ChangeEvent } from "react";
 
 interface InputGroupProps {
   label: string;
-  type: string;
-  placeholder: string;
-  autoComplete: string;
+  name: string;
+  type?: string;
+  placeholder?: string;
+  autoComplete?: string;
   value?: string;
   className?: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  required: boolean;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function InputGroup({
   label,
+  name,
   type = "text",
   placeholder = "",
   autoComplete,
   value,
-  className,
+  className = "",
+  required = false,
   onChange,
 }: InputGroupProps) {
+  const id = name; // usiamo il name anche come id per collegare la label
+
   return (
-    <div className={`input-group ${className || ""}`}>
-      <Label text={label} />
-      <Input name={label} type={type} placeholder={placeholder} autoComplete={autoComplete} value={value} className={className} onChange={onChange} />
+    <div className={`input-group ${className}`}>
+      <Label text={label} htmlFor={id} />
+      <Input
+        id={id}
+        name={name}
+        type={type}
+        placeholder={placeholder}
+        autoComplete={autoComplete}
+        value={value}
+        required={required}
+        onChange={onChange}
+      />
     </div>
   );
 }

@@ -1,0 +1,43 @@
+import React, { createContext, useContext, useState } from "react";
+import type { ReactNode } from "react";
+
+
+interface FormData {
+  address: string;
+  name: string;
+  surname: string;
+  email: string;
+  phone: string;
+  // aggiungerai altri campi man mano che crei gli step
+}
+
+interface FormContextType {
+  formData: FormData;
+  setFormData: React.Dispatch<React.SetStateAction<FormData>>;
+}
+
+const FormContext = createContext<FormContextType | undefined>(undefined);
+
+export const FormProvider = ({ children }: { children: ReactNode }) => {
+  const [formData, setFormData] = useState<FormData>({
+    address: "",
+    name: "",
+    surname: "",
+    email: "",
+    phone: "",
+  });
+
+  return (
+    <FormContext.Provider value={{ formData, setFormData }}>
+      {children}
+    </FormContext.Provider>
+  );
+};
+
+export const useFormContext = (): FormContextType => {
+  const context = useContext(FormContext);
+  if (!context) {
+    throw new Error("useFormContext must be used inside FormProvider");
+  }
+  return context;
+};

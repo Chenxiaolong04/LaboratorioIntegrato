@@ -1,48 +1,61 @@
-import React, { useEffect } from "react";
-import TestImage from "../../assets/img/test-image.jpg";
+import React, { useState, useImperativeHandle, forwardRef } from "react";
 import InputGroup from "../InputGroup";
-import { useState } from "react";
 
-const StepLocation: React.FC = () => {
-  // const [locationData, setLocationData] = useState({});
-  const [address, setAddress] = useState("");
-  const [cap, setCap] = useState(0);
-  const [provincia, setProvincia] = useState("");
+const indirizzoRegex =
+  /^(via|viale|corso|piazza|largo)\s+[a-zàèéìòù'\s]+[\s,]*\d+[a-zA-Z]?$/i;
 
-  // bisogna creare il context LocationData per condividerlo con gli altri step e per mandare alla fine al backend un unico oggetto
-  // useEffect(() => {
-  //   setLocationData({ address, cap, provincia });
-  // }, [address, cap, provincia]);
+export interface StepLocationRef {
+  validate: () => boolean;
+}
 
-  return (
-    <div className="step">
-      <h2>Dove si trova l'immobile da valutare?</h2>
+interface StepLocationProps {
+  error: string;
+  setError: React.Dispatch<React.SetStateAction<string>>;
+  setIsValid: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
-      <InputGroup
-        label="Indirizzo dell'immobile"
-        type="text"
-        placeholder="Es: Via Roma"
-        autoComplete="street-address"
-        onChange={(e) => setAddress(e.target.value)}
-      />
-      <InputGroup
-        label="CAP"
-        type="number"
-        placeholder="Es: 10015"
-        autoComplete="postal-code"
-        onChange={(e) => setAddress(e.target.value)}
-      />
-      <InputGroup
-        label="Provincia"
-        type="text"
-        placeholder="Es: Torino"
-        autoComplete="address-level1"
-        onChange={(e) => setAddress(e.target.value)}
-      />
+const StepLocation = forwardRef<StepLocationRef, StepLocationProps>(
+  ({ error, setError, setIsValid }, ref) => {
+    const [address, setAddress] = useState("");
 
-      <img src={TestImage} alt="" />
-    </div>
-  );
-};
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      setAddress(e.target.value);
+    };
+
+    // 👇 Esponiamo la funzione validate() al genitore tramite ref
+    useImperativeHandle(ref, () => ({
+      validate: () => {
+        if (!indirizzoRegex.test(address)) {
+          setError("Inserisci un indirizzo valido (es: Via Roma 10)");
+          setIsValid(false);
+          return false;
+        }
+        setError("");
+        setIsValid(true);
+        return true;
+      },
+    }));
+
+    return (
+      <div className="step">
+        <h2>Dove si trova l'immobile da valutare?</h2>
+
+        <InputGroup
+          name="address"
+          label="Indirizzo dell'immobile"
+          type="text"
+          placeholder="Es: Via Roma 10"
+          autoComplete="street-address"
+          value={address}
+          required
+          onChange={handleChange}
+        />
+
+        {/* Mostra l'errore solo dopo che l'utente ha cliccato Avanti */}
+        {error && <p className="error-message">{error}</p>}
+      </div>
+    );
+  }
+);
 
 export default StepLocation;
