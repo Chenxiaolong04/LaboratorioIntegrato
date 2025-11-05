@@ -1,8 +1,9 @@
 package com.immobiliaris.demo.repository;
 
-import com.immobiliaris.demo.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import com.immobiliaris.demo.model.User;
 
 import java.util.Optional;
 
