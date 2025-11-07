@@ -6,7 +6,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -54,7 +56,7 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(this.corsConfigurationSource))
             .csrf(csrf -> csrf.disable())  // Disabilita CSRF per API REST (usa JWT in produzione)
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**", "/login", "/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
+                .requestMatchers("/", "/api/auth/**", "/login", "/error", "/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/agent/**").hasRole("AGENT")
                 .requestMatchers("/admin/**").hasRole("ADMIN")
@@ -62,15 +64,22 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
-                .loginPage("/login")
+                .loginPage("/error")  // Reindirizza a /error invece di /login
                 .usernameParameter("email")
                 .passwordParameter("password")
                 .successHandler(successHandler)
                 .permitAll()
             )
             .logout(logout -> logout
-                .logoutSuccessUrl("/login?logout")
+                .logoutSuccessUrl("/error")  // Dopo logout vai a /error
                 .permitAll()
+            )
+            .exceptionHandling(ex -> ex
+                .accessDeniedPage("/error")  // Reindirizza a /error per 403 Forbidden
+                .authenticationEntryPoint((request, response, authException) -> {
+                    // Quando non sei autenticato, vai a /error
+                    response.sendRedirect("/error");
+                })
             );
 
         return http.build();
@@ -87,5 +96,14 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    /**
+     * AuthenticationManager per API REST login
+     * Necessario per permettere login tramite JSON
+     */
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+        return authConfig.getAuthenticationManager();
     }
 }
