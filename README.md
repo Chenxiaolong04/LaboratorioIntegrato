@@ -1,6 +1,6 @@
-# 🏠 Agenzia Immobiliare - Progetto Fullstack
+# 🏠 Agenzia Immobiliare - Progetto Backend
 
-Progetto con **Spring Boot** (backend) e **React** (frontend) per la gestione di un'agenzia immobiliare.
+Progetto **Spring Boot** (backend) per la gestione di un'agenzia immobiliare con autenticazione e API REST.
 
 ---
 
@@ -9,7 +9,6 @@ Progetto con **Spring Boot** (backend) e **React** (frontend) per la gestione di
 - ✅ **JDK 17** (o superiore)
 - ✅ **Maven 3.8+** (o usa il wrapper `mvnw.cmd` incluso)
 - ✅ **MySQL 8.0+** con database e utenti già configurati
-- ✅ **Node.js 16+** e **npm**
 
 ---
 
@@ -19,7 +18,7 @@ Il progetto si aspetta:
 - Database: `AgenziaImmobiliare`
 - Utente: `ITS_2025` / Password: `its_2025`
 
-Verifica configurazione in: `demo/src/main/resources/application.properties`
+Verifica configurazione in: `backend/src/main/resources/application.properties`
 
 Spring Boot creerà/aggiornerà automaticamente le tabelle al primo avvio (`spring.jpa.hibernate.ddl-auto=update`).
 
@@ -31,41 +30,40 @@ Spring Boot creerà/aggiornerà automaticamente le tabelle al primo avvio (`spri
 
 **Windows PowerShell:**
 ```powershell
-cd demo
-.\start-backend.ps1
+cd backend
+.\mvnw.cmd spring-boot:run
 ```
 
 **Windows Command Prompt:**
 ```cmd
-cd demo
-start-backend.bat
+cd backend
+mvnw.cmd spring-boot:run
 ```
 
-**Se ricevi "Accesso negato"**, esegui come **Amministratore**.
+**Oppure con Maven globale:**
+```bash
+cd backend
+mvn spring-boot:run
+```
+
+**Se ricevi "Accesso negato"**, esegui il terminale come **Amministratore**.
 
 Il backend sarà su: **http://localhost:8080**
 
 ---
 
-### 2. Avvia Frontend React
+### 2. Test API
 
-```bash
-cd frontend
-npm install    # solo la prima volta
-npm start
-```
+Puoi testare le API con:
+- Browser: `http://localhost:8080/api/auth/check`
+- Postman/Insomnia
+- cURL: `curl http://localhost:8080/api/auth/check`
 
-Il frontend sarà su: **http://localhost:3000**
-
----
-
-### 3. Login
-
-Apri il browser su **http://localhost:3000** e accedi con le credenziali degli utenti nel tuo database.
+Per accedere usa le credenziali degli utenti presenti nel database.
 
 Il sistema riconosce automaticamente i ruoli da `Tipi_utente.Nome`:
-- **"Amministratore"** → Dashboard admin (`/admin-dashboard`)
-- **"Agente"** → Dashboard agente (`/agent-dashboard`)
+- **"Amministratore"** → Accesso API admin
+- **"Agente"** → Accesso API agente
 - **"Cliente"** → Accesso base
 
 ---
@@ -75,49 +73,24 @@ Il sistema riconosce automaticamente i ruoli da `Tipi_utente.Nome`:
 ```
 LaboratorioIntegrato/
 ├── README.md                          # Questo file
-├── demo/                              # Backend Spring Boot
-│   ├── src/main/java/com/immobiliaris/demo/
-│   │   ├── config/                    # Spring Security, CORS
-│   │   ├── controller/api/            # REST API per React
-│   │   ├── entity/                    # User, TipoUtente
-│   │   ├── repository/                # JPA Repository
-│   │   └── service/                   # CustomUserDetailsService
-│   ├── src/main/resources/
-│   │   └── application.properties     # Configurazione DB
-│   ├── start-backend.bat              # Script avvio Windows CMD
-│   ├── start-backend.ps1              # Script avvio PowerShell
-│   └── pom.xml
-│
-└── frontend/                          # Frontend React
-    ├── src/
-    │   ├── components/
-    │   │   ├── Login.js               # Form login
-    │   │   ├── ProtectedRoute.js      # Guard per route protette
-    │   │   ├── AdminDashboard.js      # Dashboard admin
-    │   │   └── AgentDashboard.js      # Dashboard agente
-    │   ├── App.js                     # Router principale
-    │   └── index.css                  # Stili
-    ├── package.json                   # Proxy -> http://localhost:8080
-    └── start-react.bat                # Script avvio React
+├── Modello DB.png                     # Diagramma database
+└── backend/                           # Backend Spring Boot
+    ├── src/main/java/com/immobiliaris/imobiliaris/
+    │   ├── config/                    # Spring Security, CORS
+    │   ├── controller/api/            # REST API
+    │   ├── entity/                    # User, TipoUtente
+    │   ├── repository/                # JPA Repository
+    │   └── service/                   # CustomUserDetailsService
+    ├── src/main/resources/
+    │   └── application.properties     # Configurazione DB MySQL
+    ├── mvnw.cmd                       # Maven wrapper Windows
+    ├── mvnw                           # Maven wrapper Linux/Mac
+    └── pom.xml                        # Dipendenze Maven
 ```
 
 ---
 
-## 🔌 API Endpoints
 
-### Autenticazione
-- `POST /login` - Login (Spring Security form)
-- `POST /logout` - Logout
-- `GET /api/auth/user` - Info utente autenticato
-- `GET /api/auth/check` - Verifica stato autenticazione
-
-### Admin (solo ROLE_ADMIN)
-- `GET /api/admin/dashboard` - Dashboard amministratore
-
-### Agent (solo ROLE_AGENT)
-- `GET /api/agent/dashboard` - Dashboard agente
-
----
 
 ## 🔧 Risoluzione Problemi
 
@@ -128,7 +101,7 @@ LaboratorioIntegrato/
 **Soluzioni:**
 1. Esegui il terminale come **Amministratore**
 2. Disabilita temporaneamente l'antivirus
-3. Usa Maven globale: `mvn spring-boot:run` nella cartella `demo/`
+3. Usa Maven globale: `mvn spring-boot:run` nella cartella `backend/`
 
 ---
 
@@ -142,23 +115,12 @@ mysql -u ITS_2025 -p
 # Password: its_2025
 ```
 
-Controlla anche `demo/src/main/resources/application.properties`:
+Controlla anche `backend/src/main/resources/application.properties`:
 ```properties
 spring.datasource.url=jdbc:mysql://localhost:3306/AgenziaImmobiliare?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
 spring.datasource.username=ITS_2025
 spring.datasource.password=its_2025
 ```
-
----
-
-### ❌ Frontend non comunica con backend
-
-**Causa:** Backend non avviato o proxy non configurato.
-
-**Verifica:**
-1. Backend sia avviato su `http://localhost:8080`
-2. Nel `frontend/package.json` ci sia: `"proxy": "http://localhost:8080"`
-3. Riavvia il frontend dopo aver modificato il proxy
 
 ---
 
@@ -177,69 +139,49 @@ spring.datasource.password=its_2025
 
 ---
 
-### ❌ "Cannot find module" su React
-
-**Causa:** Dipendenze non installate.
-
-**Soluzione:**
-```bash
-cd frontend
-npm install
-```
-
----
-
 ## 🛠️ Dettagli Tecnici
 
 ### Backend (Spring Boot 3.5.7)
 - **Java 17**
-- **Spring Security** con form login
-- **JPA/Hibernate** per database MySQL
+- **Spring Security** con form login e session-based authentication
+- **JPA/Hibernate** per gestione database MySQL
 - **CSRF disabilitato** per API REST
-- **CORS configurato** per `http://localhost:3000`
-- **Session-based authentication** (cookie `JSESSIONID`)
-
-### Frontend (React 18)
-- **React Router** per navigazione
-- **Axios** per chiamate API (con `withCredentials: true`)
-- **Proxy configurato** su backend (`localhost:8080`)
-- **Protected Routes** con verifica ruoli
+- **CORS configurato** per accettare richieste da `http://localhost:3000`
+- **BCrypt** per criptazione password (10 rounds)
 
 ---
 
 ## 📝 Note Importanti
 
-- Le **password** devono essere criptate con **BCrypt** nel database
-- Il **proxy** (`package.json`) funziona solo in development
-- **CORS** è configurato per accettare `http://localhost:3000`
-- Le **sessioni** usano cookie (`withCredentials: true` su Axios)
+- Le **password** devono essere criptate con **BCrypt** nel database (10 rounds)
+- L'autenticazione usa **sessioni Spring Security** con cookie `JSESSIONID`
+- **CORS** è configurato per accettare richieste da `http://localhost:3000`
+- Puoi integrare qualsiasi frontend (React, Vue, Angular) usando le API REST
 
 ---
 
 ## ✅ Checklist Pre-Avvio
 
 - [ ] MySQL avviato con database `AgenziaImmobiliare`
-- [ ] Utenti e ruoli presenti nel database
+- [ ] Utenti e ruoli presenti nel database con password BCrypt
 - [ ] JDK 17 installato e configurato
-- [ ] Node.js e npm installati
-- [ ] Dipendenze frontend installate (`npm install`)
+- [ ] Maven installato (o usa il wrapper `mvnw.cmd` incluso)
 
 ---
 
 ## 🎯 Quick Start
 
-```bash
-# Terminal 1 - Backend
-cd demo
-.\start-backend.ps1       # o start-backend.bat
+```powershell
+# Windows PowerShell
+cd backend
+.\mvnw.cmd spring-boot:run
 
-# Terminal 2 - Frontend
-cd frontend
-npm install               # solo prima volta
-npm start
+# Oppure con Maven globale
+cd backend
+mvn spring-boot:run
 
-# Browser
-# Apri http://localhost:3000 e fai login
+# Backend disponibile su: http://localhost:8080
+# Test API: http://localhost:8080/api/auth/check
 ```
 
 ---
