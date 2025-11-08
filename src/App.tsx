@@ -4,7 +4,7 @@ import { Route, Routes } from "react-router-dom";
 import AboutUs from "./pages/public/AboutUs";
 import Contact from "./pages/public/Contact";
 import MultiStepForm from "./pages/public/MultiStepForm";
-import Login from "./pages/public/Login";
+import Login from "./pages/private/Login";
 
 function App() {
   return (

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import PrivateLayout from "../../layouts/PrivateLayout";
 import TestImage from "../../assets/img/test-image.jpg";
+import { Link } from "react-router-dom";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -16,7 +17,7 @@ export default function Login() {
   return (
     <PrivateLayout>
       <section className="login-page">
-        <img src={TestImage} alt="" />
+        <Link to={'/'}><img src={TestImage} alt="logo" /></Link>
         <div className="login-container">
             <h1>
               Bentornato! <br /> Felice di rivederti
