@@ -1,11 +1,11 @@
-import Navbar from "../components/Navbar";
+import NavbarPublic from "../components/NavbarPublic";
 import Footer from "../components/Footer";
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      <Navbar />
+      <NavbarPublic/>
       {children}
       <Footer />
     </>

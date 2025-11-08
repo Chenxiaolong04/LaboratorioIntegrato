@@ -1,5 +1,4 @@
 import { useState } from "react";
-import PrivateLayout from "../../layouts/PrivateLayout";
 import TestImage from "../../assets/img/test-image.jpg";
 import { Link } from "react-router-dom";
 
@@ -15,7 +14,6 @@ export default function Login() {
   };
 
   return (
-    <PrivateLayout>
       <section className="login-page">
         <Link to={'/'}><img src={TestImage} alt="logo" /></Link>
         <div className="login-container">
@@ -47,6 +45,5 @@ export default function Login() {
             </form>
         </div>
       </section>
-    </PrivateLayout>
   );
 }

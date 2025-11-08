@@ -25,6 +25,9 @@
 // Login
 @use './login';
 
+// dashboard Admin
+@use './dashboardAdmin';
+
 
 // Global resets
 * {
@@ -67,7 +70,7 @@ footer {
   // Medium (md)
   @media (min-width: 768px) {
     max-width: 720px;
-    padding: 3rem 1rem;
+    padding: 2rem 1rem;
   }
 
   // Large (lg)

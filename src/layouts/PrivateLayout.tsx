@@ -1,3 +1,5 @@
+import NavbarPrivate from "../components/NavbarPrivate";
+
 export default function PrivateLayout({
   children,
 }: {
@@ -5,6 +7,7 @@ export default function PrivateLayout({
 }) {
   return (
     <>
+      <NavbarPrivate />
       {children}
     </>
   );
