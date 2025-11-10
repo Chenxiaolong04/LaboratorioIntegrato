@@ -1,0 +1,53 @@
+@use './variables' as var;
+
+.create-user {
+  margin-top: 2rem;
+  padding: 3rem;
+  background: var.$palette-gray;
+  border-radius: 12px;
+  max-width: 500px;
+
+  h2 {
+    font-size: var.$fs-mb-section-title;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+
+  .create-user-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+
+      label {
+        font-weight: 600;
+      }
+
+      input,
+      select {
+        padding: 0.6rem;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+      }
+    }
+
+    .btn-primary {
+      margin-top: 1rem;
+      padding: 0.7rem;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.2s;
+
+      &:hover {
+        background: #0056b3;
+      }
+    }
+  }
+}

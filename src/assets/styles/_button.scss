@@ -19,6 +19,11 @@
         }
     }
 
+    &.red {
+        background-color: rgb(182, 0, 0);
+        color: white;
+    }
+
     &.gray {
         background-color: var.$palette-gray;
 

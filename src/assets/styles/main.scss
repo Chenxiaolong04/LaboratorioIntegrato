@@ -4,6 +4,7 @@
 @use './button';
 @use './input';
 @use './inputGroup';
+@use './searchBar';
 
 // layout
 @use './navbar';
@@ -27,6 +28,7 @@
 
 // dashboard Admin
 @use './dashboardAdmin';
+@use './createUser';
 
 
 // Global resets

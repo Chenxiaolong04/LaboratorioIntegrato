@@ -1,9 +1,24 @@
-import { useEffect, useState } from "react";
-import { FaBell, FaUser } from "react-icons/fa"; // icone moderne
-import Button from "./Button";
+import { useEffect, useRef, useState } from "react";
+import { FaBell } from "react-icons/fa";
+import { Link } from "react-router-dom";
+import TestImage from "../assets/img/test-image.jpg";
+
+interface Notification {
+  id: number;
+  message: string;
+  time: string;
+}
 
 export default function NavbarPrivate() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const notificationsRef = useRef<HTMLDivElement>(null);
+
+  const notifications: Notification[] = [
+    { id: 1, message: "Nuova vendita completata", time: "1h fa" },
+    { id: 2, message: "Nuovo incarico assegnato", time: "2h fa" },
+    { id: 3, message: "Valutazione AI completata", time: "5h fa" },
+  ];
 
   useEffect(() => {
     document.body.classList.toggle("no-scroll", menuOpen);
@@ -13,31 +28,41 @@ export default function NavbarPrivate() {
     };
   }, [menuOpen]);
 
-  const handleLinkClick = () => {
-    setMenuOpen(false);
-  };
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        notificationsRef.current &&
+        !notificationsRef.current.contains(event.target as Node)
+      ) {
+        setNotificationsOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <nav className="navbar">
-      {/* Links desktop */}
       <div className="links-desktop-navbar">
         <ul>
           <li>
-            <a href="#">Dashboard</a>
+            <Link to={"/admin"}>Dashboard</Link>
           </li>
           <li>
-            <a href="#">Valutazioni AI</a>
+            <Link to={"/admin/create-user"}>Crea profilo</Link>
           </li>
           <li>
-            <a href="#">Incarichi</a>
+            <Link to={"/admin/evaluationsAI"}>Valutazioni AI</Link>
           </li>
           <li>
-            <a href="#">Vendite</a>
+            <Link to={"/admin/assignments"}>Incarichi</Link>
+          </li>
+          <li>
+            <Link to={"/admin/sales"}>Vendite</Link>
           </li>
         </ul>
       </div>
 
-      {/* Hamburger button mobile */}
       <button
         className={`menu-btn ${menuOpen ? "open" : ""}`}
         onClick={() => setMenuOpen(!menuOpen)}
@@ -47,40 +72,54 @@ export default function NavbarPrivate() {
         <span className="span-hamburger"></span>
       </button>
 
-      {/* Overlay menu mobile */}
       <div className={`menu-overlay ${menuOpen ? "active" : ""}`}>
         <ul>
           <li>
-            <a href="#" onClick={handleLinkClick}>
-              Dashboard
-            </a>
+            <Link to={"/admin"}>Dashboard</Link>
           </li>
           <li>
-            <a href="#" onClick={handleLinkClick}>
-              Valutazioni AI
-            </a>
+            <Link to={"/admin/create-user"}>Crea profilo</Link>
           </li>
           <li>
-            <a href="#" onClick={handleLinkClick}>
-              Incarichi
-            </a>
+            <Link to={"/admin/evaluationsAI"}>Valutazioni AI</Link>
           </li>
           <li>
-            <a href="#" onClick={handleLinkClick}>
-              Vendite
-            </a>
+            <Link to={"/admin/assignments"}>Incarichi</Link>
+          </li>
+          <li>
+            <Link to={"/admin/sales"}>Vendite</Link>
           </li>
         </ul>
       </div>
       <div className="button-links">
-        <a href="#" className="icon-btn">
-          <FaBell size={20} />
-          <span className="badge">3</span>
-        </a>
+        <div ref={notificationsRef} className="notification-wrapper">
+          <button
+            className="icon-btn"
+            onClick={() => setNotificationsOpen(!notificationsOpen)}
+          >
+            <FaBell size={20} />
+            {notifications.length > 0 && (
+              <span className="badge">{notifications.length}</span>
+            )}
+          </button>
 
-        <a href="#" className="icon-btn">
-          <FaUser size={20} />
-        </a>
+          {notificationsOpen && (
+            <div className="notifications-dropdown">
+              <ul>
+                {notifications.map((n) => (
+                  <li key={n.id}>
+                    <p>{n.message}</p>
+                    <span className="time">{n.time}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+
+        <Link to={"/"}>
+          <img src={TestImage} alt="logo" />
+        </Link>
       </div>
     </nav>
   );
