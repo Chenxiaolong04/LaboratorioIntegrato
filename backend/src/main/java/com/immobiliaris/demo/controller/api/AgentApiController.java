@@ -19,12 +19,9 @@ public class AgentApiController {
     @GetMapping("/dashboard")
     public ResponseEntity<Map<String, Object>> getDashboard(Authentication authentication) {
         Map<String, Object> response = new LinkedHashMap<>();
-        response.put("message", "Benvenuto agente");
-        response.put("user", authentication.getName());
-        response.put("role", "AGENT");
         
         // Ottieni statistiche personali dal Service
-        Map<String, Integer> stats = statisticsService.getAgentStatistics(authentication.getName());
+        Map<String, Long> stats = statisticsService.getAgentStatistics(authentication.getName());
         response.put("statistics", stats);
         
         return ResponseEntity.ok(response);

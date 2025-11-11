@@ -1,4 +1,4 @@
-package com.immobiliaris.demo.model;
+package com.immobiliaris.demo.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

@@ -36,4 +36,18 @@ public class ContrattoRepository {
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, nomeStato, idAgente);
         return count != null ? count : 0;
     }
+
+    /**
+     * Conta i contratti conclusi nell'ultimo mese usando Data_inizio
+     * Un contratto chiuso significa che è stato attivato
+     * @param nomeStato Nome dello stato
+     * @return Numero di contratti conclusi nell'ultimo mese
+     */
+    public Integer countByStatoLastMonth(String nomeStato) {
+        String sql = "SELECT COUNT(*) FROM Contratti c " +
+                     "JOIN Stati_contratto sc ON c.Id_stato_contratto = sc.Id_stato_contratto " +
+                     "WHERE sc.Nome = ? AND c.Data_inizio >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, nomeStato);
+        return count != null ? count : 0;
+    }
 }

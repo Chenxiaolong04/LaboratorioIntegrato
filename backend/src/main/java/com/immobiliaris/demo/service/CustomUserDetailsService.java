@@ -1,6 +1,6 @@
 package com.immobiliaris.demo.service;
 
-import com.immobiliaris.demo.model.User;
+import com.immobiliaris.demo.entity.User;
 import com.immobiliaris.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

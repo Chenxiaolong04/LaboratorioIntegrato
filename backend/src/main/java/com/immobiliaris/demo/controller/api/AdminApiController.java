@@ -19,14 +19,34 @@ public class AdminApiController {
     @GetMapping("/dashboard")
     public ResponseEntity<Map<String, Object>> getDashboard(Authentication authentication) {
         Map<String, Object> response = new LinkedHashMap<>();
-        response.put("message", "Benvenuto amministratore");
-        response.put("user", authentication.getName());
-        response.put("role", "ADMIN");
         
-        // Ottieni statistiche dal Service
-        Map<String, Integer> stats = statisticsService.getAdminStatistics();
-        response.put("statistics", stats);
+        try {
+            // Ottieni statistiche complete dal Service
+            Map<String, Object> dashboardData = statisticsService.getAdminDashboardData();
+            response.put("statistics", dashboardData.get("statistics"));
+            response.put("ultimi10Immobili", dashboardData.get("ultimi10Immobili"));
+        } catch (Exception e) {
+            // Se c'è errore, ritorna almeno le info base
+            System.err.println("Errore caricamento dashboard: " + e.getMessage());
+            e.printStackTrace();
+            response.put("error", e.getMessage());
+        }
         
         return ResponseEntity.ok(response);
+    }
+
+    /**
+     * API per ottenere immobili con paginazione
+     * GET /api/admin/immobili?page=0&size=10
+     * @param page Numero pagina (0 = prima pagina)
+     * @param size Numero elementi per pagina (default 10)
+     */
+    @GetMapping("/immobili")
+    public ResponseEntity<Map<String, Object>> getImmobiliPaginated(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        
+        Map<String, Object> result = statisticsService.getImmobiliPaginated(page, size);
+        return ResponseEntity.ok(result);
     }
 }

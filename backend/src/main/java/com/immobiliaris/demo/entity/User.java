@@ -1,4 +1,4 @@
-package com.immobiliaris.demo.model;
+package com.immobiliaris.demo.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -15,7 +15,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Id_utente")
-    private Long idUtente;
+    private Integer idUtente;
 
     @Column(name = "CF", length = 16)
     private String cf;

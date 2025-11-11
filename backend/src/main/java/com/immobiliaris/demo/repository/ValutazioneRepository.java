@@ -36,4 +36,17 @@ public class ValutazioneRepository {
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, nomeStato, idAgente);
         return count != null ? count : 0;
     }
+
+    /**
+     * Conta le valutazioni con uno specifico stato nell'ultimo mese usando Data_valutazione
+     * @param nomeStato Nome dello stato
+     * @return Numero di valutazioni nell'ultimo mese
+     */
+    public Integer countByStatoLastMonth(String nomeStato) {
+        String sql = "SELECT COUNT(*) FROM Valutazioni v " +
+                     "JOIN Stati_valutazione sv ON v.Id_stato_valutazione = sv.Id_stato_valutazione " +
+                     "WHERE sv.Nome = ? AND v.Data_valutazione >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, nomeStato);
+        return count != null ? count : 0;
+    }
 }
