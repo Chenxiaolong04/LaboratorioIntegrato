@@ -2,8 +2,6 @@ package com.immobiliaris.demo.repository;
 
 import com.immobiliaris.demo.entity.Valutazione;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -13,19 +11,19 @@ public interface ValutazioneJpaRepository extends JpaRepository<Valutazione, Int
     
     /**
      * Conta le valutazioni con uno specifico stato
+     * Spring genera automaticamente la query
      */
-    @Query("SELECT COUNT(v) FROM Valutazione v WHERE v.statoValutazione.nome = :stato")
-    Long countByStatoValutazioneNome(@Param("stato") String stato);
+    Long countByStatoValutazioneNome(String nome);
     
     /**
      * Conta le valutazioni di un agente specifico con uno specifico stato
+     * Spring genera automaticamente: WHERE statoValutazione.nome = ? AND agente.idUtente = ?
      */
-    @Query("SELECT COUNT(v) FROM Valutazione v WHERE v.statoValutazione.nome = :stato AND v.agente.id = :idAgente")
-    Long countByStatoValutazioneNomeAndAgenteId(@Param("stato") String stato, @Param("idAgente") Integer idAgente);
+    Long countByStatoValutazioneNomeAndAgenteIdUtente(String nome, Integer agenteIdUtente);
     
     /**
      * Conta le valutazioni con uno specifico stato nell'ultimo mese
+     * Spring genera automaticamente: WHERE nome = ? AND dataValutazione >= ?
      */
-    @Query("SELECT COUNT(v) FROM Valutazione v WHERE v.statoValutazione.nome = :stato AND v.dataValutazione >= :dataLimite")
-    Long countByStatoValutazioneNomeAndDataValutazioneAfter(@Param("stato") String stato, @Param("dataLimite") LocalDate dataLimite);
+    Long countByStatoValutazioneNomeAndDataValutazioneAfter(String nome, LocalDate data);
 }

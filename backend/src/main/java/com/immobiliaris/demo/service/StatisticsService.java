@@ -56,9 +56,8 @@ public class StatisticsService {
         
         data.put("statistics", stats);
         
-        // Ultimi 10 immobili aggiunti
-        Pageable top10 = PageRequest.of(0, 10);
-        List<Immobile> immobili = immobileRepository.findTop10ByOrderByDataInserimentoDesc(top10);
+        // Ultimi 10 immobili aggiunti (Spring trova automaticamente i primi 10)
+        List<Immobile> immobili = immobileRepository.findTop10ByOrderByDataInserimentoDesc();
         
         // Trasforma in Map per JSON
         List<Map<String, Object>> ultimi10Immobili = immobili.stream().map(i -> {
@@ -112,13 +111,13 @@ public class StatisticsService {
         }
         
         // Contratti conclusi dall'agente (stato 'chiuso')
-        stats.put("contrattiConclusi", contrattoRepository.countByStatoContrattoNomeAndAgenteId("chiuso", idAgente));
+        stats.put("contrattiConclusi", contrattoRepository.countByStatoContrattoNomeAndAgenteIdUtente("chiuso", idAgente));
         
         // Valutazioni in corso dell'agente (stato 'in_verifica')
-        stats.put("valutazioniInCorso", valutazioneRepository.countByStatoValutazioneNomeAndAgenteId("in_verifica", idAgente));
+        stats.put("valutazioniInCorso", valutazioneRepository.countByStatoValutazioneNomeAndAgenteIdUtente("in_verifica", idAgente));
         
         // Valutazioni con AI assegnate all'agente (stato 'solo_AI')
-        stats.put("valutazioniConAI", valutazioneRepository.countByStatoValutazioneNomeAndAgenteId("solo_AI", idAgente));
+        stats.put("valutazioniConAI", valutazioneRepository.countByStatoValutazioneNomeAndAgenteIdUtente("solo_AI", idAgente));
         
         return stats;
     }
@@ -134,7 +133,7 @@ public class StatisticsService {
         
         // Ottieni immobili della pagina con Spring Data JPA
         Pageable pageable = PageRequest.of(page, size);
-        Page<Immobile> immobiliPage = immobileRepository.findAllOrderByDataInserimentoDesc(pageable);
+        Page<Immobile> immobiliPage = immobileRepository.findAllByOrderByDataInserimentoDesc(pageable);
         
         // Trasforma in Map per JSON
         List<Map<String, Object>> immobili = immobiliPage.getContent().stream().map(i -> {

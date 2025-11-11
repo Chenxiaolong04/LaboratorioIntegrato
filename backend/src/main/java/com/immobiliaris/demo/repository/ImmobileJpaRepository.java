@@ -4,8 +4,6 @@ import com.immobiliaris.demo.entity.Immobile;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -15,19 +13,19 @@ public interface ImmobileJpaRepository extends JpaRepository<Immobile, Integer> 
     
     /**
      * Conta gli immobili con uno specifico stato
+     * Spring genera automaticamente: SELECT COUNT(*) WHERE statoImmobile.nome = ?
      */
-    @Query("SELECT COUNT(i) FROM Immobile i WHERE i.statoImmobile.nome = :stato")
-    Long countByStatoImmobileNome(@Param("stato") String stato);
+    Long countByStatoImmobileNome(String nome);
     
     /**
      * Ottiene gli ultimi 10 immobili ordinati per data inserimento
+     * Spring capisce automaticamente "OrderBy" e "Desc"
      */
-    @Query("SELECT i FROM Immobile i ORDER BY i.dataInserimento DESC")
-    List<Immobile> findTop10ByOrderByDataInserimentoDesc(Pageable pageable);
+    List<Immobile> findTop10ByOrderByDataInserimentoDesc();
     
     /**
      * Ottiene immobili con paginazione ordinati per data inserimento
+     * Spring usa automaticamente il Pageable per paginazione e ordinamento
      */
-    @Query("SELECT i FROM Immobile i ORDER BY i.dataInserimento DESC")
-    Page<Immobile> findAllOrderByDataInserimentoDesc(Pageable pageable);
+    Page<Immobile> findAllByOrderByDataInserimentoDesc(Pageable pageable);
 }
