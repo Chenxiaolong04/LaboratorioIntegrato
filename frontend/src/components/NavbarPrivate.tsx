@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { FaBell } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import TestImage from "../assets/img/test-image.jpg";
+import logo from "../assets/img/logo.svg";
 
 interface Notification {
   id: number;
@@ -118,7 +118,7 @@ export default function NavbarPrivate() {
         </div>
 
         <Link to={"/"}>
-          <img src={TestImage} alt="logo" />
+          <img src={logo} alt="logo" />
         </Link>
       </div>
     </nav>

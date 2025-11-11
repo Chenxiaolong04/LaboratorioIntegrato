@@ -1,24 +1,32 @@
 import { useState } from "react";
-import TestImage from "../../assets/img/test-image.jpg";
 import { Link, useNavigate } from "react-router-dom";
 import { loginUser } from "../../services/api";
 import { useAuth } from "../../context/AuthContext";
 import Button from "../../components/Button";
 import Input from "../../components/Input";
+import Loader from "../../components/Loader";
+import Logo from '../../assets/img/logo.svg'
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
+
+    // Simula che la richiesta al backend duri almeno due secondi giusto per far vedere il loader anche se sono in localhost
+    const timeout = new Promise((res) => setTimeout(res, 6000));
 
     try {
       const userData = await loginUser(email, password);
+
+      await timeout
 
       if (!userData.success) {
         setError(userData.message || "Credenziali non valide");
@@ -40,17 +48,21 @@ export default function Login() {
     } catch (err) {
       console.error(err);
       setError("Errore durante il login");
+    } finally {
+      setLoading(false);
     }
   };
+
+  if (loading) return <Loader />
 
   return (
     <section className="login-page">
       <Link to={"/"}>
-        <img src={TestImage} alt="logo" />
+        <img src={Logo} alt="logo" />
       </Link>
       <div className="login-container">
         <h1>
-          Bentornato! <br /> Felice di rivederti
+          Accedi al tuo account
         </h1>
 
         <form className="login-form" onSubmit={handleSubmit}>

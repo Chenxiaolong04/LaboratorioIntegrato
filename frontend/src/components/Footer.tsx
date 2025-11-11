@@ -7,7 +7,7 @@ import {
     FaEnvelope,
     FaMapLocationDot
 } from "react-icons/fa6";
-import TestImage from "../assets/img/test-image.jpg";
+import logo from "../assets/img/logo.svg";
 
 export default function Footer() {
     return (
@@ -17,7 +17,7 @@ export default function Footer() {
                     {/* Logo o marchio */}
                     <div className="footer-logo">
                         <img
-                            src={TestImage}
+                            src={logo}
                             alt="Logo Laboratorio Integrato"
                             loading="lazy"
                             width="150"

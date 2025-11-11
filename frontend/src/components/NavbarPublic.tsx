@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
+import logo from '../assets/img/logo.svg'
 import Button from "./Button";
+import { Link } from "react-router-dom";
 
 export default function NavbarPublic() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -18,7 +20,7 @@ export default function NavbarPublic() {
 
   return (
     <nav className="navbar">
-      <h2 className="logo">Immobiliaris</h2>
+      <Link to={'/'}><img src={logo} alt="logo" /></Link>
 
       {/* Links desktop */}
       <div className="links-desktop-navbar">

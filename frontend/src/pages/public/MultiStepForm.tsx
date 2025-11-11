@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import TestImage from "../../assets/img/test-image.jpg";
+import logo from "../../assets/img/logo.svg";
 import StepLocation, {
   type StepLocationRef,
 } from "../../components/formSteps/StepLocation";
@@ -39,7 +39,7 @@ export default function MultiStepForm() {
       <section className="form-container">
         <div className="brand">
           <Link to="/">
-            <img className="logo" src={TestImage} alt="" />
+            <img className="logo" src={logo} alt="" />
           </Link>
         </div>
 
