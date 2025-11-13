@@ -267,4 +267,58 @@ public class StatisticsService {
         
         return result;
     }
+
+    /**
+     * Restituisce valutazioni generate solo da AI con offset/limit
+     * Mostra i dettagli dell'immobile e il prezzo stimato dall'AI
+     */
+    public Map<String, Object> getValutazioniSoloAILoadMore(int offset, int limit) {
+        Map<String, Object> result = new LinkedHashMap<>();
+        
+        // Ottieni tutte le valutazioni con stato "solo_AI"
+        List<Valutazione> tutteValutazioni = valutazioneRepository.findByStatoValutazioneNome("solo_AI");
+        
+        // Applica offset e limit manualmente
+        int totalValutazioni = tutteValutazioni.size();
+        List<Valutazione> valutazioniBatch = tutteValutazioni.stream()
+            .skip(offset)
+            .limit(limit)
+            .collect(Collectors.toList());
+        
+        // Trasforma in Map mostrando i dettagli della valutazione
+        List<Map<String, Object>> valuazioniData = valutazioniBatch.stream().map(v -> {
+            Map<String, Object> m = new LinkedHashMap<>();
+            
+            // Dati valutazione
+            m.put("id", v.getId());
+            m.put("prezzoAI", v.getPrezzoAI());
+            m.put("dataValutazione", v.getDataValutazione());
+            m.put("descrizione", v.getDescrizione());
+            
+            // Dati immobile
+            if (v.getImmobile() != null) {
+                Immobile immobile = v.getImmobile();
+                m.put("tipo", immobile.getTipologia());
+                m.put("nomeProprietario", immobile.getProprietario().getNome() + " " + immobile.getProprietario().getCognome());
+                m.put("indirizzo", immobile.getVia() + ", " + immobile.getCitta());
+                m.put("metratura", immobile.getMetratura());
+                m.put("stanze", immobile.getStanze());
+            } else {
+                m.put("tipo", null);
+                m.put("nomeProprietario", null);
+                m.put("indirizzo", null);
+                m.put("metratura", null);
+                m.put("stanze", null);
+            }
+            
+            return m;
+        }).collect(Collectors.toList());
+        
+        result.put("valutazioni", valuazioniData);
+        result.put("nextOffset", offset + limit);
+        result.put("hasMore", (offset + limit) < totalValutazioni);
+        result.put("pageSize", valutazioniBatch.size());
+        
+        return result;
+    }
 }

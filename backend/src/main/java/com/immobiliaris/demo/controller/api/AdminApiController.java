@@ -82,4 +82,21 @@ public class AdminApiController {
             return ResponseEntity.status(500).body("Errore recupero contratti");
         }
     }
+
+    /**
+     * Restituisce valutazioni generate solo da AI con i dettagli degli immobili
+     * Usa offset/limit per load-more progressivo
+     * Esempio: GET /api/admin/valutazioni/solo-ai?offset=0&limit=10
+     */
+    @GetMapping("/valutazioni/solo-ai")
+    public ResponseEntity<Object> getValutazioniSoloAI(
+            @RequestParam(defaultValue = "0") int offset,
+            @RequestParam(defaultValue = "10") int limit) {
+        try {
+            return ResponseEntity.ok(statisticsService.getValutazioniSoloAILoadMore(offset, limit));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Errore recupero valutazioni");
+        }
+    }
 }
