@@ -282,5 +282,68 @@ GET /api/admin/immobili?page=2&size=10  → Immobili 21-30
 
 ---
 
+## 📧 Invio Email
+
+### POST `/api/mail/send`
+Invia una email tramite backend
+
+**Autenticazione:** ❌ No (⚠️ solo per test - in produzione proteggi con ruoli ADMIN/AGENT)
+
+**Request:**
+```json
+{
+  "to": "destinatario@example.com",
+  "subject": "Oggetto della mail",
+  "message": "Corpo del messaggio"
+}
+```
+
+**Response (200 OK):**
+```
+"Email inviata con successo ✅"
+```
+
+**Errori:**
+- `400 Bad Request` - Body JSON mancante o malformato
+- `500 Internal Server Error` - Errore SMTP (credenziali, connessione)
+
+
+---
+
+### GET `/api/mail/test`
+Verifica che l'endpoint mail sia raggiungibile
+
+**Response (200 OK):**
+```
+"Mail endpoint raggiungibile! ✅"
+```
+
+---
+
+## 📨 Configurazione SMTP
+
+### Gmail (con App Password)
+```properties
+spring.mail.host=smtp.gmail.com
+spring.mail.port=587
+spring.mail.username=your-email@gmail.com
+spring.mail.password=your-app-password
+```
+
+**Come ottenere App Password:**
+1. Google Account → Sicurezza → Verifica in 2 passaggi (attiva)
+2. Cerca "Password per le app" → Genera nuova password
+3. Copia codice (16 caratteri) e usa in `application.properties`
+
+### Mailtrap (testing)
+```properties
+spring.mail.host=smtp.mailtrap.io
+spring.mail.port=2525
+spring.mail.username=YOUR_MAILTRAP_USER
+spring.mail.password=YOUR_MAILTRAP_PASS
+```
+
+---
+
 
 

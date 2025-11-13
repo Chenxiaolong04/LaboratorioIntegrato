@@ -1,6 +1,7 @@
 import React, { useState, useImperativeHandle, forwardRef } from "react";
 import InputGroup from "../InputGroup";
-import TestImage from "../../assets/img/test-image.jpg"
+import TestImage from "../../assets/img/test-image.jpg";
+import { useFormContext } from "../../context/FormContext";
 
 const indirizzoRegex =
   /^(via|viale|corso|piazza|largo)\s+[a-zàèéìòù'\s]+[\s,]*\d+[a-zA-Z]?$/i;
@@ -16,13 +17,15 @@ interface StepLocationProps {
 
 const StepLocation = forwardRef<StepLocationRef, StepLocationProps>(
   ({ error, setError }, ref) => {
-    const [address, setAddress] = useState("");
+    const { formData, setFormData } = useFormContext();
+    const [address, setAddress] = useState(formData.address || "");
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      setAddress(e.target.value);
+      const value = e.target.value;
+      setAddress(value);
+      setFormData((prev) => ({ ...prev, address: value }));
     };
 
-    // 👇 Esponiamo la funzione validate() al genitore tramite ref
     useImperativeHandle(ref, () => ({
       validate: () => {
         if (!indirizzoRegex.test(address)) {
@@ -49,7 +52,6 @@ const StepLocation = forwardRef<StepLocationRef, StepLocationProps>(
           onChange={handleChange}
         />
 
-        {/* Mostra l'errore solo dopo che l'utente ha cliccato Avanti */}
         {error && <p className="error-message">{error}</p>}
 
         <img className="map" src={TestImage} alt="" />

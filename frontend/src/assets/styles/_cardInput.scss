@@ -1,0 +1,16 @@
+@use "./variables" as var;
+
+.card-input {
+  text-align: center;
+  font-size: var.$fs-mb-section-subtitle;
+  padding: 1rem;
+  background-color: var.$palette-gray;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+
+  &.active {
+    border: 2px solid;
+    border-color: var.$palette-lightblu;
+  }
+}

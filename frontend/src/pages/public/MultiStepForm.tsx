@@ -8,13 +8,23 @@ import StepContacts from "../../components/formSteps/StepContacts";
 import StepSuccess from "../../components/formSteps/StepSuccess";
 import Button from "../../components/Button";
 import { FormProvider } from "../../context/FormContext";
+import StepType, {
+  type StepTypeRef,
+} from "../../components/formSteps/StepType";
+import StepStatus, {
+  type StepStatusRef,
+} from "../../components/formSteps/StepStatus";
 
 export default function MultiStepForm() {
   const [error, setError] = useState("");
+  const [errorType, setErrorType] = useState("");
+  const [errorStatus, setErrorStatus] = useState("");
   const [step, setStep] = useState(0);
 
   const stepLocationRef = useRef<StepLocationRef>(null);
-  const totalSteps = 3;
+  const stepTypeRef = useRef<StepTypeRef>(null);
+  const stepStatusRef = useRef<StepStatusRef>(null);
+  const totalSteps = 5;
 
   const handleNext = () => {
     if (step === 0) {
@@ -22,16 +32,27 @@ export default function MultiStepForm() {
       if (!valid) return;
     }
 
+    if (step === 1) {
+      const valid = stepTypeRef.current?.validate();
+      if (!valid) return;
+    }
+
+    if (step === 2) {
+      const valid = stepStatusRef.current?.validate();
+      if (!valid) return;
+    }
+
     if (step < totalSteps - 1) setStep(step + 1);
   };
 
   const handlePrev = () => {
+    setError("");
+    setErrorType("");
     if (step > 0) setStep(step - 1);
   };
 
   const handleSubmit = () => {
-    console.log("Invio dati al backend...");
-    setStep(2);
+    setStep(4);
   };
 
   return (
@@ -41,6 +62,7 @@ export default function MultiStepForm() {
           <Link to="/">
             <img className="logo" src={logo} alt="" />
           </Link>
+          <h2>Immobiliaris</h2>
         </div>
 
         {step < totalSteps - 1 && (
@@ -67,9 +89,25 @@ export default function MultiStepForm() {
             />
           )}
 
-          {step === 1 && <StepContacts />}
+          {step === 1 && (
+            <StepType
+              ref={stepTypeRef}
+              error={errorType}
+              setError={setErrorType}
+            />
+          )}
 
-          {step === 2 && <StepSuccess />}
+          {step === 2 && (
+            <StepStatus
+              ref={stepStatusRef}
+              error={errorStatus}
+              setError={setErrorStatus}
+            />
+          )}
+
+          {step === 3 && <StepContacts />}
+
+          {step === 4 && <StepSuccess />}
 
           {step < totalSteps - 1 && (
             <div className="step-control">

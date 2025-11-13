@@ -116,8 +116,8 @@ public class StatisticsService {
         // Valutazioni in corso dell'agente (stato 'in_verifica')
         stats.put("valutazioniInCorso", valutazioneRepository.countByStatoValutazioneNomeAndAgenteIdUtente("in_verifica", idAgente));
         
-        // Valutazioni con AI assegnate all'agente (stato 'solo_AI')
-        stats.put("valutazioniConAI", valutazioneRepository.countByStatoValutazioneNomeAndAgenteIdUtente("solo_AI", idAgente));
+        // Totale valutazioni con AI nel sistema (tutte, anche senza agente assegnato)
+        stats.put("valutazioniConAI", valutazioneRepository.countByStatoValutazioneNome("solo_AI"));
         
         return stats;
     }

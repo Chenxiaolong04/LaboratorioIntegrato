@@ -15,7 +15,7 @@ public class CorsConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         
-        // Permetti solo frontend su porta 5173
+        // Permetti solo frontend su porta 3000
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
         
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));

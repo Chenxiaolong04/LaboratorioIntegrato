@@ -8,7 +8,8 @@ interface FormData {
   surname: string;
   email: string;
   phone: string;
-  // aggiungerai altri campi man mano che crei gli step
+  type: string;
+  status: string;
 }
 
 interface FormContextType {
@@ -25,6 +26,8 @@ export const FormProvider = ({ children }: { children: ReactNode }) => {
     surname: "",
     email: "",
     phone: "",
+    type: "",
+    status: "",
   });
 
   return (

@@ -21,7 +21,7 @@ export default function Login() {
     setLoading(true);
 
     // Simula che la richiesta al backend duri almeno due secondi giusto per far vedere il loader anche se sono in localhost
-    const timeout = new Promise((res) => setTimeout(res, 6000));
+    const timeout = new Promise((res) => setTimeout(res, 2000));
 
     try {
       const userData = await loginUser(email, password);

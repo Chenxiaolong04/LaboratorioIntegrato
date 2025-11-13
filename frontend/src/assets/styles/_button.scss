@@ -11,14 +11,6 @@
     font-size: 1.2rem;
     cursor: pointer;
 
-    &.green {
-        background-color: var.$palette-green;
-
-        &:hover {
-            background-color: var.$palette-green;
-        }
-    }
-
     &.red {
         background-color: rgb(182, 0, 0);
         color: white;

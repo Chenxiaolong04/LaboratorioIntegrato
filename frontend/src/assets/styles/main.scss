@@ -4,6 +4,7 @@
 @use './button';
 @use './input';
 @use './inputGroup';
+@use './cardInput';
 @use './searchBar';
 @use './loader';
 
@@ -49,7 +50,7 @@ ul {
 }
 
 body {
-  font-family: 'Outfit', sans-serif;
+  font-family: "Sora", sans-serif;
 }
 
 section,
