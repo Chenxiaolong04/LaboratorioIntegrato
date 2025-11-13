@@ -17,21 +17,30 @@ public class AdminApiController {
     private StatisticsService statisticsService;
 
     @GetMapping("/dashboard")
-    public ResponseEntity<Map<String, Object>> getDashboard(Authentication authentication) {
+    public ResponseEntity<Map<String, Object>> getDashboard(Authentication authentication,
+                                                            @RequestParam(defaultValue = "0") int offset,
+                                                            @RequestParam(defaultValue = "10") int limit) {
         Map<String, Object> response = new LinkedHashMap<>();
-        
+
         try {
             // Ottieni statistiche complete dal Service
             Map<String, Object> dashboardData = statisticsService.getAdminDashboardData();
             response.put("statistics", dashboardData.get("statistics"));
-            response.put("ultimi10Immobili", dashboardData.get("ultimi10Immobili"));
+
+            // Ottieni batch di immobili usando offset/limit (per comportamento "Carica altri")
+            Map<String, Object> immobiliLoad = statisticsService.getImmobiliLoadMore(offset, limit);
+            response.put("immobili", immobiliLoad.get("immobili"));
+            response.put("nextOffset", immobiliLoad.get("nextOffset"));
+            response.put("hasMore", immobiliLoad.get("hasMore"));
+            response.put("pageSize", immobiliLoad.get("pageSize"));
+
         } catch (Exception e) {
             // Se c'è errore, ritorna almeno le info base
             System.err.println("Errore caricamento dashboard: " + e.getMessage());
             e.printStackTrace();
             response.put("error", e.getMessage());
         }
-        
+
         return ResponseEntity.ok(response);
     }
 
@@ -51,12 +60,23 @@ public class AdminApiController {
     }
 
     /**
-     * Restituisce tutti i contratti con stato "chiuso" (solo per admin)
+     * Endpoint per il pulsante "Carica altri" nel frontend.
+     * Usa offset (numero di elementi già caricati) e limit (quantità da caricare)
+     * Esempio: GET /api/admin/immobili/load?offset=0&limit=10
+     */
+    
+
+    /**
+     * Restituisce contratti chiusi con i dettagli degli immobili associati
+     * Usa offset/limit per load-more progressivo (come dashboard)
+     * Esempio: GET /api/admin/contratti/chiusi?offset=0&limit=10
      */
     @GetMapping("/contratti/chiusi")
-    public ResponseEntity<Object> getContrattiChiusi() {
+    public ResponseEntity<Object> getContrattiChiusi(
+            @RequestParam(defaultValue = "0") int offset,
+            @RequestParam(defaultValue = "10") int limit) {
         try {
-            return ResponseEntity.ok(statisticsService.getContrattiChiusi());
+            return ResponseEntity.ok(statisticsService.getContrattiChiusiLoadMore(offset, limit));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(500).body("Errore recupero contratti");
