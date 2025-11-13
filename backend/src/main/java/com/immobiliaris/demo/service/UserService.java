@@ -1,6 +1,7 @@
 package com.immobiliaris.demo.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -99,5 +100,15 @@ public class UserService {
     public User getUserById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Utente non trovato"));
+    }
+
+    private Integer tipoUtenteId;
+
+    public Integer getTipoUtenteId() {
+        return tipoUtenteId;
+    }
+
+    public void setTipoUtenteId(Integer tipoUtenteId) {
+        this.tipoUtenteId = tipoUtenteId;
     }
 }

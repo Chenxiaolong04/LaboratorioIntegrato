@@ -1,6 +1,7 @@
 package com.immobiliaris.demo.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.immobiliaris.demo.entity.User;
@@ -16,10 +17,11 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    // Registrazione nuovo utente (admin o agent)
+    // Registrazione nuovo utente (solo ADMIN)
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/register")
-    public User registerUser(@RequestBody User user, @RequestParam Integer tipoUtenteId) {
-        return userService.registerUser(user, tipoUtenteId);
+    public User registerUser(@RequestBody User user) {
+        return userService.registerUser(user, user.getTipoUtente().getIdTipo());
     }
 
     // Aggiornamento utente
