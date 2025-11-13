@@ -10,29 +10,21 @@ interface FAQ {
 
 const faqs: FAQ[] = [
     {
-        question: "Domanda neg giwgiweigwnig?",
-        answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus commodo id ipsum ut placerat. Donec a commodo mauris. Nam mattis aliquet enim, placerat accumsan lectus consequat at. Cras leo nibh, ultricies vitae ultricies sit amet, ornare nec mi. Mauris luctus a mi sed egestas.",
+        question: "1. Cosa devo indicare per la posizione della casa?",
+        answer: "Indica zona, quartiere e vicinanza a servizi utili (mezzi, scuole, parchi). Queste informazioni aumentano subito il valore percepito.",
     },
     {
-        question: "Domanda neg giwgiweigwnig?",
+        question: "2. Come specificare correttamente la metratura?",
         answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
     },
     {
-        question: "Domanda neg giwgiweigwnig?",
+        question: "3. Va indicato se l’edificio ha un ascensore?",
         answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
     },
     {
-        question: "Domanda neg giwgiweigwnig?",
+        question: "4. Devo menzionare le spese condominiali?",
         answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    },
-    {
-        question: "Domanda neg giwgiweigwnig?",
-        answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    },
-    {
-        question: "Domanda neg giwgiweigwnig?",
-        answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    },
+    }
 ];
 
 export default function FAQ() {
@@ -64,11 +56,7 @@ export default function FAQ() {
                         </div>
                     ))}
                 </div>
-                <div className="faq-contact">
-                    <img src={TestImage} alt="" />
-                    <p>Hai altre domande?</p>
-                    <Button className="lightblu">Contattaci</Button>
-                </div>
+                
             </div>
         </section>
     );

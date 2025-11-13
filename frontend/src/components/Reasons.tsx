@@ -2,14 +2,13 @@ import { BsFastForwardCircleFill } from "react-icons/bs";
 import { FaMapLocationDot } from "react-icons/fa6";
 import { GrServices } from "react-icons/gr";
 import { FaBrain } from "react-icons/fa";
-import TestImage from "../assets/img/test-image.jpg";
+import { FaLongArrowAltRight } from "react-icons/fa";
 import Button from "./Button";
 
 export default function Reasons() {
     return (
         <section className="reasons">
             <h2>Perché sceglierci</h2>
-            <h3>Ecco i nostri punti forti principali</h3>
             <div className="reasons-container">
                 <div className="cards-container">
                     <div className="card">
@@ -29,10 +28,8 @@ export default function Reasons() {
                         <h4>Zero stress nella vendita</h4>
                     </div>
                 </div>
-                <div className="about-us">
-                    <img src={TestImage} alt="" />
-                    <h3>Immobiliaris è un’agenzia immobiliare radicata nel territorio piemontese e parte del gruppo Indomus. Da anni aiutiamo i proprietari a vendere casa in modo rapido e sicuro. Uniamo l’esperienza locale alla tecnologia digitale per offrire un servizio moderno, personalizzato e vicino alle persone.</h3>
-                    <Button className="lightblu">Scopri di più su chi siamo</Button>
+                <div className="steps-button">
+                    <Button className="lightblu">Valuta ora <FaLongArrowAltRight /></Button>
                 </div>
             </div>
         </section>

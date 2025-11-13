@@ -5,10 +5,12 @@
     flex-direction: column;
     gap: 3rem;
     text-align: center;
+    background-color: var.$palette-gray;
     color: black;
 
     .stat h3 {
         font-size: var.$fs-mb-section-title;
+        color: var.$palette-lightblu;
     }
 
     .stat p {
