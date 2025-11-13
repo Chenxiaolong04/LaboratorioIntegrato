@@ -49,4 +49,17 @@ public class AdminApiController {
         Map<String, Object> result = statisticsService.getImmobiliPaginated(page, size);
         return ResponseEntity.ok(result);
     }
+
+    /**
+     * Restituisce tutti i contratti con stato "chiuso" (solo per admin)
+     */
+    @GetMapping("/contratti/chiusi")
+    public ResponseEntity<Object> getContrattiChiusi() {
+        try {
+            return ResponseEntity.ok(statisticsService.getContrattiChiusi());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Errore recupero contratti");
+        }
+    }
 }

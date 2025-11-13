@@ -10,10 +10,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
+import com.immobiliaris.demo.entity.Contratto;
 
 @Service
 public class StatisticsService {
@@ -158,5 +159,52 @@ public class StatisticsService {
         result.put("hasPrevious", immobiliPage.hasPrevious());
         
         return result;
+    }
+
+    /**
+     * Restituisce tutti i contratti con stato "chiuso" mappati in JSON semplice
+     * Usato dall'API admin per mostrare i contratti conclusi
+     */
+    public List<Map<String,Object>> getContrattiChiusi() {
+        List<Contratto> contratti = contrattoRepository.findByStatoContrattoNome("chiuso");
+
+        return contratti.stream().map(c -> {
+            Map<String,Object> m = new LinkedHashMap<>();
+            m.put("id", c.getId());
+            m.put("numeroContratto", c.getNumeroContratto());
+            m.put("dataInizio", c.getDataInizio());
+            m.put("dataFine", c.getDataFine());
+            m.put("dataInvio", c.getDataInvio());
+            m.put("dataRicezione", c.getDataRicezione());
+            m.put("percentualeCommissione", c.getPercentualeCommissione());
+
+            if (c.getAgente() != null) {
+                m.put("agente", c.getAgente().getNome() + " " + c.getAgente().getCognome());
+            } else {
+                m.put("agente", null);
+            }
+
+            if (c.getUtente() != null) {
+                m.put("utente", c.getUtente().getNome() + " " + c.getUtente().getCognome());
+            } else {
+                m.put("utente", null);
+            }
+
+            if (c.getImmobile() != null) {
+                m.put("immobileId", c.getImmobile().getId());
+                m.put("immobileTipologia", c.getImmobile().getTipologia());
+            } else {
+                m.put("immobileId", null);
+                m.put("immobileTipologia", null);
+            }
+
+            if (c.getStatoContratto() != null) {
+                m.put("stato", c.getStatoContratto().getNome());
+            } else {
+                m.put("stato", null);
+            }
+
+            return m;
+        }).collect(Collectors.toList());
     }
 }
