@@ -6,10 +6,14 @@ import { PiWarningCircleBold } from "react-icons/pi";
 import Button from "../../../components/Button";
 import { Link } from "react-router-dom";
 import SearchBar from "../../../components/SearchBar";
-import { getAdminDashboard, type DashboardData } from "../../../services/api";
+import {
+  getAdminDashboard,
+  type DashboardData,
+  type Immobile,
+} from "../../../services/api";
 
 const filterOptions = [
-  { label: "Vendite concluse", value: "vendite" },
+  { label: "Contratti conclusi", value: "contratti" },
   { label: "Incarichi in corso", value: "incarichi" },
   { label: "Valutazioni AI", value: "valutazioni" },
 ];
@@ -18,31 +22,54 @@ export default function AdminHome() {
   const [filter, setFilter] = useState<string | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [dashboardData, setDashboardData] = useState<DashboardData | null>(
-    null
-  );
+  const [statistics, setStatistics] = useState<
+    DashboardData["statistics"] | null
+  >(null);
+  const [immobili, setImmobili] = useState<Immobile[]>([]);
+  const [nextOffset, setNextOffset] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    async function fetchData() {
+    console.log('prova')
+    async function fetchInitialData() {
+      setLoading(true);
       try {
-        const data = await getAdminDashboard();
-        setDashboardData(data);
+        const data = await getAdminDashboard(0, 10);
+        setStatistics(data.statistics);
+        setImmobili(data.immobili);
+        setNextOffset(data.nextOffset);
+        setHasMore(data.hasMore);
       } catch (err) {
-        console.error("Errore nel caricamento dashboard:", err);
+        console.error(err);
+      } finally {
+        setLoading(false);
       }
     }
-    fetchData();
+    fetchInitialData();
   }, []);
 
-  if (!dashboardData) return <p>Caricamento...</p>;
+  const handleLoadMore = async () => {
+    if (!hasMore) return;
+    setLoading(true);
+    try {
+      const data = await getAdminDashboard(nextOffset, 10);
+      setImmobili((prev) => [...prev, ...data.immobili]);
+      setNextOffset(data.nextOffset);
+      setHasMore(data.hasMore);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const { statistics, ultimi10Immobili } = dashboardData;
+  if (!statistics) return <p>Caricamento...</p>;
 
-  // da modificare la logica appena si aggiorna il db
-  const data = ultimi10Immobili.map((i) => ({
+  const mappedData = immobili.map((i) => ({
     tipo:
       i.tipo.toLowerCase() === "appartamento"
-        ? "vendite"
+        ? "contratti"
         : i.tipo.toLowerCase() === "villa"
         ? "incarichi"
         : "valutazioni",
@@ -51,7 +78,7 @@ export default function AdminHome() {
     agente: i.agenteAssegnato || "-",
   }));
 
-  const filteredData = data
+  const filteredData = mappedData
     .filter((d) => (filter ? d.tipo === filter : true))
     .filter((d) => {
       const query = searchQuery.toLowerCase();
@@ -72,11 +99,11 @@ export default function AdminHome() {
               <span>
                 <FaCheckCircle size={32} color="green" />
               </span>
-              <h3>Vendite concluse</h3>
+              <h3>Contratti conclusi</h3>
             </div>
             <div className="data-card">
               <h3>{statistics.contrattiConclusi}</h3>
-              <Link to="/admin/vendite">
+              <Link to="/admin/contratti">
                 <FaSquareArrowUpRight size={50} />
               </Link>
             </div>
@@ -170,7 +197,7 @@ export default function AdminHome() {
                   <tr key={i}>
                     <td>
                       <div className="cell-content">
-                        {row.tipo === "vendite" && (
+                        {row.tipo === "contratti" && (
                           <FaCheckCircle size={32} color="green" />
                         )}
                         {row.tipo === "incarichi" && (
@@ -197,9 +224,13 @@ export default function AdminHome() {
             </table>
           </div>
 
-          <div className="btn-table">
-            <Button>Mostra altri avvisi</Button>
-          </div>
+          {hasMore && (
+            <div className="btn-table">
+              <Button onClick={handleLoadMore} disabled={loading}>
+                {loading ? "Caricamento..." : "Mostra altri avvisi"}
+              </Button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -207,7 +238,7 @@ export default function AdminHome() {
       <div className="stats-today">
         <h2>Statistiche mensili</h2>
         <div className="card">
-          <h3>Vendite concluse</h3>
+          <h3>Contratti conclusi</h3>
           <p>+ {statistics.contrattiConclusiMensili}</p>
         </div>
         <div className="card">

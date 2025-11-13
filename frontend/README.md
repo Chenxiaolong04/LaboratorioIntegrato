@@ -13,12 +13,12 @@ src/
 │   ├── common/           # Button, Modal, Input, ecc.
 │   ├── public/           # Componenti specifici area pubblica
 │   └── backoffice/       # Componenti specifici admin
+├── context/              # React Context per stati globali (auth e form)
 ├── layouts/              # Layout per aree Public e Admin
 ├── pages/
 │   ├── public/           # Pagine portale pubblico
 │   └── private/          # Pagine admin/backoffice
 ├── services/             # Chiamate API e gestione endpoint
-├── store/                # React Context per stati globali (es. auth)
 ├── App.tsx               # Router principale
 └── main.tsx              # Entry point React
 ```
@@ -29,16 +29,14 @@ src/
 
 ### Public
 - Home
-- Onboarding proprietario (multi-step)
-- Chi siamo
-- Contatti
+- Onboarding proprietario (multi-step) non indicizzata
 
 ### Backoffice
 - Login admin / agente immobiliare
-- Dashboard
+- Dashboard admin / agente immobiliare
 - Valutazioni AI
-- Incarichi
-- Vendite
+- Incarichi in corso
+- Contratti conclusi
 
 ---
 

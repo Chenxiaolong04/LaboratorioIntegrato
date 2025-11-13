@@ -9,9 +9,9 @@ import DashboardAdmin from "./pages/private/adminPages/DashboardAdmin";
 import ProtectedRoute from "./components/ProtectedRoute";
 import CreateUser from "./pages/private/adminPages/CreateUser";
 import AdminHome from "./pages/private/adminPages/AdminHome";
-import SalesAdmin from "./pages/private/adminPages/SalesAdmin";
 import AssignmentsAdmin from "./pages/private/adminPages/AssignmentsAdmin";
 import EvaluationsAI from "./pages/private/EvaluationsAI";
+import ContractsAdmin from "./pages/private/adminPages/ContractsAdmin";
 
 function App() {
   return (
@@ -26,14 +26,14 @@ function App() {
         <Route
           path="/admin"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute role="admin">
               <DashboardAdmin />
             </ProtectedRoute>
           }
         >
           <Route index element={<AdminHome />} />
           <Route path="create-user" element={<CreateUser />} />
-          <Route path="sales" element={<SalesAdmin />} />
+          <Route path="contracts" element={<ContractsAdmin />} />
           <Route path="assignments" element={<AssignmentsAdmin />} />
           <Route path="evaluationsAI" element={<EvaluationsAI />} />
         </Route>

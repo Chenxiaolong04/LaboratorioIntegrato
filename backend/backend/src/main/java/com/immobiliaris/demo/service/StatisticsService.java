@@ -10,10 +10,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
+import com.immobiliaris.demo.entity.Contratto;
 
 @Service
 public class StatisticsService {
@@ -156,6 +157,113 @@ public class StatisticsService {
         result.put("totalPages", immobiliPage.getTotalPages());
         result.put("hasNext", immobiliPage.hasNext());
         result.put("hasPrevious", immobiliPage.hasPrevious());
+        
+        return result;
+    }
+
+    /**
+     * Carica immobili usando offset e limit (uso per "Load more" nel frontend)
+     * Restituisce una mappa con la lista di immobili, nextOffset e hasMore
+     */
+    public Map<String, Object> getImmobiliLoadMore(int offset, int limit) {
+        List<Map<String, Object>> items = new java.util.ArrayList<>();
+
+        if (limit <= 0) limit = 10;
+        if (offset < 0) offset = 0;
+
+        int page = offset / limit;
+        int indexInPage = offset % limit;
+        long total = immobileRepository.count();
+
+        while (items.size() < limit) {
+            Page<Immobile> p = immobileRepository.findAllByOrderByDataInserimentoDesc(PageRequest.of(page, limit));
+            List<Immobile> content = p.getContent();
+            if (content.isEmpty()) break;
+
+            for (int i = indexInPage; i < content.size() && items.size() < limit; i++) {
+                Immobile iObj = content.get(i);
+                Map<String, Object> immobileMap = new LinkedHashMap<>();
+                immobileMap.put("tipo", iObj.getTipologia());
+                immobileMap.put("nomeProprietario", iObj.getProprietario() != null ? iObj.getProprietario().getNome() + " " + iObj.getProprietario().getCognome() : null);
+                immobileMap.put("dataInserimento", iObj.getDataInserimento());
+
+                String agenteNome = findAgenteForImmobile(iObj.getId());
+                immobileMap.put("agenteAssegnato", agenteNome);
+
+                items.add(immobileMap);
+            }
+
+            if ((page + 1) * (long) limit >= total) break; // non ci sono altre pagine
+            page++;
+            indexInPage = 0; // dopo la prima iterazione prendi sempre dall'inizio della pagina
+        }
+
+        int nextOffset = offset + items.size();
+        boolean hasMore = nextOffset < total;
+
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("immobili", items);
+        result.put("nextOffset", nextOffset);
+        result.put("hasMore", hasMore);
+        result.put("pageSize", limit);
+
+        return result;
+    }
+
+    /**
+     * Restituisce contratti chiusi con offset/limit per load-more (come dashboard)
+     * Mostra i dettagli dell'immobile associato (tipo, proprietario, data, agente)
+     */
+    public Map<String, Object> getContrattiChiusiLoadMore(int offset, int limit) {
+        Map<String, Object> result = new LinkedHashMap<>();
+        
+        // Ottieni tutti i contratti chiusi (nota: non usiamo Page perché findByStatoContrattoNome non è pageable)
+        List<Contratto> tuttiContratti = contrattoRepository.findByStatoContrattoNome("chiuso");
+        
+        // Applica offset e limit manualmente
+        int totalContratti = tuttiContratti.size();
+        List<Contratto> contractiBatch = tuttiContratti.stream()
+            .skip(offset)
+            .limit(limit)
+            .collect(Collectors.toList());
+        
+        // Trasforma in Map mostrando i dettagli dell'immobile
+        List<Map<String, Object>> contrattiData = contractiBatch.stream().map(c -> {
+            Map<String, Object> m = new LinkedHashMap<>();
+            
+            // Dati contratto
+            m.put("id", c.getId());
+            m.put("numeroContratto", c.getNumeroContratto());
+            m.put("dataInizio", c.getDataInizio());
+            m.put("dataFine", c.getDataFine());
+            
+            // Dati immobile (come nel dashboard)
+            if (c.getImmobile() != null) {
+                Immobile immobile = c.getImmobile();
+                m.put("tipo", immobile.getTipologia());
+                m.put("nomeProprietario", immobile.getProprietario().getNome() + " " + immobile.getProprietario().getCognome());
+                m.put("dataInserimento", immobile.getDataInserimento());
+                
+                // Agente direttamente dal Contratto (non dalla Valutazione)
+                String agenteNome = null;
+                if (c.getAgente() != null) {
+                    agenteNome = c.getAgente().getNome() + " " + c.getAgente().getCognome();
+                }
+                m.put("agenteAssegnato", agenteNome);
+            } else {
+                m.put("tipo", null);
+                m.put("nomeProprietario", null);
+                m.put("dataInserimento", null);
+                m.put("agenteAssegnato", null);
+            }
+            
+            return m;
+        }).collect(Collectors.toList());
+        
+        result.put("contratti", contrattiData);
+        result.put("nextOffset", offset + limit);
+        result.put("hasMore", (offset + limit) < totalContratti);
+        result.put("pageSize", contractiBatch.size());
         
         return result;
     }

@@ -58,7 +58,7 @@ export default function NavbarPrivate() {
             <Link to={"/admin/assignments"}>Incarichi</Link>
           </li>
           <li>
-            <Link to={"/admin/sales"}>Vendite</Link>
+            <Link to={"/admin/contracts"}>Contratti</Link>
           </li>
         </ul>
       </div>
@@ -87,7 +87,7 @@ export default function NavbarPrivate() {
             <Link to={"/admin/assignments"}>Incarichi</Link>
           </li>
           <li>
-            <Link to={"/admin/sales"}>Vendite</Link>
+            <Link to={"/admin/contracts"}>Contratti</Link>
           </li>
         </ul>
       </div>

@@ -36,7 +36,7 @@ export default function CreateUser() {
 
   return (
     <section className="create-user">
-      <h2>Crea un nuovo utente</h2>
+      <h2>Crea un nuovo profilo</h2>
 
       <form onSubmit={handleSubmit} className="create-user-form">
         <InputGroup

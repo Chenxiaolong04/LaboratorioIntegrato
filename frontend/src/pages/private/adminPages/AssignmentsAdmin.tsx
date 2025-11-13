@@ -1,6 +1,7 @@
 import { useState } from "react";
 import SearchBar from "../../../components/SearchBar";
 import Button from "../../../components/Button";
+import { FaX } from "react-icons/fa6";
 
 const data = [
   {
@@ -48,7 +49,7 @@ const data = [
 export default function AssignmentsAdmin() {
   const [searchQuery, setSearchQuery] = useState("");
   return (
-    <section>
+    <div className="dashboard-container">
       <div className="table-container">
         <h2>Incarichi in corso</h2>
 
@@ -83,8 +84,8 @@ export default function AssignmentsAdmin() {
                     <td>{row.agente}</td>
                     <td>
                       <div className="action-buttons">
-                        <Button className="lightblu">Modifica</Button>
-                        <Button className="red">Elimina</Button>
+                        <Button className="lightblu" title="Maggiori dettagli sull'incarico">Dettagli</Button>
+                        <Button className="red" title="Elimina incarico"><FaX /></Button>
                       </div>
                     </td>
                   </tr>
@@ -97,6 +98,6 @@ export default function AssignmentsAdmin() {
           <Button>Mostra altri incarichi</Button>
         </div>
       </div>
-    </section>
+    </div>
   );
 }

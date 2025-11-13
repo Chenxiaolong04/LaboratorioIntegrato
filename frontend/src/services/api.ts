@@ -45,7 +45,6 @@ export type LoginResponse = {
   message: string;
 };
 
-
 export async function loginUser(
   email: string,
   password: string
@@ -59,8 +58,14 @@ export async function loginUser(
   );
 }
 
-
 // --- DASHBOARD ADMIN REQUEST --- //
+
+export type Immobile = {
+  tipo: string;
+  nomeProprietario: string;
+  dataInserimento: string;
+  agenteAssegnato: string | null;
+};
 
 export type DashboardData = {
   statistics: {
@@ -71,16 +76,49 @@ export type DashboardData = {
     valutazioniInCorsoMensili: number;
     valutazioniConAIMensili: number;
   };
-  ultimi10Immobili: {
-    tipo: string;
-    nomeProprietario: string;
-    dataInserimento: string;
-    agenteAssegnato: string | null;
-  }[];
+  immobili: Immobile[];
+  nextOffset: number;
+  hasMore: boolean;
+  pageSize: number;
 };
 
-export async function getAdminDashboard(): Promise<DashboardData> {
-  return apiFetch<DashboardData>("/admin/dashboard", {
-    method: "GET",
-  });
+export async function getAdminDashboard(
+  offset = 0,
+  limit = 10
+): Promise<DashboardData> {
+  return apiFetch<DashboardData>(
+    `/admin/dashboard?offset=${offset}&limit=${limit}`,
+    {
+      method: "GET",
+    }
+  );
+}
+
+// --- CONTRATTI CONCLUSI REQUEST --- //
+export type ContrattoChiuso = {
+  id: number;
+  numeroContratto: string;
+  dataInizio: string;
+  dataFine: string;
+  tipo: string | null;
+  nomeProprietario: string | null;
+  dataInserimento: string | null;
+  agenteAssegnato: string | null;
+};
+
+export type ContrattiResponse = {
+  contratti: ContrattoChiuso[];
+  nextOffset: number;
+  hasMore: boolean;
+  pageSize: number;
+};
+
+export async function getContrattiChiusi(
+  offset = 0,
+  limit = 10
+): Promise<ContrattiResponse> {
+  return apiFetch<ContrattiResponse>(
+    `/admin/contratti/chiusi?offset=${offset}&limit=${limit}`,
+    { method: "GET" }
+  );
 }
