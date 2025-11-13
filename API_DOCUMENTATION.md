@@ -202,20 +202,24 @@ Restituisce la lista di **contratti conclusi** (stato = "chiuso") con i dettagli
 {
   "contratti": [
     {
-      "id": 1,
-      "numeroContratto": "CNT-2025-001",
+      "numeroContratto": "C-2025-001",
+      "dataInvio": "2025-11-08",
+      "dataRicezione": "2025-11-09",
       "dataInizio": "2025-01-15",
       "dataFine": "2025-03-15",
+      "valutazioneUmana": 225000,
       "tipo": "Appartamento",
       "nomeProprietario": "Mario Rossi",
       "dataInserimento": "2024-12-20",
       "agenteAssegnato": "Luigi Verdi"
     },
     {
-      "id": 2,
-      "numeroContratto": "CNT-2025-002",
+      "numeroContratto": "C-2025-002",
+      "dataInvio": "2025-01-25",
+      "dataRicezione": "2025-01-26",
       "dataInizio": "2025-02-01",
       "dataFine": "2025-04-01",
+      "valutazioneUmana": null,
       "tipo": "Villa",
       "nomeProprietario": "Anna Bianchi",
       "dataInserimento": "2024-12-15",
@@ -235,10 +239,12 @@ Restituisce la lista di **contratti conclusi** (stato = "chiuso") con i dettagli
 - `pageSize` (number): Numero di contratti ritornati in questa richiesta
 
 **Campi di ogni contratto:**
-- `id`: ID contratto
 - `numeroContratto`: Numero identificativo contratto
+- `dataInvio`: Data invio contratto
+- `dataRicezione`: Data ricezione contratto
 - `dataInizio`: Data inizio contratto
 - `dataFine`: Data fine contratto
+- `valutazioneUmana`: Prezzo stimato dall'agente (null se non disponibile)
 - `tipo`: Tipologia immobile (Appartamento, Villa, Ufficio, ecc.)
 - `nomeProprietario`: Nome completo proprietario immobile
 - `dataInserimento`: Data inserimento immobile nel sistema
@@ -265,31 +271,36 @@ Restituisce la lista di **valutazioni generate solo dall'AI** (stato = "solo_AI"
 {
   "valutazioni": [
     {
-      "id": 1,
       "prezzoAI": 215000,
       "dataValutazione": "2025-11-12",
       "descrizione": "Valutazione automatica immobile Torino",
       "tipo": "Appartamento",
-      "nomeProprietario": "Luca Bianchi",
-      "indirizzo": "Via Roma 12, Torino",
+      "via": "Via Roma 12",
+      "citta": "Torino",
+      "cap": "10100",
+      "provincia": "TO",
       "metratura": 85,
-      "stanze": 3
-    },
-    {
-      "id": 2,
-      "prezzoAI": 350000,
-      "dataValutazione": "2025-11-12",
-      "descrizione": "Valutazione AI attico Rivoli",
-      "tipo": "Attico",
+      "condizioni": "Buone condizioni",
+      "stanze": 3,
+      "bagni": 1,
+      "piano": 3,
+      "ascensore": true,
+      "garage": true,
+      "giardino": false,
+      "balcone": true,
+      "terrazzo": false,
+      "cantina": false,
+      "riscaldamento": "Centralizzato",
       "nomeProprietario": "Luca Bianchi",
-      "indirizzo": "Corso Francia 101, Rivoli",
-      "metratura": 120,
-      "stanze": 4
+      "emailProprietario": "luca.bianchi@email.com",
+      "telefonoProprietario": "3201234567",
+      "descrizione": "Appartamento luminoso in centro.",
+      "dataInserimento": "2024-12-20"
     }
   ],
   "nextOffset": 10,
   "hasMore": false,
-  "pageSize": 2
+  "pageSize": 1
 }
 ```
 
@@ -300,21 +311,127 @@ Restituisce la lista di **valutazioni generate solo dall'AI** (stato = "solo_AI"
 - `pageSize` (number): Numero di valutazioni ritornate in questa richiesta
 
 **Campi di ogni valutazione:**
-- `id`: ID valutazione
 - `prezzoAI`: Prezzo stimato dall'AI
 - `dataValutazione`: Data della valutazione
 - `descrizione`: Note sulla valutazione
-- `tipo`: Tipologia immobile (Appartamento, Villa, Attico, ecc.)
-- `nomeProprietario`: Nome completo proprietario immobile
-- `indirizzo`: Indirizzo completo (Via + Città)
-- `metratura`: Superficie immobile in mq
+- `tipo`: Tipologia immobile
+- `via`: Via/indirizzo
+- `citta`: Città
+- `cap`: CAP
+- `provincia`: Provincia (sigla)
+- `metratura`: Superficie in mq
+- `condizioni`: Stato di conservazione
 - `stanze`: Numero stanze
+- `bagni`: Numero bagni
+- `piano`: Piano
+- `ascensore`: Presenza ascensore (true/false)
+- `garage`: Presenza garage (true/false)
+- `giardino`: Presenza giardino (true/false)
+- `balcone`: Presenza balcone (true/false)
+- `terrazzo`: Presenza terrazzo (true/false)
+- `cantina`: Presenza cantina (true/false)
+- `riscaldamento`: Tipo di riscaldamento
+- `nomeProprietario`: Nome completo proprietario
+- `emailProprietario`: Email proprietario
+- `telefonoProprietario`: Telefono proprietario
+- `descrizione`: Descrizione immobile
+- `dataInserimento`: Data inserimento nel sistema
 
 **Response (403):** Se non hai ROLE_ADMIN
 
 ---
 
-## 🏢 Dashboard Agente
+### GET `/api/admin/valutazioni/in-verifica?offset=0&limit=10`
+**Richiede:** `ROLE_ADMIN`
+
+Restituisce la lista di **valutazioni in verifica** (stato = "in_verifica") con TUTTI i campi della tabella valutazione. Supporta caricamento progressivo con offset/limit.
+
+**Query Parameters:**
+- `offset` (opzionale, default: 0): quante valutazioni sono già state caricate
+- `limit` (opzionale, default: 10): quante valutazioni caricare
+
+**Response (200 OK):**
+```json
+{
+  "valutazioni": [
+    {
+      "prezzoAI": 215000,
+      "prezzoUmano": 220000,
+      "dataValutazione": "2025-11-12",
+      "statoValutazione": "in_verifica",
+      "descrizione": "Valutazione in corso di verifica",
+      "nomeAgente": "Luigi Verdi",
+      "emailAgente": "luigi.verdi@email.com",
+      "tipo": "Appartamento",
+      "via": "Via Roma 12",
+      "citta": "Torino",
+      "cap": "10100",
+      "provincia": "TO",
+      "metratura": 85,
+      "condizioni": "Buone condizioni",
+      "stanze": 3,
+      "bagni": 1,
+      "piano": 3,
+      "ascensore": true,
+      "garage": true,
+      "giardino": false,
+      "balcone": true,
+      "terrazzo": false,
+      "cantina": false,
+      "riscaldamento": "Centralizzato",
+      "nomeProprietario": "Luca Bianchi",
+      "emailProprietario": "luca.bianchi@email.com",
+      "telefonoProprietario": "3201234567",
+      "descrizione": "Appartamento luminoso in centro.",
+      "dataInserimento": "2024-12-20"
+    }
+  ],
+  "nextOffset": 10,
+  "hasMore": false,
+  "pageSize": 1
+}
+```
+
+**Campi risposta:**
+- `valutazioni` (array): Array di valutazioni per questa richiesta
+- `nextOffset` (number): Offset da usare per la prossima richiesta
+- `hasMore` (boolean): `true` se ci sono altre valutazioni, `false` se sei alla fine
+- `pageSize` (number): Numero di valutazioni ritornate in questa richiesta
+
+**Campi di ogni valutazione (TUTTI i campi della tabella):**
+- `prezzoAI`: Prezzo stimato dall'AI
+- `prezzoUmano`: Prezzo stimato dall'agente (null se non completato)
+- `dataValutazione`: Data della valutazione
+- `statoValutazione`: Stato della valutazione (in_verifica, solo_AI, approvata, ecc.)
+- `descrizione`: Note sulla valutazione
+- `nomeAgente`: Nome completo agente che effettua la valutazione
+- `emailAgente`: Email agente
+- `tipo`: Tipologia immobile
+- `via`: Via/indirizzo
+- `citta`: Città
+- `cap`: CAP
+- `provincia`: Provincia (sigla)
+- `metratura`: Superficie in mq
+- `condizioni`: Stato di conservazione
+- `stanze`: Numero stanze
+- `bagni`: Numero bagni
+- `piano`: Piano
+- `ascensore`: Presenza ascensore (true/false)
+- `garage`: Presenza garage (true/false)
+- `giardino`: Presenza giardino (true/false)
+- `balcone`: Presenza balcone (true/false)
+- `terrazzo`: Presenza terrazzo (true/false)
+- `cantina`: Presenza cantina (true/false)
+- `riscaldamento`: Tipo di riscaldamento
+- `nomeProprietario`: Nome completo proprietario
+- `emailProprietario`: Email proprietario
+- `telefonoProprietario`: Telefono proprietario
+- `descrizione`: Descrizione immobile
+- `dataInserimento`: Data inserimento nel sistema
+
+**Response (403):** Se non hai ROLE_ADMIN
+
+---
 
 ### GET `/api/agent/dashboard`
 **Richiede:** `ROLE_AGENT`
@@ -351,6 +468,7 @@ Restituisce la lista di **valutazioni generate solo dall'AI** (stato = "solo_AI"
 | `/api/admin/immobili` | GET | ✅ Sì | ADMIN | Immobili paginated (pagina-based pagination) |
 | `/api/admin/contratti/chiusi` | GET | ✅ Sì | ADMIN | Lista contratti conclusi con dettagli immobili (offset/limit load-more) |
 | `/api/admin/valutazioni/solo-ai` | GET | ✅ Sì | ADMIN | Lista valutazioni generate solo da AI (offset/limit load-more) |
+| `/api/admin/valutazioni/in-verifica` | GET | ✅ Sì | ADMIN | Lista valutazioni in verifica con TUTTI i campi (offset/limit load-more) |
 | `/api/agent/dashboard` | GET | ✅ Sì | AGENT | Dashboard agente (statistiche personali) |
 | `/api/mail/send` | POST | ❌ No* | - | Invia email (⚠️ proteggere in prod) |
 | `/api/mail/test` | GET | ❌ No | - | Verifica mail endpoint |

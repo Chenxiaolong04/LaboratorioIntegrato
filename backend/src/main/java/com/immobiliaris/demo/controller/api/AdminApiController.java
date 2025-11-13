@@ -99,4 +99,21 @@ public class AdminApiController {
             return ResponseEntity.status(500).body("Errore recupero valutazioni");
         }
     }
+
+    /**
+     * Restituisce valutazioni in verifica con TUTTI i campi della tabella valutazione
+     * Usa offset/limit per load-more progressivo
+     * Esempio: GET /api/admin/valutazioni/in-verifica?offset=0&limit=10
+     */
+    @GetMapping("/valutazioni/in-verifica")
+    public ResponseEntity<Object> getValutazioniInVerifica(
+            @RequestParam(defaultValue = "0") int offset,
+            @RequestParam(defaultValue = "10") int limit) {
+        try {
+            return ResponseEntity.ok(statisticsService.getValutazioniInVerficaLoadMore(offset, limit));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Errore recupero valutazioni in verifica");
+        }
+    }
 }
