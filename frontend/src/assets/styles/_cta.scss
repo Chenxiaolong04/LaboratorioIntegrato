@@ -1,19 +1,48 @@
 @use './variables' as var;
 
+// Larghezza usata per il RIQUADRO FAQ su desktop (max-width: 800px)
+$cta-max-width-desktop: 800px; 
+
+
 .cta-section {
-    background-image: url('../img/test-image.jpg');
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
+    background-image: none; 
+    
+    // Lo sfondo grigio è ora limitato alla max-width
+    background-color: var.$palette-gray; 
+
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 1rem;
-    margin: 0;
-    max-width: 100vw;
-
+    gap: 1.5rem; 
+    
+    // === REGOLE CHIAVE PER LIMITARE LA LARGHEZZA DEL RIQUADRO E CENTRARLO ===
+    width: 100%; 
+    max-width: $cta-max-width-desktop; /* <-- Limita il riquadro a 800px anche su mobile */
+    margin: 0 auto; /* <-- Centra l'intero riquadro */
+    
+    padding: 3rem 1rem; 
+    
+    
     h2 {
         font-size: var.$fs-mb-section-title;
+        color: #000000;
+        text-align: center;
+    }
+}
+
+@media (min-width: 768px) {
+    .cta-section {
+        max-width: $cta-max-width-desktop; // 800px
+        margin: 0 auto; 
+        
+        /* Adattiamo il padding a 2rem laterali, come le FAQ */
+        padding: 4rem 2rem; 
+    }
+}
+
+@media (min-width: 1200px) {
+    .cta-section {
+        padding: 5rem 2rem;
     }
 }
