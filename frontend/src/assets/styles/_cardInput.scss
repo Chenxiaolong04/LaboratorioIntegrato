@@ -2,7 +2,7 @@
 
 .card-input {
   text-align: center;
-  font-size: var.$fs-mb-section-subtitle;
+  font-size: 1rem;
   padding: 1rem;
   background-color: var.$palette-gray;
   border: none;
@@ -10,7 +10,17 @@
   cursor: pointer;
 
   &.active {
-    border: 2px solid;
+    border: 4px solid;
     border-color: var.$palette-lightblu;
+  }
+
+  img {
+    height: 100px;
+  }
+
+  @media (min-width: 768px) {
+    img {
+      height: 200px;
+    }
   }
 }

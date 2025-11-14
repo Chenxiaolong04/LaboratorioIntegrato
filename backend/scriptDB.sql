@@ -1,5 +1,5 @@
 -- ======================================================
--- DATABASE: Agenzia Immobiliare - Schema completo aggiornato
+-- DATABASE: Agenzia Immobiliare - Schema completo aggiornato con CASCADE
 -- ======================================================
 DROP DATABASE IF EXISTS AgenziaImmobiliare;
 CREATE DATABASE IF NOT EXISTS AgenziaImmobiliare;
@@ -31,6 +31,7 @@ CREATE TABLE Utenti (
     Data_registrazione DATE DEFAULT (CURRENT_DATE),
     Id_tipo INT,
     FOREIGN KEY (Id_tipo) REFERENCES Tipi_utente(Id_tipo)
+        ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 -- =========================================
@@ -74,7 +75,7 @@ CREATE TABLE Immobili (
     Condizioni VARCHAR(100),
     Stanze INT,
     Bagni INT,
-    Riscaldamento VARCHAR(50),
+    Riscaldamento VARCHAR(100),
     Id_stato_immobile INT,
     Piano INT,
     Ascensore BOOLEAN DEFAULT FALSE,
@@ -87,8 +88,10 @@ CREATE TABLE Immobili (
     Descrizione TEXT,
     Data_inserimento DATE DEFAULT (CURRENT_DATE),
     Id_utente INT,
-    FOREIGN KEY (Id_stato_immobile) REFERENCES Stati_immobile(Id_stato_immobile),
+    FOREIGN KEY (Id_stato_immobile) REFERENCES Stati_immobile(Id_stato_immobile)
+        ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (Id_utente) REFERENCES Utenti(Id_utente)
+        ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- =========================================
@@ -99,13 +102,17 @@ CREATE TABLE Richieste (
     Id_stato_richiesta INT,
     Descrizione TEXT,
     Data DATE DEFAULT (CURRENT_DATE),
-    Id_utente INT,              
-    Id_immobile INT,            
-    Id_agente INT NULL,         
-    FOREIGN KEY (Id_stato_richiesta) REFERENCES Stati_richiesta(Id_stato_richiesta),
-    FOREIGN KEY (Id_utente) REFERENCES Utenti(Id_utente),
-    FOREIGN KEY (Id_immobile) REFERENCES Immobili(Id_immobile),
+    Id_utente INT,
+    Id_immobile INT,
+    Id_agente INT NULL,
+    FOREIGN KEY (Id_stato_richiesta) REFERENCES Stati_richiesta(Id_stato_richiesta)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (Id_utente) REFERENCES Utenti(Id_utente)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (Id_immobile) REFERENCES Immobili(Id_immobile)
+        ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (Id_agente) REFERENCES Utenti(Id_utente)
+        ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 -- =========================================
@@ -113,16 +120,19 @@ CREATE TABLE Richieste (
 -- =========================================
 CREATE TABLE Valutazioni (
     Id_valutazione INT AUTO_INCREMENT PRIMARY KEY,
-    Prezzo_AI INT NULL,             
-    Prezzo_Umano INT NULL,         
+    Prezzo_AI INT NULL,
+    Prezzo_Umano INT NULL,
     Data_valutazione DATE DEFAULT (CURRENT_DATE),
     Id_stato_valutazione INT,
     Descrizione TEXT,
-    Id_agente INT,                            
-    Id_immobile INT,                          
-    FOREIGN KEY (Id_stato_valutazione) REFERENCES Stati_valutazione(Id_stato_valutazione),
-    FOREIGN KEY (Id_agente) REFERENCES Utenti(Id_utente),
+    Id_agente INT,
+    Id_immobile INT,
+    FOREIGN KEY (Id_stato_valutazione) REFERENCES Stati_valutazione(Id_stato_valutazione)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (Id_agente) REFERENCES Utenti(Id_utente)
+        ON DELETE SET NULL ON UPDATE CASCADE,
     FOREIGN KEY (Id_immobile) REFERENCES Immobili(Id_immobile)
+        ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- =========================================
@@ -142,12 +152,18 @@ CREATE TABLE Contratti (
     Id_richiesta INT,
     Id_immobile INT,
     Id_agente INT,
-    FOREIGN KEY (Id_stato_contratto) REFERENCES Stati_contratto(Id_stato_contratto),
-    FOREIGN KEY (Id_valutazione) REFERENCES Valutazioni(Id_valutazione),
-    FOREIGN KEY (Id_utente) REFERENCES Utenti(Id_utente),
-    FOREIGN KEY (Id_richiesta) REFERENCES Richieste(Id_richiesta),
-    FOREIGN KEY (Id_immobile) REFERENCES Immobili(Id_immobile),
+    FOREIGN KEY (Id_stato_contratto) REFERENCES Stati_contratto(Id_stato_contratto)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (Id_valutazione) REFERENCES Valutazioni(Id_valutazione)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (Id_utente) REFERENCES Utenti(Id_utente)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (Id_richiesta) REFERENCES Richieste(Id_richiesta)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (Id_immobile) REFERENCES Immobili(Id_immobile)
+        ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (Id_agente) REFERENCES Utenti(Id_utente)
+        ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 -- =========================================
@@ -161,7 +177,68 @@ CREATE TABLE Foto (
     Copertina BOOLEAN DEFAULT FALSE,
     Id_immobile INT,
     FOREIGN KEY (Id_immobile) REFERENCES Immobili(Id_immobile)
+        ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+CREATE TABLE zone (
+    id_zona INT PRIMARY KEY AUTO_INCREMENT,     
+    nome_quartiere VARCHAR(50) NOT NULL,        
+    cap VARCHAR(5) NOT NULL               
+);
+
+
+INSERT INTO zone (nome_quartiere, cap) VALUES
+('Centro', '10121'),
+('Centro Storico/Quadrilatero Confine', '10122'),
+('Quadrilatero Romano', '10122'),
+('Centro Ovest/San Salvario Confine', '10123'),
+('Vanchiglia', '10124'),
+('Borgo Vanchiglia', '10124'),
+('San Salvario', '10125'),
+('Nizza Millefonti', '10126'),
+('Lingotto', '10126'),
+('Crocetta Est/Borgo Po Ovest', '10127'),
+('Crocetta', '10128'),
+('Centro Postale/Grandi Utenti', '10129'),
+('Collina Ovest', '10131'),
+('Sassi', '10132'),
+('Madonna del Pilone', '10133'),
+('Cavoretto', '10133'),
+('Borgo Po', '10133'),
+('Filadelfia', '10134'),
+('Mirafiori Nord', '10135'),
+('Mirafiori Sud', '10135'),
+('Santa Rita Sud Confine', '10136'),
+('Santa Rita', '10137'),
+('Cenisia', '10138'),
+('Cenisia/Borgo San Paolo Confine', '10139'),
+('Borgo San Paolo', '10141'),
+('Pozzo Strada', '10141'),
+('Pozzo Strada/Parella Confine', '10142'),
+('Cit Turin', '10143'),
+('San Donato', '10144'),
+('Campidoglio', '10144'),
+('Parella', '10145'),
+('Parella Nord/Lucento Sud', '10146'),
+('Borgo Vittoria', '10147'),
+('Lucento', '10148'),
+('Borgata Lesna', '10149'),
+('Madonna di Campagna', '10149'),
+('Caselle Postali/Servizi Centrali', '10150'),
+('Vallette', '10151'),
+('Aurora', '10152'),
+('Borgo Dora', '10152'),
+('Valdocco', '10152'),
+('Regio Parco', '10153'),
+('Barriera di Milano', '10154'),
+('Rebaudengo', '10155'),
+('Barca', '10156'),
+('Bertolla', '10156'),
+('Falchera', '10156'),
+('Villaretto', '10156');
+
+
+
 
 -- =========================================
 -- 9️⃣ Dati iniziali per gli stati
@@ -193,81 +270,67 @@ INSERT INTO Tipi_utente (Nome, Descrizione) VALUES
 ('Agente', 'Agente immobiliare che valuta e gestisce immobili'),
 ('Amministratore', 'Utente con privilegi di gestione completa');
 
-INSERT INTO utenti (CF, Nome, Cognome, Email, Password, Telefono, Via, Citta, CAP, Id_tipo)
-VALUES (
-    'RSSMRA85M01H503Z',
-    'Luca',
-    'Bianchi',
-    'admin@immobili.it',
-    '$2a$12$MnZPV4BBQ/2OLceM4s7FkOf9Ibn37s9MUnHTtpm9vHkXRokGruwOS',
-    '+393331234567',
-    'Via Italia 12',
-    'Torino',
-    '10100',
-    3
-);
+-- =========================================
+-- 👤 Inserimento Utenti
+-- =========================================
+INSERT INTO Utenti (CF, Nome, Cognome, Email, Password, Telefono, Via, Citta, CAP, Id_tipo)
+VALUES ('RSSMRA85M01H503Z', 'Luca', 'Bianchi', 'admin@immobili.it', '$2a$12$lN5DUIlcGJFE2GPRbqPcp.WFr6aDYqzDpfOIW2jMLU02sFYlbS/42', '+393331234567', 'Via Italia 12', 'Torino', '10100', 3);
 
-INSERT INTO utenti (CF, Nome, Cognome, Email, Password, Telefono, Via, Citta, CAP, Id_tipo)
-VALUES (
-    'RSSMRA85M01H501Z',
-    'Luca',
-    'Bianchi',
-    'agente@immobili.it',
-    '$2a$12$9m8A6gdj4vrz6o1WVjwJ9.8X4ouF37Bk862IFmIIGdqadPAl3vxSi',
-    '+393331234567',
-    'Via Italia 12',
-    'Torino',
-    '10100',
-    2
-);
+-- Agenti
+INSERT INTO Utenti (CF, Nome, Cognome, Email, Password, Telefono, Via, Citta, CAP, Id_tipo)
+VALUES 
+('RSSMRA85201H501Z', 'Mattia', 'Rossi', 'agente@immobili.it', '$2a$12$Ktx9k/ambYBsY8XDj2O7KO7Y94ARdywfk8LBfUiIhFyzf6A6jyny.', '+393331444111', 'Via Po 2', 'Torino', '10123', 2),
+('RSSMRA85M01H501Z', 'Luca', 'Rossi', 'lrossi@immobili.it', '$2a$12$Ktx9k/ambYBsY8XDj2O7KO7Y94ARdywfk8LBfUiIhFyzf6A6jyny.', '+393331111111', 'Via Po 22', 'Torino', '10123', 2),
+('VRDGPP90T10H501Y', 'Giulia', 'Verdi', 'gverdi@immobili.it', '$2a$12$Ktx9k/ambYBsY8XDj2O7KO7Y94ARdywfk8LBfUiIhFyzf6A6jyny.', '+393332222222', 'Via Milano 10', 'Milano', '20100', 2),
+('BNCLRA88R20H501T', 'Laura', 'Bianchi', 'lbianchi@immobili.it', '$2a$12$Ktx9k/ambYBsY8XDj2O7KO7Y94ARdywfk8LBfUiIhFyzf6A6jyny.', '+393333333333', 'Via Roma 33', 'Cuneo', '12100', 2),
+('FRNMRC92D15H501Z', 'Marco', 'Ferrari', 'mferrari@immobili.it', '$2a$12$Ktx9k/ambYBsY8XDj2O7KO7Y94ARdywfk8LBfUiIhFyzf6A6jyny.', '+393334444444', 'Corso Francia 100', 'Rivoli', '10098', 2);
 
--- ✅ POPOLAMENTO COMPLETO DATABASE AGENZIA IMMOBILIARE
--- Contiene: 12 immobili, valutazioni, contratti conclusi per dashboard admin
+-- Clienti
+INSERT INTO Utenti (CF, Nome, Cognome, Email, Password, Telefono, Via, Citta, CAP, Id_tipo)
+VALUES
+('PLLMRA99H20H501B', 'Mario', 'Pellegrini', 'mpellegrini@immobili.it', '$2a$12$0yHJNq5eSsKZfh8iL3jIKuq2QCqCpvlMl4oUVxX3Rcb0sF6Xf0m4y', '+393335555555', 'Via Nizza 44', 'Torino', '10126', 1),
+('CNTLRA95E01H501X', 'Lara', 'Conti', 'lconti@immobili.it', '$2a$12$0yHJNq5eSsKZfh8iL3jIKuq2QCqCpvlMl4oUVxX3Rcb0sF6Xf0m4y', '+393336666666', 'Via Dante 77', 'Milano', '20121', 1);
 
-
--------------------------------------------------------
--- ✅ INSERIMENTO 12 IMMOBILI
--------------------------------------------------------
+-- =========================================
+-- IMMOBILI
+-- =========================================
 INSERT INTO Immobili (Via, Citta, CAP, Provincia, Tipologia, Metratura, Condizioni, Stanze, Id_stato_immobile, Piano, Ascensore, Garage, Prezzo, Descrizione, Id_utente)
 VALUES
 ('Via Roma 12', 'Torino', '10100', 'TO', 'Appartamento', 85, 'Buone condizioni', 3, 2, 3, TRUE, TRUE, 220000, 'Appartamento luminoso in centro.', 2),
 ('Via Milano 5', 'Torino', '10121', 'TO', 'Monolocale', 40, 'Ristrutturato', 1, 2, 1, FALSE, FALSE, 120000, 'Ottimo per studenti.', 2),
 ('Corso Francia 101', 'Rivoli', '10098', 'TO', 'Attico', 120, 'Ottime condizioni', 4, 1, 5, TRUE, TRUE, 350000, 'Attico con terrazzo panoramico.', 2),
 ('Via Po 18', 'Torino', '10123', 'TO', 'Bilocale', 55, 'Buono', 2, 1, 2, FALSE, FALSE, 180000, 'Perfetto per coppie.', 2),
-('Via Garibaldi 200', 'Milano', '20100', 'MI', 'Appartamento', 95, 'Da ristrutturare', 4, 1, 3, FALSE, TRUE, 300000, 'Zona centrale.', 2),
-('Via Nizza 300', 'Torino', '10126', 'TO', 'Trilocale', 70, 'Buone condizioni', 3, 2, 4, TRUE, FALSE, 210000, 'Vicino metropolitana.', 2),
-('Via Kennedy 45', 'Moncalieri', '10024', 'TO', 'Villetta', 200, 'Ottime condizioni', 6, 2, 0, FALSE, TRUE, 480000, 'Villetta di pregio.', 2),
-('Corso Giulio 90', 'Ivrea', '10015', 'TO', 'Appartamento', 80, 'Buono', 3, 1, 1, TRUE, TRUE, 160000, 'Zona tranquilla.', 2),
-('Via Dante 33', 'Cuneo', '12100', 'CN', 'Villa', 300, 'Nuovo', 8, 2, 0, FALSE, TRUE, 600000, 'Villa con giardino.', 2),
-('Corso Umbria 15', 'Torino', '10139', 'TO', 'Loft', 60, 'Ristrutturato', 2, 1, 1, FALSE, FALSE, 190000, 'Stile industriale moderno.', 2),
-('Via Verdi 1', 'Asti', '14100', 'AT', 'Bilocale', 50, 'Ottimo', 2, 2, 3, FALSE, TRUE, 150000, 'Bilocale moderno.', 2),
-('Via Solferino 55', 'Milano', '20121', 'MI', 'Attico', 140, 'Ottimo', 5, 1, 6, TRUE, TRUE, 950000, 'Attico di lusso.', 2);
+('Via Garibaldi 200', 'Milano', '20100', 'MI', 'Appartamento', 95, 'Da ristrutturare', 4, 1, 3, FALSE, TRUE, 300000, 'Zona centrale.', 3),
+('Via Nizza 300', 'Torino', '10126', 'TO', 'Trilocale', 70, 'Buone condizioni', 3, 2, 4, TRUE, FALSE, 210000, 'Vicino metropolitana.', 3),
+('Via Kennedy 45', 'Moncalieri', '10024', 'TO', 'Villetta', 200, 'Ottime condizioni', 6, 2, 0, FALSE, TRUE, 480000, 'Villetta di pregio.', 4),
+('Corso Giulio 90', 'Ivrea', '10015', 'TO', 'Appartamento', 80, 'Buono', 3, 1, 1, TRUE, TRUE, 160000, 'Zona tranquilla.', 4),
+('Via Dante 33', 'Cuneo', '12100', 'CN', 'Villa', 300, 'Nuovo', 8, 2, 0, FALSE, TRUE, 600000, 'Villa con giardino.', 5),
+('Corso Umbria 15', 'Torino', '10139', 'TO', 'Loft', 60, 'Ristrutturato', 2, 1, 1, FALSE, FALSE, 190000, 'Stile industriale moderno.', 5),
+('Via Verdi 1', 'Asti', '14100', 'AT', 'Bilocale', 50, 'Ottimo', 2, 2, 3, FALSE, TRUE, 150000, 'Bilocale moderno.', 5),
+('Via Solferino 55', 'Milano', '20121', 'MI', 'Attico', 140, 'Ottimo', 5, 1, 6, TRUE, TRUE, 950000, 'Attico di lusso.', 5);
 
--------------------------------------------------------
--- ✅ VALUTAZIONI (AI e In verifica)
--------------------------------------------------------
-
--- Valutazioni generate solo da AI (Id_stato_valutazione = 1)
+-- =========================================
+-- VALUTAZIONI
+-- =========================================
 INSERT INTO Valutazioni (Prezzo_AI, Id_stato_valutazione, Id_agente, Id_immobile, Descrizione)
 VALUES
 (215000, 1, NULL, 1, 'Valutazione automatica immobile Torino'),
 (350000, 1, NULL, 3, 'Valutazione AI attico Rivoli'),
-(600000, 1, NULL, 9, 'Valutazione AI villa Cuneo');
-
--- Valutazioni in verifica (Id_stato_valutazione = 2)
-INSERT INTO Valutazioni (Prezzo_AI, Id_stato_valutazione, Id_agente, Id_immobile, Descrizione)
-VALUES
+(600000, 1, NULL, 9, 'Valutazione AI villa Cuneo'),
 (480000, 2, 2, 7, 'Agente sta verificando villetta Moncalieri'),
-(950000, 2, 2, 12, 'In verifica attico Milano');
+(950000, 2, 3, 12, 'In verifica attico Milano'),
+(210000, 2, 4, 6, 'In verifica trilocale Torino'),
+(300000, 2, 5, 5, 'In verifica appartamento Milano');
 
--------------------------------------------------------
--- ✅ CONTRATTI CONCLUSI (Id_stato_contratto = 4)
--------------------------------------------------------
+-- =========================================
+-- CONTRATTI
+-- =========================================
 INSERT INTO Contratti (Data_inizio, Data_fine, Id_stato_contratto, Numero_contratto, Percentuale_commissione, Id_valutazione, Id_utente, Id_richiesta, Id_immobile, Id_agente)
 VALUES
-('2025-11-10', '2026-012-10', 4, 'C-2025-001', 3.00, 1, 2, NULL, 1, 2),
-('2025-02-01', '2025-02-28', 4, 'C-2025-002', 3.00, 2, 2, NULL, 3, 2),
-('2025-02-15', '2025-03-15', 4, 'C-2025-003', 3.00, 3, 2, NULL, 7, 2);
+('2025-11-10', '2026-12-10', 4, 'C-2025-001', 3.00, 1, 6, NULL, 1, 2),
+('2025-02-01', '2025-02-28', 4, 'C-2025-002', 3.00, 2, 6, NULL, 3, 2),
+('2025-02-15', '2025-03-15', 4, 'C-2025-003', 3.00, 3, 7, NULL, 7, 3),
+('2025-03-10', '2025-04-10', 4, 'C-2025-004', 3.50, 4, 7, NULL, 12, 3);
 
 
 

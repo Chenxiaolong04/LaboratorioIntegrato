@@ -232,10 +232,18 @@ public class StatisticsService {
             Map<String, Object> m = new LinkedHashMap<>();
             
             // Dati contratto
-            m.put("id", c.getId());
             m.put("numeroContratto", c.getNumeroContratto());
+            m.put("dataInvio", c.getDataInvio());
+            m.put("dataRicezione", c.getDataRicezione());
             m.put("dataInizio", c.getDataInizio());
             m.put("dataFine", c.getDataFine());
+            
+            // Valutazione umana (se disponibile)
+            if (c.getValutazione() != null) {
+                m.put("valutazioneUmana", c.getValutazione().getPrezzoUmano());
+            } else {
+                m.put("valutazioneUmana", null);
+            }
             
             // Dati immobile (come nel dashboard)
             if (c.getImmobile() != null) {
@@ -266,5 +274,217 @@ public class StatisticsService {
         result.put("pageSize", contractiBatch.size());
         
         return result;
+    }
+
+    /**
+     * Restituisce valutazioni generate solo da AI con offset/limit
+     * Mostra i dettagli dell'immobile e il prezzo stimato dall'AI
+     */
+    public Map<String, Object> getValutazioniSoloAILoadMore(int offset, int limit) {
+        Map<String, Object> result = new LinkedHashMap<>();
+        
+        // Ottieni tutte le valutazioni con stato "solo_AI"
+        List<Valutazione> tutteValutazioni = valutazioneRepository.findByStatoValutazioneNome("solo_AI");
+        
+        // Applica offset e limit manualmente
+        int totalValutazioni = tutteValutazioni.size();
+        List<Valutazione> valutazioniBatch = tutteValutazioni.stream()
+            .skip(offset)
+            .limit(limit)
+            .collect(Collectors.toList());
+        
+        // Trasforma in Map mostrando i dettagli della valutazione
+        List<Map<String, Object>> valuazioniData = valutazioniBatch.stream().map(v -> {
+            Map<String, Object> m = new LinkedHashMap<>();
+            
+            // ID della valutazione (per operazioni di eliminazione)
+            m.put("id", v.getId());
+            
+            // Dati valutazione
+            m.put("prezzoAI", v.getPrezzoAI());
+            m.put("dataValutazione", v.getDataValutazione());
+            m.put("descrizione", v.getDescrizione());
+            
+            // Dati immobile - COMPLETI
+            if (v.getImmobile() != null) {
+                Immobile immobile = v.getImmobile();
+                m.put("tipo", immobile.getTipologia());
+                m.put("via", immobile.getVia());
+                m.put("citta", immobile.getCitta());
+                m.put("cap", immobile.getCap());
+                m.put("provincia", immobile.getProvincia());
+                m.put("metratura", immobile.getMetratura());
+                m.put("condizioni", immobile.getCondizioni());
+                m.put("stanze", immobile.getStanze());
+                m.put("bagni", immobile.getBagni());
+                m.put("piano", immobile.getPiano());
+                m.put("ascensore", immobile.getAscensore());
+                m.put("garage", immobile.getGarage());
+                m.put("giardino", immobile.getGiardino());
+                m.put("balcone", immobile.getBalcone());
+                m.put("terrazzo", immobile.getTerrazzo());
+                m.put("cantina", immobile.getCantina());
+                m.put("riscaldamento", immobile.getRiscaldamento());
+                
+                // Proprietario e dati di contatto
+                if (immobile.getProprietario() != null) {
+                    m.put("nomeProprietario", immobile.getProprietario().getNome() + " " + immobile.getProprietario().getCognome());
+                    m.put("emailProprietario", immobile.getProprietario().getEmail());
+                    m.put("telefonoProprietario", immobile.getProprietario().getTelefono());
+                } else {
+                    m.put("nomeProprietario", null);
+                    m.put("emailProprietario", null);
+                    m.put("telefonoProprietario", null);
+                }
+                
+                m.put("descrizione", immobile.getDescrizione());
+                m.put("dataInserimento", immobile.getDataInserimento());
+            } else {
+                m.put("tipo", null);
+                m.put("via", null);
+                m.put("citta", null);
+                m.put("cap", null);
+                m.put("provincia", null);
+                m.put("metratura", null);
+                m.put("condizioni", null);
+                m.put("stanze", null);
+                m.put("bagni", null);
+                m.put("piano", null);
+                m.put("ascensore", null);
+                m.put("garage", null);
+                m.put("giardino", null);
+                m.put("balcone", null);
+                m.put("terrazzo", null);
+                m.put("cantina", null);
+                m.put("riscaldamento", null);
+                m.put("nomeProprietario", null);
+                m.put("emailProprietario", null);
+                m.put("telefonoProprietario", null);
+                m.put("descrizione", null);
+                m.put("dataInserimento", null);
+            }
+            
+            return m;
+        }).collect(Collectors.toList());
+        
+        result.put("valutazioni", valuazioniData);
+        result.put("nextOffset", offset + limit);
+        result.put("hasMore", (offset + limit) < totalValutazioni);
+        result.put("pageSize", valutazioniBatch.size());
+        
+        return result;
+    }
+
+    public Map<String, Object> getValutazioniInVerficaLoadMore(int offset, int limit) {
+        Map<String, Object> result = new LinkedHashMap<>();
+        
+        // Ottieni tutte le valutazioni con stato "in_verifica"
+        List<Valutazione> tutteValutazioni = valutazioneRepository.findByStatoValutazioneNome("in_verifica");
+        
+        // Applica offset e limit manualmente
+        int totalValutazioni = tutteValutazioni.size();
+        List<Valutazione> valutazioniBatch = tutteValutazioni.stream()
+            .skip(offset)
+            .limit(limit)
+            .collect(Collectors.toList());
+        
+        // Trasforma in Map mostrando TUTTI i campi della tabella valutazione
+        List<Map<String, Object>> valuazioniData = valutazioniBatch.stream().map(v -> {
+            Map<String, Object> m = new LinkedHashMap<>();
+            
+            // ID della valutazione (per operazioni di eliminazione)
+            m.put("id", v.getId());
+            
+            // Tutti i campi della tabella Valutazioni
+            m.put("prezzoAI", v.getPrezzoAI());
+            m.put("prezzoUmano", v.getPrezzoUmano());
+            m.put("dataValutazione", v.getDataValutazione());
+            m.put("statoValutazione", v.getStatoValutazione() != null ? v.getStatoValutazione().getNome() : null);
+            m.put("descrizione", v.getDescrizione());
+            
+            // Dati agente
+            if (v.getAgente() != null) {
+                m.put("nomeAgente", v.getAgente().getNome() + " " + v.getAgente().getCognome());
+                m.put("emailAgente", v.getAgente().getEmail());
+            } else {
+                m.put("nomeAgente", null);
+                m.put("emailAgente", null);
+            }
+            
+            // Dati immobile COMPLETI
+            if (v.getImmobile() != null) {
+                Immobile immobile = v.getImmobile();
+                m.put("tipo", immobile.getTipologia());
+                m.put("via", immobile.getVia());
+                m.put("citta", immobile.getCitta());
+                m.put("cap", immobile.getCap());
+                m.put("provincia", immobile.getProvincia());
+                m.put("metratura", immobile.getMetratura());
+                m.put("condizioni", immobile.getCondizioni());
+                m.put("stanze", immobile.getStanze());
+                m.put("bagni", immobile.getBagni());
+                m.put("piano", immobile.getPiano());
+                m.put("ascensore", immobile.getAscensore());
+                m.put("garage", immobile.getGarage());
+                m.put("giardino", immobile.getGiardino());
+                m.put("balcone", immobile.getBalcone());
+                m.put("terrazzo", immobile.getTerrazzo());
+                m.put("cantina", immobile.getCantina());
+                m.put("riscaldamento", immobile.getRiscaldamento());
+                
+                // Proprietario
+                if (immobile.getProprietario() != null) {
+                    m.put("nomeProprietario", immobile.getProprietario().getNome() + " " + immobile.getProprietario().getCognome());
+                    m.put("emailProprietario", immobile.getProprietario().getEmail());
+                    m.put("telefonoProprietario", immobile.getProprietario().getTelefono());
+                } else {
+                    m.put("nomeProprietario", null);
+                    m.put("emailProprietario", null);
+                    m.put("telefonoProprietario", null);
+                }
+                
+                m.put("descrizione", immobile.getDescrizione());
+                m.put("dataInserimento", immobile.getDataInserimento());
+            } else {
+                m.put("tipo", null);
+                m.put("via", null);
+                m.put("citta", null);
+                m.put("cap", null);
+                m.put("provincia", null);
+                m.put("metratura", null);
+                m.put("condizioni", null);
+                m.put("stanze", null);
+                m.put("bagni", null);
+                m.put("piano", null);
+                m.put("ascensore", null);
+                m.put("garage", null);
+                m.put("giardino", null);
+                m.put("balcone", null);
+                m.put("terrazzo", null);
+                m.put("cantina", null);
+                m.put("riscaldamento", null);
+                m.put("nomeProprietario", null);
+                m.put("emailProprietario", null);
+                m.put("telefonoProprietario", null);
+                m.put("descrizione", null);
+                m.put("dataInserimento", null);
+            }
+            
+            return m;
+        }).collect(Collectors.toList());
+        
+        result.put("valutazioni", valuazioniData);
+        result.put("nextOffset", offset + limit);
+        result.put("hasMore", (offset + limit) < totalValutazioni);
+        result.put("pageSize", valutazioniBatch.size());
+        
+        return result;
+    }
+
+    /**
+     * Elimina una valutazione per ID
+     */
+    public void deleteValutazione(Integer id) {
+        valutazioneRepository.deleteById(id);
     }
 }

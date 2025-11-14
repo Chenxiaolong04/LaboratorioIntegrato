@@ -82,4 +82,68 @@ public class AdminApiController {
             return ResponseEntity.status(500).body("Errore recupero contratti");
         }
     }
+
+    /**
+     * Restituisce valutazioni generate solo da AI con i dettagli degli immobili
+     * Usa offset/limit per load-more progressivo
+     * Esempio: GET /api/admin/valutazioni/solo-ai?offset=0&limit=10
+     */
+    @GetMapping("/valutazioni/solo-ai")
+    public ResponseEntity<Object> getValutazioniSoloAI(
+            @RequestParam(defaultValue = "0") int offset,
+            @RequestParam(defaultValue = "10") int limit) {
+        try {
+            return ResponseEntity.ok(statisticsService.getValutazioniSoloAILoadMore(offset, limit));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Errore recupero valutazioni");
+        }
+    }
+
+    /**
+     * Restituisce valutazioni in verifica con TUTTI i campi della tabella valutazione
+     * Usa offset/limit per load-more progressivo
+     * Esempio: GET /api/admin/valutazioni/in-verifica?offset=0&limit=10
+     */
+    @GetMapping("/valutazioni/in-verifica")
+    public ResponseEntity<Object> getValutazioniInVerifica(
+            @RequestParam(defaultValue = "0") int offset,
+            @RequestParam(defaultValue = "10") int limit) {
+        try {
+            return ResponseEntity.ok(statisticsService.getValutazioniInVerficaLoadMore(offset, limit));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Errore recupero valutazioni in verifica");
+        }
+    }
+
+    /**
+     * Elimina una valutazione AI per ID
+     * Esempio: DELETE /api/admin/valutazioni/solo-ai/5
+     */
+    @DeleteMapping("/valutazioni/solo-ai/{id}")
+    public ResponseEntity<Object> deleteValutazioneAI(@PathVariable Integer id) {
+        try {
+            statisticsService.deleteValutazione(id);
+            return ResponseEntity.ok(Map.of("success", true, "message", "Valutazione AI eliminata con successo"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(Map.of("success", false, "message", "Errore eliminazione valutazione: " + e.getMessage()));
+        }
+    }
+
+    /**
+     * Elimina una valutazione in verifica per ID
+     * Esempio: DELETE /api/admin/valutazioni/in-verifica/7
+     */
+    @DeleteMapping("/valutazioni/in-verifica/{id}")
+    public ResponseEntity<Object> deleteValutazioneInVerifica(@PathVariable Integer id) {
+        try {
+            statisticsService.deleteValutazione(id);
+            return ResponseEntity.ok(Map.of("success", true, "message", "Valutazione in verifica eliminata con successo"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(Map.of("success", false, "message", "Errore eliminazione valutazione: " + e.getMessage()));
+        }
+    }
 }

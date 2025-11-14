@@ -45,6 +45,10 @@ public class Contratto {
     @ManyToOne
     @JoinColumn(name = "Id_immobile")
     private Immobile immobile;
+
+    @ManyToOne
+    @JoinColumn(name = "Id_valutazione")
+    private Valutazione valutazione;
     
     // Getters e Setters
     public Integer getId() {
@@ -133,5 +137,13 @@ public class Contratto {
     
     public void setImmobile(Immobile immobile) {
         this.immobile = immobile;
+    }
+
+    public Valutazione getValutazione() {
+        return valutazione;
+    }
+
+    public void setValutazione(Valutazione valutazione) {
+        this.valutazione = valutazione;
     }
 }

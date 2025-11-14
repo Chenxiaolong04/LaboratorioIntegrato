@@ -35,6 +35,12 @@ public class Immobile {
     
     @Column(name = "Stanze")
     private Integer stanze;
+
+    @Column(name = "Bagni")
+    private Integer bagni;
+
+    @Column(name = "Riscaldamento")
+    private String riscaldamento;
     
     @ManyToOne
     @JoinColumn(name = "Id_stato_immobile")
@@ -48,6 +54,18 @@ public class Immobile {
     
     @Column(name = "Garage")
     private Boolean garage;
+
+    @Column(name = "Giardino")
+    private Boolean giardino;
+
+    @Column(name = "Balcone")
+    private Boolean balcone;
+
+    @Column(name = "Terrazzo")
+    private Boolean terrazzo;
+
+    @Column(name = "Cantina")
+    private Boolean cantina;
     
     @Column(name = "Prezzo")
     private Integer prezzo;
@@ -134,6 +152,22 @@ public class Immobile {
     public void setStanze(Integer stanze) {
         this.stanze = stanze;
     }
+
+    public Integer getBagni() {
+        return bagni;
+    }
+
+    public void setBagni(Integer bagni) {
+        this.bagni = bagni;
+    }
+
+    public String getRiscaldamento() {
+        return riscaldamento;
+    }
+
+    public void setRiscaldamento(String riscaldamento) {
+        this.riscaldamento = riscaldamento;
+    }
     
     public StatoImmobile getStatoImmobile() {
         return statoImmobile;
@@ -165,6 +199,38 @@ public class Immobile {
     
     public void setGarage(Boolean garage) {
         this.garage = garage;
+    }
+
+    public Boolean getGiardino() {
+        return giardino;
+    }
+
+    public void setGiardino(Boolean giardino) {
+        this.giardino = giardino;
+    }
+
+    public Boolean getBalcone() {
+        return balcone;
+    }
+
+    public void setBalcone(Boolean balcone) {
+        this.balcone = balcone;
+    }
+
+    public Boolean getTerrazzo() {
+        return terrazzo;
+    }
+
+    public void setTerrazzo(Boolean terrazzo) {
+        this.terrazzo = terrazzo;
+    }
+
+    public Boolean getCantina() {
+        return cantina;
+    }
+
+    public void setCantina(Boolean cantina) {
+        this.cantina = cantina;
     }
     
     public Integer getPrezzo() {

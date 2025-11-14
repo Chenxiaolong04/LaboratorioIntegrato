@@ -6,9 +6,11 @@ interface InputProps {
   type?: string;
   placeholder?: string;
   autoComplete?: string;
-  value?: string;
+  value?: string | number;
   className?: string;
   required?: boolean;
+  min?: number;
+  max?: number;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -21,6 +23,8 @@ const Input: FC<InputProps> = ({
   value = "",
   className = "input-form",
   required = false,
+  min = 0,
+  max = 0,
   onChange,
 }) => {
   return (
@@ -33,6 +37,8 @@ const Input: FC<InputProps> = ({
       value={value}
       className={className}
       required={required}
+      min={min}
+      max={max}
       onChange={onChange}
     />
   );

@@ -1,6 +1,7 @@
 @use "./variables" as var;
 
 .form-container {
+  height: 100vh;
   display: flex;
   flex-direction: column;
   padding: 1rem;
@@ -23,7 +24,7 @@
 
     .progress-bar {
       background: var.$palette-lightblu;
-      height: 100%;
+      height: 1rem;
       border-radius: 10px;
       transition: width 0.3s ease;
     }
@@ -42,6 +43,10 @@
 
       h2 {
         font-size: 1.5rem;
+        text-align: center;
+      }
+
+      p {
         text-align: center;
       }
 
@@ -103,17 +108,32 @@
   .form-container {
     padding: 3rem 1rem;
 
+    .progress {
+      margin: 3rem 0;
+    }
+
     .brand {
       .logo {
-        width: 200px;
+        width: 100px;
       }
     }
 
     form .step {
       .map {
-      height: 30rem;
+        height: 30rem;
+      }
+
+      h2 {
+        font-size: var.$fs-dk-section-subtitle;
+      }
+
+      .card-group-input {
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        grid-template-rows: 1fr;
+        .card-input {
+          max-width: 20rem;
+        }
+      }
     }
-    }
-    
   }
 }

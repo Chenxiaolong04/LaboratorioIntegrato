@@ -1,7 +1,10 @@
 import React, { useState, useImperativeHandle, forwardRef } from "react";
 import { useFormContext } from "../../context/FormContext";
 import CardInput from "../CardInput";
-import TestImage from "../../assets/img/test-image.jpg";
+import NuovoImg from "../../assets/img/form-img/nuovo_immobile.webp";
+import OttimoImg from "../../assets/img/form-img/ottimo_immobile.webp";
+import BuonoImg from "../../assets/img/form-img/buono_immobile.webp";
+import RistrutturareImg from "../../assets/img/form-img/ristrutturare_immobile.webp";
 
 export interface StepStatusRef {
   validate: () => boolean;
@@ -34,16 +37,23 @@ const StepStatus = forwardRef<StepStatusRef, StepStatusProps>(
       },
     }));
 
+    const statuses = [
+      { text: "Nuovo", img: NuovoImg },
+      { text: "Ottimo stato", img: OttimoImg },
+      { text: "Buono", img: BuonoImg },
+      { text: "Da ristrutturare", img: RistrutturareImg },
+    ];
+
     return (
       <div className="step">
         <h2>Stato dell'immobile</h2>
 
         <div className="card-group-input">
-          {["Nuovo", "Ottimo stato", "Buono", "Da ristrutturare"].map((text) => (
+          {statuses.map(({ text, img }) => (
             <CardInput
               key={text}
               text={text}
-              img={TestImage}
+              img={img}
               isActive={selectedStatus === text}
               onClick={() => handleSelect(text)}
             />

@@ -5,16 +5,13 @@ import {
   FaPhone,
   FaFileContract,
 } from "react-icons/fa";
-import TestImage from "../../assets/img/test-image.jpg";
-import { useFormContext } from "../../context/FormContext";
+import ContractImage from "../../assets/img/form-img/contract_sign.webp";
 
 const SuccessPage = () => {
-  const {formData} = useFormContext()
   return (
     <section className="success-page">
-      <pre>{JSON.stringify(formData, null, 2)}</pre>
       <div className="success-content">
-        <FaCheckCircle size={150} color="blue" />
+        <FaCheckCircle size={150} color="#348AA7" />
 
         <h2>Richiesta avvenuta con successo!</h2>
         <h3 className="subtitle">Ecco i tuoi prossimi step:</h3>
@@ -48,7 +45,7 @@ const SuccessPage = () => {
         </h4>
 
         <FaArrowDown size={32} />
-        <img src={TestImage} alt="" />
+        <img src={ContractImage} alt="contratto firmato" loading="lazy"/>
       </div>
     </section>
   );
