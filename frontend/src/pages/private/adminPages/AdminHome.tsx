@@ -31,7 +31,6 @@ export default function AdminHome() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    console.log('prova')
     async function fetchInitialData() {
       setLoading(true);
       try {
@@ -97,14 +96,14 @@ export default function AdminHome() {
           <div className="general-container">
             <div className="title-card">
               <span>
-                <FaCheckCircle size={32} color="green" />
+                <FaCheckCircle size={36} color="green" />
               </span>
               <h3>Contratti conclusi</h3>
             </div>
             <div className="data-card">
               <h3>{statistics.contrattiConclusi}</h3>
               <Link to="/admin/contratti">
-                <FaSquareArrowUpRight size={50} />
+                <FaSquareArrowUpRight size={50} color="#348AA7" />
               </Link>
             </div>
           </div>
@@ -112,14 +111,14 @@ export default function AdminHome() {
           <div className="general-container">
             <div className="title-card">
               <span>
-                <TbProgressCheck size={32} color="orange" />
+                <TbProgressCheck size={36} color="orange" />
               </span>
               <h3>Incarichi in corso</h3>
             </div>
             <div className="data-card">
               <h3>{statistics.valutazioniInCorso}</h3>
               <Link to="/admin/incarichi">
-                <FaSquareArrowUpRight size={50} />
+                <FaSquareArrowUpRight size={50} color="#348AA7" />
               </Link>
             </div>
           </div>
@@ -127,14 +126,14 @@ export default function AdminHome() {
           <div className="general-container">
             <div className="title-card">
               <span>
-                <PiWarningCircleBold size={32} color="gray" />
+                <PiWarningCircleBold size={36} color="gray" />
               </span>
-              <h3>Valutazioni AI effettuate</h3>
+              <h3>Valutazioni AI</h3>
             </div>
             <div className="data-card">
               <h3>{statistics.valutazioniConAI}</h3>
               <Link to="/admin/valutazioniAI">
-                <FaSquareArrowUpRight size={50} />
+                <FaSquareArrowUpRight size={50} color="#348AA7" />
               </Link>
             </div>
           </div>
@@ -152,7 +151,7 @@ export default function AdminHome() {
             <div className="dropdown">
               <Button
                 onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="lightblu"
+                className="blu"
               >
                 <FaFilter color={"white"} />
               </Button>
@@ -226,7 +225,7 @@ export default function AdminHome() {
 
           {hasMore && (
             <div className="btn-table">
-              <Button onClick={handleLoadMore} disabled={loading}>
+              <Button onClick={handleLoadMore} disabled={loading} className="blu">
                 {loading ? "Caricamento..." : "Mostra altri avvisi"}
               </Button>
             </div>

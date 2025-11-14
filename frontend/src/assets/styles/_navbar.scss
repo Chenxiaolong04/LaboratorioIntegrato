@@ -1,3 +1,5 @@
+@use './variables' as var;
+
 /* Blocca lo scroll del body quando aperto il menu mobile */
 .no-scroll {
   overflow: hidden;
@@ -8,7 +10,6 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: white;
   position: relative;
   padding: 1rem;
   width: 100%;
@@ -106,6 +107,7 @@
 
   .button-links {
     display: flex;
+    align-items: center;
     gap: 1rem;
 
     .notification-wrapper {

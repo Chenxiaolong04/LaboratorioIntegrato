@@ -28,6 +28,10 @@ export default function NavbarPrivate() {
     };
   }, [menuOpen]);
 
+  const handleLinkClick = () => {
+    setMenuOpen(false);
+  };
+
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (
@@ -75,22 +79,23 @@ export default function NavbarPrivate() {
       <div className={`menu-overlay ${menuOpen ? "active" : ""}`}>
         <ul>
           <li>
-            <Link to={"/admin"}>Dashboard</Link>
+            <Link to={"/admin"} onClick={handleLinkClick}>Dashboard</Link>
           </li>
           <li>
-            <Link to={"/admin/create-user"}>Crea profilo</Link>
+            <Link to={"/admin/create-user"} onClick={handleLinkClick}>Crea profilo</Link>
           </li>
           <li>
-            <Link to={"/admin/evaluationsAI"}>Valutazioni AI</Link>
+            <Link to={"/admin/evaluationsAI"} onClick={handleLinkClick}>Valutazioni AI</Link>
           </li>
           <li>
-            <Link to={"/admin/assignments"}>Incarichi</Link>
+            <Link to={"/admin/assignments"} onClick={handleLinkClick}>Incarichi</Link>
           </li>
           <li>
-            <Link to={"/admin/contracts"}>Contratti</Link>
+            <Link to={"/admin/contracts"} onClick={handleLinkClick}>Contratti</Link>
           </li>
         </ul>
       </div>
+
       <div className="button-links">
         <div ref={notificationsRef} className="notification-wrapper">
           <button
@@ -116,10 +121,7 @@ export default function NavbarPrivate() {
             </div>
           )}
         </div>
-
-        <Link to={"/"}>
           <img src={logo} alt="logo" />
-        </Link>
       </div>
     </nav>
   );

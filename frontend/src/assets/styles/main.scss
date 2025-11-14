@@ -29,7 +29,8 @@
 @use "./login";
 
 // dashboard Admin
-@use "./dashboardAdmin";
+@use "./adminHome";
+@use "./tablesDashboard";
 @use "./createUser";
 
 // Global resets

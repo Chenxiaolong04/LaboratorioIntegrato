@@ -1,0 +1,141 @@
+@use './variables' as var;
+
+.dashboard-container {
+  background-color: var.$palette-lightblu;
+  color: white;
+  padding: 1rem;
+  display: flex;
+  gap: 2rem;
+
+  .table-container {
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    h2 {
+      font-size: var.$fs-mb-section-subtitle;
+    }
+
+    .filter-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-right: auto;
+      position: relative;
+
+      .dropdown-menu {
+        position: absolute;
+        top: 60px;
+        right: 0;
+        display: flex;
+        flex-direction: column;
+        background-color: var.$palette-gray;
+        padding: 1rem;
+        border: 1px solid;
+        border-radius: 10px;
+
+        li {
+          padding: 1rem;
+          white-space: nowrap;
+          cursor: pointer;
+          border-radius: 10px;
+
+          &:hover {
+            background-color: var.$palette-gray;
+          }
+
+          &.active {
+            background-color: var.$palette-lightblu;
+            color: white;
+            font-weight: 600;
+          }
+        }
+      }
+
+      .remove-filter {
+        background-color: rgb(200, 0, 0);
+        color: white;
+      }
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+      border-radius: 10px;
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+        min-width: 1200px;
+
+        thead {
+          background-color: var.$palette-blu;
+          text-align: left;
+
+          th {
+            padding: 1rem;
+            font-weight: 600;
+            font-size: var.$fs-mb-section-subtitle;
+            white-space: nowrap;
+          }
+        }
+
+        tbody {
+          background-color: white;
+          color: black;
+          td {
+            padding: 1rem;
+            vertical-align: middle;
+
+            .action-buttons {
+              display: flex;
+              gap: 1rem;
+            }
+
+            .cell-content {
+              display: flex;
+              align-items: center;
+              gap: 0.5rem;
+            }
+
+            h3 {
+              font-size: 1rem;
+              font-weight: 500;
+              margin: 0;
+            }
+          }
+        }
+      }
+    }
+
+    .btn-table {
+      display: flex;
+      justify-content: center;
+
+      .btn {
+        color: white;
+        background-color: var.$palette-blu;
+      }
+    }
+
+    &::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: #ccc;
+      border-radius: 10px;
+    }
+  }
+}
+
+@media (min-width: 768px) {
+    .dashboard-container {
+        .table-container {
+            h2 {
+                font-size: var.$fs-dk-section-title;
+            }
+        }
+    }
+}
