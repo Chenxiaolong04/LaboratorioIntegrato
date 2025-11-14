@@ -297,7 +297,10 @@ public class StatisticsService {
         List<Map<String, Object>> valuazioniData = valutazioniBatch.stream().map(v -> {
             Map<String, Object> m = new LinkedHashMap<>();
             
-            // Dati valutazione (senza id)
+            // ID della valutazione (per operazioni di eliminazione)
+            m.put("id", v.getId());
+            
+            // Dati valutazione
             m.put("prezzoAI", v.getPrezzoAI());
             m.put("dataValutazione", v.getDataValutazione());
             m.put("descrizione", v.getDescrizione());
@@ -389,7 +392,10 @@ public class StatisticsService {
         List<Map<String, Object>> valuazioniData = valutazioniBatch.stream().map(v -> {
             Map<String, Object> m = new LinkedHashMap<>();
             
-            // Tutti i campi della tabella Valutazioni (senza id)
+            // ID della valutazione (per operazioni di eliminazione)
+            m.put("id", v.getId());
+            
+            // Tutti i campi della tabella Valutazioni
             m.put("prezzoAI", v.getPrezzoAI());
             m.put("prezzoUmano", v.getPrezzoUmano());
             m.put("dataValutazione", v.getDataValutazione());
@@ -473,5 +479,12 @@ public class StatisticsService {
         result.put("pageSize", valutazioniBatch.size());
         
         return result;
+    }
+
+    /**
+     * Elimina una valutazione per ID
+     */
+    public void deleteValutazione(Integer id) {
+        valutazioneRepository.deleteById(id);
     }
 }
