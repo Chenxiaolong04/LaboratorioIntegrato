@@ -271,6 +271,7 @@ Restituisce la lista di **valutazioni generate solo dall'AI** (stato = "solo_AI"
 {
   "valutazioni": [
     {
+      "id": 5,
       "prezzoAI": 215000,
       "dataValutazione": "2025-11-12",
       "descrizione": "Valutazione automatica immobile Torino",
@@ -311,6 +312,7 @@ Restituisce la lista di **valutazioni generate solo dall'AI** (stato = "solo_AI"
 - `pageSize` (number): Numero di valutazioni ritornate in questa richiesta
 
 **Campi di ogni valutazione:**
+- `id`: ID valutazione (per operazioni di eliminazione)
 - `prezzoAI`: Prezzo stimato dall'AI
 - `dataValutazione`: Data della valutazione
 - `descrizione`: Note sulla valutazione
@@ -355,6 +357,7 @@ Restituisce la lista di **valutazioni in verifica** (stato = "in_verifica") con 
 {
   "valutazioni": [
     {
+      "id": 7,
       "prezzoAI": 215000,
       "prezzoUmano": 220000,
       "dataValutazione": "2025-11-12",
@@ -399,6 +402,7 @@ Restituisce la lista di **valutazioni in verifica** (stato = "in_verifica") con 
 - `pageSize` (number): Numero di valutazioni ritornate in questa richiesta
 
 **Campi di ogni valutazione (TUTTI i campi della tabella):**
+- `id`: ID valutazione (per operazioni di eliminazione)
 - `prezzoAI`: Prezzo stimato dall'AI
 - `prezzoUmano`: Prezzo stimato dall'agente (null se non completato)
 - `dataValutazione`: Data della valutazione
@@ -428,6 +432,46 @@ Restituisce la lista di **valutazioni in verifica** (stato = "in_verifica") con 
 - `telefonoProprietario`: Telefono proprietario
 - `descrizione`: Descrizione immobile
 - `dataInserimento`: Data inserimento nel sistema
+
+**Response (403):** Se non hai ROLE_ADMIN
+
+---
+
+### DELETE `/api/admin/valutazioni/solo-ai/{id}`
+**Richiede:** `ROLE_ADMIN`
+
+Elimina una valutazione AI per ID riga per riga dall'elenco.
+
+**Path Parameters:**
+- `id` (required): ID della valutazione AI da eliminare
+
+**Response (200 OK):**
+```json
+{
+  "success": true,
+  "message": "Valutazione AI eliminata con successo"
+}
+```
+
+**Response (403):** Se non hai ROLE_ADMIN
+
+---
+
+### DELETE `/api/admin/valutazioni/in-verifica/{id}`
+**Richiede:** `ROLE_ADMIN`
+
+Elimina una valutazione in verifica per ID riga per riga dall'elenco.
+
+**Path Parameters:**
+- `id` (required): ID della valutazione in verifica da eliminare
+
+**Response (200 OK):**
+```json
+{
+  "success": true,
+  "message": "Valutazione in verifica eliminata con successo"
+}
+```
 
 **Response (403):** Se non hai ROLE_ADMIN
 
@@ -468,7 +512,9 @@ Restituisce la lista di **valutazioni in verifica** (stato = "in_verifica") con 
 | `/api/admin/immobili` | GET | ✅ Sì | ADMIN | Immobili paginated (pagina-based pagination) |
 | `/api/admin/contratti/chiusi` | GET | ✅ Sì | ADMIN | Lista contratti conclusi con dettagli immobili (offset/limit load-more) |
 | `/api/admin/valutazioni/solo-ai` | GET | ✅ Sì | ADMIN | Lista valutazioni generate solo da AI (offset/limit load-more) |
+| `/api/admin/valutazioni/solo-ai/{id}` | DELETE | ✅ Sì | ADMIN | Elimina valutazione AI per ID |
 | `/api/admin/valutazioni/in-verifica` | GET | ✅ Sì | ADMIN | Lista valutazioni in verifica con TUTTI i campi (offset/limit load-more) |
+| `/api/admin/valutazioni/in-verifica/{id}` | DELETE | ✅ Sì | ADMIN | Elimina valutazione in verifica per ID |
 | `/api/agent/dashboard` | GET | ✅ Sì | AGENT | Dashboard agente (statistiche personali) |
 | `/api/mail/send` | POST | ❌ No* | - | Invia email (⚠️ proteggere in prod) |
 | `/api/mail/test` | GET | ❌ No | - | Verifica mail endpoint |
