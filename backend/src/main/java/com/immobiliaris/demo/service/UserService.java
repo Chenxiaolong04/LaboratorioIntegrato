@@ -22,7 +22,7 @@ public class UserService {
 
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    // Registrazione nuovo utente (admin o agent)
+    // Registrazione nuovo utente (solo ADMIN)
     public User registerUser(User user, Integer tipoUtenteId) {
         // Controllo email duplicata
         if(userRepository.findByEmail(user.getEmail()).isPresent()) {
@@ -44,58 +44,109 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    // Registrazione nuovo utente senza tipo utente specifico
-    public User registerUserBasic(User user) {
-        // Controllo email duplicata
-        if(userRepository.findByEmail(user.getEmail()).isPresent()) {
-            throw new RuntimeException("Email già registrata");
-        }
-
-        // Hash password
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-
-        // Data registrazione
-        user.setDataRegistrazione(new java.sql.Date(System.currentTimeMillis()));
-
-        // Salvataggio
-        return userRepository.save(user);
-    }
-
-    // Aggiornamento utente
-    public User updateUser(Long id, User updatedUser) {
-        return userRepository.findById(id)
-                .map(user -> {
-                    user.setNome(updatedUser.getNome());
-                    user.setCognome(updatedUser.getCognome());
-                    user.setEmail(updatedUser.getEmail());
-                    user.setTelefono(updatedUser.getTelefono());
-                    user.setVia(updatedUser.getVia());
-                    user.setCitta(updatedUser.getCitta());
-                    user.setCap(updatedUser.getCap());
-
-                    // Aggiornamento password solo se fornita
-                    if(updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
-                        user.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
-                    }
-
-                    // Aggiornamento tipoUtente
-                    if(updatedUser.getTipoUtente() != null) {
-                        TipoUtente tipo = tipoUtenteRepository.findById(updatedUser.getTipoUtente().getIdTipo())
-                                .orElseThrow(() -> new RuntimeException("Tipo utente non trovato"));
-                        user.setTipoUtente(tipo);
-                    }
-
-                    return userRepository.save(user);
-                })
+    // Recupera utente per email
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Utente non trovato"));
     }
 
-    // Lista tutti gli utenti
+    // Modifica profilo personale (solo ADMIN)
+    public User updateOwnProfile(String email, User updatedUser) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Utente non trovato"));
+
+        // Aggiorna solo i campi forniti
+        if(updatedUser.getNome() != null && !updatedUser.getNome().isEmpty()) {
+            user.setNome(updatedUser.getNome());
+        }
+        if(updatedUser.getCognome() != null && !updatedUser.getCognome().isEmpty()) {
+            user.setCognome(updatedUser.getCognome());
+        }
+        if(updatedUser.getTelefono() != null && !updatedUser.getTelefono().isEmpty()) {
+            user.setTelefono(updatedUser.getTelefono());
+        }
+        if(updatedUser.getVia() != null && !updatedUser.getVia().isEmpty()) {
+            user.setVia(updatedUser.getVia());
+        }
+        if(updatedUser.getCitta() != null && !updatedUser.getCitta().isEmpty()) {
+            user.setCitta(updatedUser.getCitta());
+        }
+        if(updatedUser.getCap() != null && !updatedUser.getCap().isEmpty()) {
+            user.setCap(updatedUser.getCap());
+        }
+        // Modifica email solo se diversa e non già in uso
+        if(updatedUser.getEmail() != null && !updatedUser.getEmail().isEmpty() && 
+           !updatedUser.getEmail().equals(user.getEmail())) {
+            if(userRepository.findByEmail(updatedUser.getEmail()).isPresent()) {
+                throw new RuntimeException("Email già in uso");
+            }
+            user.setEmail(updatedUser.getEmail());
+        }
+        // Modifica password se fornita
+        if(updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+        }
+
+        return userRepository.save(user);
+    }
+
+    // Modifica utente per ID (solo ADMIN)
+    public User updateUserAsAdmin(Long id, User updatedUser) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Utente non trovato"));
+
+        // Aggiorna campi personali
+        if(updatedUser.getNome() != null && !updatedUser.getNome().isEmpty()) {
+            user.setNome(updatedUser.getNome());
+        }
+        if(updatedUser.getCognome() != null && !updatedUser.getCognome().isEmpty()) {
+            user.setCognome(updatedUser.getCognome());
+        }
+        if(updatedUser.getTelefono() != null && !updatedUser.getTelefono().isEmpty()) {
+            user.setTelefono(updatedUser.getTelefono());
+        }
+        if(updatedUser.getVia() != null && !updatedUser.getVia().isEmpty()) {
+            user.setVia(updatedUser.getVia());
+        }
+        if(updatedUser.getCitta() != null && !updatedUser.getCitta().isEmpty()) {
+            user.setCitta(updatedUser.getCitta());
+        }
+        if(updatedUser.getCap() != null && !updatedUser.getCap().isEmpty()) {
+            user.setCap(updatedUser.getCap());
+        }
+        // Modifica email solo se diversa e non già in uso
+        if(updatedUser.getEmail() != null && !updatedUser.getEmail().isEmpty() && 
+           !updatedUser.getEmail().equals(user.getEmail())) {
+            if(userRepository.findByEmail(updatedUser.getEmail()).isPresent()) {
+                throw new RuntimeException("Email già in uso");
+            }
+            user.setEmail(updatedUser.getEmail());
+        }
+        // Modifica password se fornita
+        if(updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+        }
+        // SOLO ADMIN può modificare il tipoUtente
+        if(updatedUser.getTipoUtente() != null && updatedUser.getTipoUtente().getIdTipo() != null) {
+            TipoUtente tipo = tipoUtenteRepository.findById(updatedUser.getTipoUtente().getIdTipo())
+                    .orElseThrow(() -> new RuntimeException("Tipo utente non trovato"));
+            user.setTipoUtente(tipo);
+        }
+
+        return userRepository.save(user);
+    }
+
+    // Aggiornamento utente generico (deprecato, usare i metodi specifici)
+    public User updateUser(Long id, User updatedUser) {
+        return updateUserAsAdmin(id, updatedUser);
+    }
+
+    // Lista tutti gli utenti (solo ADMIN)
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
-    // Recupero utente per ID
+    // Recupero utente per ID (solo ADMIN)
     public User getUserById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Utente non trovato"));
