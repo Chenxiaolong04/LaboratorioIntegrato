@@ -100,14 +100,4 @@ public class UserService {
         return userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Utente non trovato"));
     }
-
-    private Integer tipoUtenteId;
-
-    public Integer getTipoUtenteId() {
-        return tipoUtenteId;
-    }
-
-    public void setTipoUtenteId(Integer tipoUtenteId) {
-        this.tipoUtenteId = tipoUtenteId;
-    }
 }
