@@ -63,9 +63,11 @@ Verifica se l'utente è autenticato
 ---
 
 ### POST `/api/users/register`
-Registrazione nuovo utente (Admin o Agente)
+Registrazione nuovo utente (Solo Admin) ⚠️ **MODIFICATO**
 
 **Implementato da:** Simone
+
+**Richiede:** `ROLE_ADMIN` ⚠️ **NUOVO**
 
 **Request:**
 ```json
@@ -74,7 +76,10 @@ Registrazione nuovo utente (Admin o Agente)
   "cognome": "Rossi",
   "email": "mario.rossi@example.com",
   "password": "Password123!",
-  "tipoUtenteId": 1
+  "tipoUtente": {
+    "idTipo": 1,
+    "nomeTipo": "Admin"
+  }
 }
 ```
 
@@ -83,9 +88,11 @@ Registrazione nuovo utente (Admin o Agente)
 - `cognome` (required): Cognome dell'utente
 - `email` (required, unique): Email dell'utente
 - `password` (required): Password (verrà hashata con BCrypt)
-- `tipoUtenteId` (required): ID del tipo utente
-  - `1` = ADMIN
-  - `2` = AGENT
+- `tipoUtente` (required) ⚠️ **MODIFICATO**: Oggetto con dati tipo utente nel body JSON
+  - `idTipo` (required): ID del tipo utente
+    - `1` = ADMIN
+    - `2` = AGENT
+  - `nomeTipo` (optional): Nome del tipo utente
 
 **Response (200 OK):**
 ```json
@@ -110,6 +117,14 @@ Registrazione nuovo utente (Admin o Agente)
 }
 ```
 
+**Response (403 Forbidden):** ⚠️ **NUOVO**
+```json
+{
+  "success": false,
+  "message": "Accesso negato. Solo l'amministratore può registrare nuovi utenti."
+}
+```
+
 **Response (500 Server Error):**
 ```json
 {
@@ -119,10 +134,12 @@ Registrazione nuovo utente (Admin o Agente)
 ```
 
 **Note:**
-- La password viene automaticamente hashata con BCrypt
-- La data di registrazione viene impostata automaticamente
-- L'email deve essere unica nel sistema
-- Questo endpoint è accessibile **senza autenticazione**
+- ⚠️ **MODIFICATO**: Solo utenti con `ROLE_ADMIN` possono accedere a questo endpoint
+- ⚠️ **MODIFICATO**: Il `tipoUtente` viene passato nel **body JSON** (non nell'URL come prima)
+- ⚠️ **MODIFICATO**: Gli agenti non possono più creare nuovi utenti
+- ✅ La password viene automaticamente hashata con BCrypt
+- ✅ La data di registrazione viene impostata automaticamente
+- ✅ L'email deve essere unica nel sistema
 
 ---
 
