@@ -47,7 +47,7 @@ export default function NavbarPrivate() {
 
   return (
     <nav className="navbar">
-      <div className="navbar-container">
+      <div className="navbar-container container">
         <div className="links-desktop-navbar">
           <ul>
             <li>

@@ -58,7 +58,6 @@ const StepLocation = forwardRef<StepLocationRef, StepLocationProps>(
           className="map"
           src={FormMap}
           alt="mappa posizione immobile"
-          loading="lazy"
         />
       </div>
     );

@@ -38,36 +38,35 @@ export default function FAQ() {
 
   return (
     <section className="faq">
-      <h2 className="faq-title-mobile">FAQ's</h2>
-      <h2 className="faq-title-desktop">
-        Le risposte che ti guidano ad una vendita perfetta
-      </h2>
-
-      <div className="faq-container">
-        <div className="faq-items">
-          {faqs.map((item, index) => (
-            <div
-              key={index}
-              className={`faq-item ${activeIndex === index ? "active" : ""}`}
-              onClick={() => toggleFAQ(index)}
-            >
-              <div className="faq-question">
-                <h4>
-                  {index + 1}. {item.question}
-                </h4>
-
-                {activeIndex === index ? (
-                  <FaChevronUp size={20} className="icon-up" />
-                ) : (
-                  <FaChevronDown size={20} className="icon-down" />
+      <div className="container">
+        <h2 className="faq-title-mobile">FAQ's</h2>
+        <h2 className="faq-title-desktop">
+          Le risposte che ti guidano ad una vendita perfetta
+        </h2>
+        <div className="faq-container">
+          <div className="faq-items">
+            {faqs.map((item, index) => (
+              <div
+                key={index}
+                className={`faq-item ${activeIndex === index ? "active" : ""}`}
+                onClick={() => toggleFAQ(index)}
+              >
+                <div className="faq-question">
+                  <h4>
+                    {index + 1}. {item.question}
+                  </h4>
+                  {activeIndex === index ? (
+                    <FaChevronUp size={20} className="icon-up" />
+                  ) : (
+                    <FaChevronDown size={20} className="icon-down" />
+                  )}
+                </div>
+                {activeIndex === index && (
+                  <p className="faq-answer">{item.answer}</p>
                 )}
               </div>
-
-              {activeIndex === index && (
-                <p className="faq-answer">{item.answer}</p>
-              )}
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </section>

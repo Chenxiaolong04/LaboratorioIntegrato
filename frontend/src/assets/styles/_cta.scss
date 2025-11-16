@@ -1,48 +1,44 @@
-@use './variables' as var;
-
-// Larghezza usata per il RIQUADRO FAQ su desktop (max-width: 800px)
-$cta-max-width-desktop: 800px; 
-
+@use "./variables" as var;
 
 .cta-section {
-    background-image: none; 
-    
-    // Lo sfondo grigio è ora limitato alla max-width
-    background-color: var.$palette-gray; 
-
+  background-color: var.$palette-blu;
+  .container {
+    min-height: 400px;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+      url("../img/cta-homepage.webp");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    color: white;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 1.5rem; 
-    
-    // === REGOLE CHIAVE PER LIMITARE LA LARGHEZZA DEL RIQUADRO E CENTRARLO ===
-    width: 100%; 
-    max-width: $cta-max-width-desktop; /* <-- Limita il riquadro a 800px anche su mobile */
-    margin: 0 auto; /* <-- Centra l'intero riquadro */
-    
-    padding: 3rem 1rem; 
-    
-    
+    gap: 1.5rem;
+    width: 100%;
+    margin: 0 auto;
+    padding: 3rem 1rem;
+
     h2 {
-        font-size: var.$fs-mb-section-title;
-        color: #000000;
-        text-align: center;
+      font-size: var.$fs-mb-section-title;
+      text-align: center;
     }
+  }
 }
 
 @media (min-width: 768px) {
-    .cta-section {
-        max-width: $cta-max-width-desktop; // 800px
-        margin: 0 auto; 
-        
-        /* Adattiamo il padding a 2rem laterali, come le FAQ */
-        padding: 4rem 2rem; 
+  .cta-section {
+    margin: 0 auto;
+    padding: 4rem 2rem;
+
+    .container {
+      border-radius: 10px;
     }
+  }
 }
 
 @media (min-width: 1200px) {
-    .cta-section {
-        padding: 5rem 2rem;
-    }
+  .cta-section {
+    padding: 5rem 2rem;
+  }
 }

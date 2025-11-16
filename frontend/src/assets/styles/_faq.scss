@@ -1,18 +1,12 @@
 @use 'variables' as var;
 
 .faq {
-    // Sfondo della sezione in blu chiaro
-    background-color: var.$palette-lightblu; 
-    // AGGIUNTA: Bordo arrotondato al riquadro azzurro
-    border-radius: 10px; 
-    // La scritta "Le risposte che ti guidano..." (H2) è NERA
+    background-color: var.$palette-lightblu;
     color: #000000; 
     padding: 2rem 1rem; 
     padding-bottom: 3rem; 
 
     .faq-title-mobile {
-        // La scritta 'FAQ's' ora usa $palette-violet
-        color: var.$palette-gray; 
         font-size: var.$fs-mb-section-subtitle; 
         padding-bottom: 0.5rem; 
     }
@@ -25,6 +19,8 @@
     
     h2 {
         padding-bottom: 0;
+        text-align: center;
+        color: white;
     }
 
     .faq-container {
@@ -40,7 +36,6 @@
         gap: 0.5rem; 
 
         .faq-item {
-            // I box interni delle domande hanno già i bordi tondi
             background-color: white; 
             color: #000000; 
             border-radius: 10px;
@@ -51,8 +46,7 @@
                 display: flex;
                 justify-content: space-between;
                 align-items: flex-start;
-                font-size: var.$fs-mb-section-subtitle; 
-                padding-bottom: 0.5rem; 
+                font-size: var.$fs-mb-section-subtitle;
 
                 h4 {
                     width: 90%; 
@@ -85,8 +79,6 @@
 
 @media (min-width: 768px) {
     .faq {
-        // AGGIUNTA: Assicurati che il bordo tondo sia applicato anche su desktop
-        border-radius: 10px; 
         padding: 4rem 2rem;
         padding-bottom: 6rem; 
         

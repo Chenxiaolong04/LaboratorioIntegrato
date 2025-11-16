@@ -16,16 +16,14 @@ const StepGeneral = forwardRef<StepGeneralRef, StepGeneralProps>(
   ({ error, setError }, ref) => {
     const { formData, setFormData } = useFormContext();
 
-    // ⭐ valori separati
     const [surface, setSurface] = useState(formData.surface?.toString() || "");
     const [floor, setFloor] = useState(formData.floor?.toString() || "");
     const [rooms, setRooms] = useState(formData.rooms?.toString() || "");
     const [bathrooms, setBathrooms] = useState(
       formData.bathrooms?.toString() || ""
     );
-    const [heating, setHeating] = useState(formData.heating || ""); // dropdown
+    const [heating, setHeating] = useState(formData.heating || "");
 
-    // ⭐ funzioni onChange distinte
     const handleSurface = (e: React.ChangeEvent<HTMLInputElement>) => {
       setSurface(e.target.value);
       setFormData({ ...formData, surface: e.target.value });
@@ -51,7 +49,6 @@ const StepGeneral = forwardRef<StepGeneralRef, StepGeneralProps>(
       setFormData({ ...formData, heating: e.target.value });
     };
 
-    // ⭐ VALIDAZIONE COMPLETA
     useImperativeHandle(ref, () => ({
       validate() {
         if (parseInt(surface) < 10 || parseInt(surface) > 1000) {

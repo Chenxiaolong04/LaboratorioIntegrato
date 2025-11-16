@@ -57,40 +57,39 @@ export default function Login() {
 
   return (
     <section className="login-page">
-      <Link to={"/"}>
-        <img src={Logo} alt="logo" />
-      </Link>
-      <div className="login-container">
-        <h1>Accedi al tuo account</h1>
-
-        <form className="login-form" onSubmit={handleSubmit}>
-          <div className="input-button">
-            <Input
-              name="email"
-              type="email"
-              placeholder="Inserisci la tua email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-          <div className="input-button">
-            <Input
-              name="password"
-              type="password"
-              placeholder="Inserisci la tua password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-
-          {error && <p className="error-message">{error}</p>}
-
-          <Button type="submit" className="lightblu">
-            Accedi
-          </Button>
-        </form>
+      <div className="container">
+        <Link to={"/"}>
+          <img src={Logo} alt="logo" />
+        </Link>
+        <div className="login-container">
+          <h1>Accedi al tuo account</h1>
+          <form className="login-form" onSubmit={handleSubmit}>
+            <div className="input-button">
+              <Input
+                name="email"
+                type="email"
+                placeholder="Inserisci la tua email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+            <div className="input-button">
+              <Input
+                name="password"
+                type="password"
+                placeholder="Inserisci la tua password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+            {error && <p className="error-message">{error}</p>}
+            <Button type="submit" className="lightblu">
+              Accedi
+            </Button>
+          </form>
+        </div>
       </div>
     </section>
   );

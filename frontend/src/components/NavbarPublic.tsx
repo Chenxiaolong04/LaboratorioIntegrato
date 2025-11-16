@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import logo from "../assets/img/logo.svg";
-import Button from "./Button";
 import { Link } from "react-router-dom";
 
 export default function NavbarPublic() {
@@ -20,7 +19,7 @@ export default function NavbarPublic() {
 
   return (
     <nav className="navbar">
-      <div className="navbar-container">
+      <div className="navbar-container container">
         <div className="brand">
           <Link to={"/"}>
             <img src={logo} alt="Logo Immobiliaris" title="Logo Immobiliaris" />
@@ -30,24 +29,24 @@ export default function NavbarPublic() {
         <div className="links-desktop-navbar">
           <ul>
             <li>
-              <a href="#" title="Vai alla homepage">
+              <a href="/" title="Vai alla homepage">
                 Home
               </a>
             </li>
             <li>
-              <a href="#" title="Scopri chi siamo">
+              <a href="#chi-siamo" title="Scopri chi siamo">
                 Chi siamo
               </a>
             </li>
             <li>
-              <a href="#" title="Contattaci">
+              <a href="#contatti" title="Contattaci">
                 Contatti
               </a>
             </li>
             <li>
-              <Button className="btn-cta-navbar lightblu">
+              <Link to={"/form"} className="btn btn-cta-navbar lightblu">
                 Valuta la tua casa
-              </Button>
+              </Link>
             </li>
           </ul>
         </div>
@@ -62,27 +61,27 @@ export default function NavbarPublic() {
         <div className={`menu-overlay ${menuOpen ? "active" : ""}`}>
           <ul>
             <li>
-              <a href="#" title="Vai alla homepage" onClick={handleLinkClick}>
+              <a href="/" title="Vai alla homepage" onClick={handleLinkClick}>
                 Home
               </a>
             </li>
             <li>
-              <a href="#" title="Scopri chi siamo" onClick={handleLinkClick}>
+              <a href="#chi-siamo" title="Scopri chi siamo" onClick={handleLinkClick}>
                 Chi siamo
               </a>
             </li>
             <li>
-              <a href="#" title="Contattaci" onClick={handleLinkClick}>
+              <a href="#contatti" title="Contattaci" onClick={handleLinkClick}>
                 Contatti
               </a>
             </li>
             <li>
-              <Button
-                className="btn-cta-navbar lightblu"
+              <Link to={"/form"}
+                className="btn btn-cta-navbar lightblu"
                 onClick={handleLinkClick}
               >
                 Valuta la tua casa
-              </Button>
+              </Link>
             </li>
           </ul>
         </div>

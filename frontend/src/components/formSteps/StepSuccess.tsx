@@ -1,9 +1,9 @@
 import {
   FaCheckCircle,
-  FaEnvelope,
-  FaArrowDown,
-  FaPhone,
-  FaFileContract,
+  // FaEnvelope,
+  // FaArrowDown,
+  // FaPhone,
+  // FaFileContract,
 } from "react-icons/fa";
 import ContractImage from "../../assets/img/form-img/contract_sign.webp";
 
@@ -14,12 +14,12 @@ const SuccessPage = () => {
         <FaCheckCircle size={150} color="#348AA7" />
 
         <h2>Richiesta avvenuta con successo!</h2>
-        <h3 className="subtitle">Ecco i tuoi prossimi step:</h3>
+        {/* <h3 className="subtitle">Ecco i tuoi prossimi step</h3> */}
 
-        <FaEnvelope size={100} />
+        {/* <FaEnvelope size={100} /> */}
 
-        <h4>Riceverai a breve un'email riepilogo contenente:</h4>
-        <ul className="steps-list">
+        <h4>Riceverai a breve un'email sui prossimi step</h4>
+        {/* <ul className="steps-list">
           <li>I dati da te inseriti;</li>
           <li>Una stima della fascia di prezzo;</li>
           <li>Ulteriori considerazioni o problemi;</li>
@@ -44,8 +44,8 @@ const SuccessPage = () => {
           email dopo la conferma con l'agente immobiliare
         </h4>
 
-        <FaArrowDown size={32} />
-        <img src={ContractImage} alt="contratto firmato" loading="lazy"/>
+        <FaArrowDown size={32} /> */}
+        <img src={ContractImage} alt="contratto firmato"/>
       </div>
     </section>
   );

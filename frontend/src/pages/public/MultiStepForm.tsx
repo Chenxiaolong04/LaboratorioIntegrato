@@ -16,7 +16,9 @@ import StepStatus, {
 } from "../../components/formSteps/StepStatus";
 import type { StepGeneralRef } from "../../components/formSteps/StepGenerals";
 import StepGeneral from "../../components/formSteps/StepGenerals";
-import StepPlus, { type StepPlusRef } from "../../components/formSteps/StepPlus";
+import StepPlus, {
+  type StepPlusRef,
+} from "../../components/formSteps/StepPlus";
 
 export default function MultiStepForm() {
   const [error, setError] = useState("");
@@ -75,86 +77,79 @@ export default function MultiStepForm() {
   return (
     <FormProvider>
       <section className="form-container">
-        <div className="brand">
-          <Link to="/">
-            <img className="logo" src={logo} alt="" />
-          </Link>
-          <h2>Immobiliaris</h2>
-        </div>
-
-        {step < totalSteps - 1 && (
-          <div className="progress">
-            <div
-              className="progress-bar"
-              style={{ width: `${((step + 1) / (totalSteps - 1)) * 100}%` }}
-            ></div>
+        <div className="container">
+          <div className="brand">
+            <Link to="/">
+              <img className="logo" src={logo} alt="Logo Immobiliaris" />
+            </Link>
+            <h2>Immobiliaris</h2>
           </div>
-        )}
-
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (step === totalSteps - 2) handleSubmit();
-            else handleNext();
-          }}
-        >
-          {step === 0 && (
-            <StepLocation
-              ref={stepLocationRef}
-              error={error}
-              setError={setError}
-            />
-          )}
-
-          {step === 1 && (
-            <StepType
-              ref={stepTypeRef}
-              error={errorType}
-              setError={setErrorType}
-            />
-          )}
-
-          {step === 2 && (
-            <StepStatus
-              ref={stepStatusRef}
-              error={errorStatus}
-              setError={setErrorStatus}
-            />
-          )}
-
-          {step === 3 && (
-            <StepGeneral
-              ref={stepGeneralRef}
-              error={errorGeneral}
-              setError={setErrorGeneral}
-            />
-          )}
-
-          {step === 4 && (
-            <StepPlus
-              ref={stepPlusRef}
-              error={errorPlus}
-              setError={setErrorPlus}
-            />
-          )}
-
-          {step === 5 && <StepContacts />}
-
-          {step === 6 && <StepSuccess />}
-
           {step < totalSteps - 1 && (
-            <div className="step-control">
-              {step > 0 && (
-                <Button type="button" onClick={handlePrev}>
-                  Torna indietro
-                </Button>
-              )}
-              <Button type="submit" className="btn-next lightblu">
-                {step === totalSteps - 2 ? "Invia" : "Avanti"}
-              </Button>
+            <div className="progress">
+              <div
+                className="progress-bar"
+                style={{ width: `${((step + 1) / (totalSteps - 1)) * 100}%` }}
+              ></div>
             </div>
           )}
-        </form>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (step === totalSteps - 2) handleSubmit();
+              else handleNext();
+            }}
+          >
+            {step === 0 && (
+              <StepLocation
+                ref={stepLocationRef}
+                error={error}
+                setError={setError}
+              />
+            )}
+            {step === 1 && (
+              <StepType
+                ref={stepTypeRef}
+                error={errorType}
+                setError={setErrorType}
+              />
+            )}
+            {step === 2 && (
+              <StepStatus
+                ref={stepStatusRef}
+                error={errorStatus}
+                setError={setErrorStatus}
+              />
+            )}
+            {step === 3 && (
+              <StepGeneral
+                ref={stepGeneralRef}
+                error={errorGeneral}
+                setError={setErrorGeneral}
+              />
+            )}
+            {step === 4 && (
+              <StepPlus
+                ref={stepPlusRef}
+                error={errorPlus}
+                setError={setErrorPlus}
+              />
+            )}
+            {step === 5 && <StepContacts />}
+            {step === 6 && <StepSuccess />}
+            {step < totalSteps - 1 && (
+              <div className="step-control">
+                {step > 0 && (
+                  <Button type="button" onClick={handlePrev}>
+                    Torna indietro
+                  </Button>
+                )}
+                <Button type="submit" className="btn-next lightblu">
+                  {step === totalSteps - 2 ? "Invia" : "Avanti"}
+                </Button>
+              </div>
+            )}
+          </form>
+        </div>
       </section>
     </FormProvider>
   );
