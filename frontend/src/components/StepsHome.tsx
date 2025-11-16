@@ -1,6 +1,5 @@
 import Step1Image from "../assets/img/test-image.jpg";
 
-
 export default function Steps() {
   return (
     <section className="steps">
@@ -20,14 +19,16 @@ export default function Steps() {
               </h4>
             </div>
             <div className="step-content">
-              <p>
-                Descrivi l'immobile.<br />
-                Semplice.<br />
-                Basta 1 minuto!
-              </p>
+              <p>Descrivi l'immobile.</p>
+              <p>Semplice.</p>
+              <p>Basta 1 minuto!</p>
             </div>
           </div>
-          <img src={Step1Image} alt="Step 1 del processo" title="Step 1 – Immobiliaris" />
+          <img
+            src={Step1Image}
+            alt="Step 1 del processo"
+            title="Step 1 - Immobiliaris"
+          />
         </div>
         <div className="step">
           <div className="step-container">
@@ -40,12 +41,16 @@ export default function Steps() {
             <div className="step-content">
               <p>
                 Entro 72 ore ottieni la stima accurata <br />
-                del tuo immobile, elaborata dal <br /> 
+                del tuo immobile, elaborata dal <br />
                 nostro team.
               </p>
             </div>
           </div>
-          <img src={Step1Image} alt="Step 2 del processo" title="Step 2 – Immobiliaris" />
+          <img
+            src={Step1Image}
+            alt="Step 2 del processo"
+            title="Step 2 - Immobiliaris"
+          />
         </div>
         <div className="step">
           <div className="step-container">
@@ -62,10 +67,13 @@ export default function Steps() {
               </p>
             </div>
           </div>
-          <img src={Step1Image} alt="Step 3 del processo" title="Step 3 – Immobiliaris" />
+          <img
+            src={Step1Image}
+            alt="Step 3 del processo"
+            title="Step 3 - Immobiliaris"
+          />
         </div>
       </div>
-      
     </section>
   );
 }
