@@ -11,6 +11,7 @@ public class PropertyRequest {
     private String type;
     private Integer squareMeters;
     private Integer rooms;
+    private Integer bathrooms;
     private Integer floor;
     private Boolean elevator;
     private Boolean garage;
