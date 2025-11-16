@@ -1,13 +1,30 @@
 @use "variables" as var;
 
 .reasons {
-    h2 {
+    margin-bottom: 2rem;
+    
+    h2 { 
         font-size: var.$fs-mb-section-title;
+        color: black;
+        text-align: left;
+        margin-bottom: 1rem; 
     }
 
     h3 {
         font-size: var.$fs-mb-section-subtitle;
         font-weight: 400;
+    }
+    
+    .reasons-container {
+        background-color: var.$palette-gray;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        padding: 2rem 1rem; 
+
+        display: flex;
+        flex-direction: column; 
+        align-items: center; // Centra orizzontalmente i figli (cards-container e steps-button)
+        gap: 2rem;
     }
 
     .card {
@@ -18,7 +35,7 @@
         gap: 1rem;
         padding: 2rem;
         margin: 2rem 0;
-        background-color: var.$palette-gray;
+        background-color: transparent; 
         border-radius: 10px;
 
         .icon {
@@ -33,6 +50,7 @@
         }
     }
 
+    
     .about-us {
         display: flex;
         flex-direction: column;
@@ -52,14 +70,16 @@
 
         .reasons-container {
             display: flex;
+            flex-direction: column;
+            align-items: center;
             justify-content: center;
             gap: 1rem;
-            padding: 3rem 0;
+            padding: 3rem 0; 
 
             .cards-container {
                 width: 100%;
                 display: grid;
-                grid-template-columns: repeat(2, 1fr); // 2 colonne
+                grid-template-columns: repeat(2, 1fr); 
                 gap: 1rem;
 
                 .card {

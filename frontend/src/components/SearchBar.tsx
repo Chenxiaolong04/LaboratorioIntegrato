@@ -2,6 +2,7 @@ import { type FormEvent, type ChangeEvent, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import Input from "./Input";
 
+
 interface SearchBarProps {
   placeholder?: string;
   onSearch: (query: string) => void;

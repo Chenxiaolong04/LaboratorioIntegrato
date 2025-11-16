@@ -3,6 +3,7 @@
 .steps {
   h2 {
     font-size: var.$fs-mb-section-title;
+    color: var.$palette-lightblu;
   }
 
   h3 {
@@ -25,7 +26,7 @@
         align-items: center;
         justify-content: center;
         background-color: var.$palette-lightblu;
-        color: white;
+        color: var.$palette-violet;
         font-size: var.$fs-mb-section-title;
         font-weight: 600;
         border-radius: 50%;
@@ -95,8 +96,6 @@
       }
     }
 
-    .steps-button {
-      padding-top: 3rem;
-    }
+    
   }
 }

@@ -1,6 +1,4 @@
 import Step1Image from "../assets/img/test-image.jpg";
-import { FaLongArrowAltRight } from "react-icons/fa";
-import Button from "./Button";
 
 export default function Steps() {
   return (
@@ -21,17 +19,16 @@ export default function Steps() {
               </h4>
             </div>
             <div className="step-content">
-              <p>
-                Descrivi la tua casa indicandone le caratteristiche: sua
-                geolocalizzazione, la superficie, il piano, il numero dei locali,
-                lo stato dell'immobile, la presenza di spazi esterni (balcone,
-                terrazzo, giardino) e tutto ciò che possa contribuire a definirne
-                in modo preciso il valore. Compilare il nostro form è veloce e
-                intuitivo, impiegherai solo 1 minuto.
-              </p>
+              <p>Descrivi l'immobile.</p>
+              <p>Semplice.</p>
+              <p>Basta 1 minuto!</p>
             </div>
           </div>
-          <img src={Step1Image} alt="" />
+          <img
+            src={Step1Image}
+            alt="Step 1 del processo"
+            title="Step 1 - Immobiliaris"
+          />
         </div>
         <div className="step">
           <div className="step-container">
@@ -39,18 +36,21 @@ export default function Steps() {
               <div className="step-number">
                 <p>2</p>
               </div>
-              <h4 className="step-name">Ricevi la valutazione entro 72 ore</h4>
+              <h4 className="step-name">Valutazione rapida e professionale</h4>
             </div>
             <div className="step-content">
               <p>
-                Il nostro team analizza le informazioni inserite e confronta il
-                tuo immobile con dati di mercato aggiornati nella tua zona. Entro
-                72 ore riceverai una valutazione realistica del valore della tua
-                casa, basata su criteri professionali e trasparenti.
+                Entro 72 ore ottieni la stima accurata <br />
+                del tuo immobile, elaborata dal <br />
+                nostro team.
               </p>
             </div>
           </div>
-          <img src={Step1Image} alt="" />
+          <img
+            src={Step1Image}
+            alt="Step 2 del processo"
+            title="Step 2 - Immobiliaris"
+          />
         </div>
         <div className="step">
           <div className="step-container">
@@ -58,23 +58,21 @@ export default function Steps() {
               <div className="step-number">
                 <p>3</p>
               </div>
-              <h4 className="step-name">Vendi con noi in esclusiva</h4>
+              <h4 className="step-name">Vendita sicura e senza pensieri</h4>
             </div>
             <div className="step-content">
               <p>
-                Dopo la valutazione, ti proponiamo una collaborazione in
-                esclusiva: un contratto chiaro, senza sorprese, per affidare la
-                vendita a un’agenzia che segue ogni fase, dalla promozione
-                dell’immobile fino alla firma del rogito, in modo sicuro e senza
-                stress.
+                Affida la vendita in esclusiva <br />
+                al nostro team.
               </p>
             </div>
           </div>
-          <img src={Step1Image} alt="" />
+          <img
+            src={Step1Image}
+            alt="Step 3 del processo"
+            title="Step 3 - Immobiliaris"
+          />
         </div>
-      </div>
-      <div className="steps-button">
-        <Button className="lightblu">Valuta ora <FaLongArrowAltRight /></Button>
       </div>
     </section>
   );

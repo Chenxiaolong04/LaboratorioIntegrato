@@ -1,75 +1,75 @@
 import { useState } from "react";
-import TestImage from "../assets/img/test-image.jpg";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
-import Button from "./Button";
 
 interface FAQ {
-    question: string;
-    answer: string;
+  question: string;
+  answer: string;
 }
 
 const faqs: FAQ[] = [
-    {
-        question: "Domanda neg giwgiweigwnig?",
-        answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus commodo id ipsum ut placerat. Donec a commodo mauris. Nam mattis aliquet enim, placerat accumsan lectus consequat at. Cras leo nibh, ultricies vitae ultricies sit amet, ornare nec mi. Mauris luctus a mi sed egestas.",
-    },
-    {
-        question: "Domanda neg giwgiweigwnig?",
-        answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    },
-    {
-        question: "Domanda neg giwgiweigwnig?",
-        answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    },
-    {
-        question: "Domanda neg giwgiweigwnig?",
-        answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    },
-    {
-        question: "Domanda neg giwgiweigwnig?",
-        answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    },
-    {
-        question: "Domanda neg giwgiweigwnig?",
-        answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    },
+  {
+    question: "Qual è la procedura per acquistare un immobile?",
+    answer:
+      "La procedura comprende alcuni eventi fondamentali: proposta d'acquisto, eventuale contratto preliminare, stipula del rogito in presenza di un notaio, dove avviene il trasferimento ufficiale della proprietà.",
+  },
+  {
+    question: "Quali documenti servono per la compravendita immobiliare?",
+    answer:
+      "Sono necessari diversi documenti, tra cui visura catastale, atto di provenienza, certificato di prestazione energetica, documenti di identità delle parti e planimetria aggiornata.",
+  },
+  {
+    question: "Come avviene la trattativa sul prezzo di una casa?",
+    answer:
+      "La trattativa parte solitamente da una proposta di acquisto. Il venditore può accettare, rifiutare o controproporre. Si arriva quindi a un accordo, che può essere formalizzato tramite un contratto preliminare.",
+  },
+  {
+    question: "Quali tasse e costi si pagano per acquistare casa?",
+    answer:
+      "All'acquisto sono legate imposte come registro, ipotecarie e catastali (con aliquote variabili in base al tipo di acquisto), spese notarili e, se previsto, costi di intermediazione. Questi variano a seconda che si tratti della prima o della seconda casa e della tipologia di venditore (privato o impresa).",
+  },
 ];
 
 export default function FAQ() {
-    const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
-    const toggleFAQ = (index: number) => {
-        setActiveIndex(activeIndex === index ? null : index);
-    };
+  const toggleFAQ = (index: number) => {
+    setActiveIndex(activeIndex === index ? null : index);
+  };
 
-    return (
-        <section className="faq">
-            <h2>Le risposte che ti guidano alla vendita perfetta</h2>
+  return (
+    <section className="faq">
+      <h2 className="faq-title-mobile">FAQ's</h2>
+      <h2 className="faq-title-desktop">
+        Le risposte che ti guidano ad una vendita perfetta
+      </h2>
 
-            <div className="faq-container">
-                <div className="faq-items">
-                    {faqs.map((item, index) => (
-                        <div
-                            key={index}
-                            className={`faq-item ${activeIndex === index ? "active" : ""}`}
-                            onClick={() => toggleFAQ(index)}
-                        >
-                            <div className="faq-question">
-                                <h4>{item.question}</h4>
-                                {activeIndex === index ? <FaChevronUp size={20}/> : <FaChevronDown size={20}/>}
-                            </div>
-                            {activeIndex === index && (
-                                <p className="faq-answer">{item.answer}</p>
-                            )}
-                        </div>
-                    ))}
-                </div>
-                <div className="faq-contact">
-                    <img src={TestImage} alt="" />
-                    <p>Hai altre domande?</p>
-                    <Button className="lightblu">Contattaci</Button>
-                </div>
+      <div className="faq-container">
+        <div className="faq-items">
+          {faqs.map((item, index) => (
+            <div
+              key={index}
+              className={`faq-item ${activeIndex === index ? "active" : ""}`}
+              onClick={() => toggleFAQ(index)}
+            >
+              <div className="faq-question">
+                <h4>
+                  {index + 1}. {item.question}
+                </h4>
+
+                {activeIndex === index ? (
+                  <FaChevronUp size={20} className="icon-up" />
+                ) : (
+                  <FaChevronDown size={20} className="icon-down" />
+                )}
+              </div>
+
+              {activeIndex === index && (
+                <p className="faq-answer">{item.answer}</p>
+              )}
             </div>
-        </section>
-    );
+          ))}
+        </div>
+      </div>
+    </section>
+  );
 }
