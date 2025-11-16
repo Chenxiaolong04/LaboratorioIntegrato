@@ -1,37 +1,37 @@
-@use './variables' as var;
+@use "./variables" as var;
 
 // components global styles
-@use './button';
-@use './input';
-@use './inputGroup';
-@use './cardInput';
-@use './searchBar';
-@use './loader';
+@use "./button";
+@use "./input";
+@use "./inputGroup";
+@use "./cardInput";
+@use "./searchBar";
+@use "./loader";
 
 // layout
-@use './navbar';
-@use './footer';
+@use "./navbar";
+@use "./footer";
 
 // homepage sections
-@use './header';
-@use './stats';
-@use './steps';
-@use './reasons';
-@use './faq';
-@use './cta';
+@use "./header";
+@use "./stats";
+@use "./steps";
+@use "./reasons";
+@use "./faq";
+@use "./cta";
 
 // Form
-@use './stepForm';
-@use './stepSuccess';
-@use './stepContacts';
+@use "./stepForm";
+@use "./stepSuccess";
+@use "./stepContacts";
 
 // Login
-@use './login';
+@use "./login";
 
 // dashboard Admin
-@use './dashboardAdmin';
-@use './createUser';
-
+@use "./adminHome";
+@use "./tablesDashboard";
+@use "./createUser";
 
 // Global resets
 * {
@@ -54,9 +54,13 @@ body {
   
 }
 
+main {
+  padding-top: 86px;
+}
+
 section,
 header,
-.navbar, 
+.navbar-container,
 footer {
   padding: 1rem;
   width: 100%;
@@ -98,4 +102,16 @@ img {
   width: 100%;
   object-fit: cover;
   object-position: center;
+}
+
+/* Chrome, Safari, Edge */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
 }

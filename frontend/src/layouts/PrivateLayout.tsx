@@ -8,7 +8,7 @@ export default function PrivateLayout({
   return (
     <>
       <NavbarPrivate />
-      {children}
+      <main>{children}</main>
     </>
   );
 }

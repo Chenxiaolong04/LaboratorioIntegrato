@@ -8,9 +8,11 @@ interface InputGroupProps {
   type?: string;
   placeholder?: string;
   autoComplete?: string;
-  value?: string;
+  value?: string | number;
   className?: string;
   required: boolean;
+  min?: number;
+  max?: number;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -23,10 +25,11 @@ export default function InputGroup({
   value,
   className = "",
   required = false,
+  min = 0,
+  max = 0,
   onChange,
 }: InputGroupProps) {
-  const id = name; // usiamo il name anche come id per collegare la label
-
+  const id = name;
   return (
     <div className={`input-group ${className}`}>
       <Label text={label} htmlFor={id} />
@@ -38,6 +41,8 @@ export default function InputGroup({
         autoComplete={autoComplete}
         value={value}
         required={required}
+        min={min}
+        max={max}
         onChange={onChange}
       />
     </div>

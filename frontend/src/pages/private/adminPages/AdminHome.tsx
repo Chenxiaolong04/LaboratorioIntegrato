@@ -6,10 +6,14 @@ import { PiWarningCircleBold } from "react-icons/pi";
 import Button from "../../../components/Button";
 import { Link } from "react-router-dom";
 import SearchBar from "../../../components/SearchBar";
-import { getAdminDashboard, type DashboardData } from "../../../services/api";
+import {
+  getAdminDashboard,
+  type DashboardData,
+  type Immobile,
+} from "../../../services/api";
 
 const filterOptions = [
-  { label: "Vendite concluse", value: "vendite" },
+  { label: "Contratti conclusi", value: "contratti" },
   { label: "Incarichi in corso", value: "incarichi" },
   { label: "Valutazioni AI", value: "valutazioni" },
 ];
@@ -18,31 +22,54 @@ export default function AdminHome() {
   const [filter, setFilter] = useState<string | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [dashboardData, setDashboardData] = useState<DashboardData | null>(
-    null
-  );
+  const [statistics, setStatistics] = useState<
+    DashboardData["statistics"] | null
+  >(null);
+  const [selected, setSelected] = useState<Immobile | null>(null);
+  const [immobili, setImmobili] = useState<Immobile[]>([]);
+  const [nextOffset, setNextOffset] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    async function fetchData() {
+    async function fetchInitialData() {
+      setLoading(true);
       try {
-        const data = await getAdminDashboard();
-        setDashboardData(data);
+        const data = await getAdminDashboard(0, 10);
+        setStatistics(data.statistics);
+        setImmobili(data.immobili);
+        setNextOffset(data.nextOffset);
+        setHasMore(data.hasMore);
       } catch (err) {
-        console.error("Errore nel caricamento dashboard:", err);
+        console.error(err);
+      } finally {
+        setLoading(false);
       }
     }
-    fetchData();
+    fetchInitialData();
   }, []);
 
-  if (!dashboardData) return <p>Caricamento...</p>;
+  const handleLoadMore = async () => {
+    if (!hasMore) return;
+    setLoading(true);
+    try {
+      const data = await getAdminDashboard(nextOffset, 10);
+      setImmobili((prev) => [...prev, ...data.immobili]);
+      setNextOffset(data.nextOffset);
+      setHasMore(data.hasMore);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const { statistics, ultimi10Immobili } = dashboardData;
+  if (!statistics) return <p>Caricamento...</p>;
 
-  // da modificare la logica appena si aggiorna il db
-  const data = ultimi10Immobili.map((i) => ({
+  const mappedData = immobili.map((i) => ({
     tipo:
       i.tipo.toLowerCase() === "appartamento"
-        ? "vendite"
+        ? "contratti"
         : i.tipo.toLowerCase() === "villa"
         ? "incarichi"
         : "valutazioni",
@@ -51,7 +78,7 @@ export default function AdminHome() {
     agente: i.agenteAssegnato || "-",
   }));
 
-  const filteredData = data
+  const filteredData = mappedData
     .filter((d) => (filter ? d.tipo === filter : true))
     .filter((d) => {
       const query = searchQuery.toLowerCase();
@@ -70,14 +97,14 @@ export default function AdminHome() {
           <div className="general-container">
             <div className="title-card">
               <span>
-                <FaCheckCircle size={32} color="green" />
+                <FaCheckCircle size={36} color="green" />
               </span>
-              <h3>Vendite concluse</h3>
+              <h3>Contratti conclusi</h3>
             </div>
             <div className="data-card">
               <h3>{statistics.contrattiConclusi}</h3>
-              <Link to="/admin/vendite">
-                <FaSquareArrowUpRight size={50} />
+              <Link to="/admin/contratti">
+                <FaSquareArrowUpRight size={50} color="white" />
               </Link>
             </div>
           </div>
@@ -85,14 +112,14 @@ export default function AdminHome() {
           <div className="general-container">
             <div className="title-card">
               <span>
-                <TbProgressCheck size={32} color="orange" />
+                <TbProgressCheck size={36} color="orange" />
               </span>
               <h3>Incarichi in corso</h3>
             </div>
             <div className="data-card">
               <h3>{statistics.valutazioniInCorso}</h3>
               <Link to="/admin/incarichi">
-                <FaSquareArrowUpRight size={50} />
+                <FaSquareArrowUpRight size={50} color="white" />
               </Link>
             </div>
           </div>
@@ -100,20 +127,19 @@ export default function AdminHome() {
           <div className="general-container">
             <div className="title-card">
               <span>
-                <PiWarningCircleBold size={32} color="gray" />
+                <PiWarningCircleBold size={36} color="gray" />
               </span>
-              <h3>Valutazioni AI effettuate</h3>
+              <h3>Valutazioni AI</h3>
             </div>
             <div className="data-card">
               <h3>{statistics.valutazioniConAI}</h3>
               <Link to="/admin/valutazioniAI">
-                <FaSquareArrowUpRight size={50} />
+                <FaSquareArrowUpRight size={50} color="white" />
               </Link>
             </div>
           </div>
         </div>
 
-        {/* Tabella avvisi */}
         <div className="table-container">
           <h2>Ultimi avvisi</h2>
           <div className="filter-buttons">
@@ -125,7 +151,7 @@ export default function AdminHome() {
             <div className="dropdown">
               <Button
                 onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="lightblu"
+                className="blu"
               >
                 <FaFilter color={"white"} />
               </Button>
@@ -170,7 +196,7 @@ export default function AdminHome() {
                   <tr key={i}>
                     <td>
                       <div className="cell-content">
-                        {row.tipo === "vendite" && (
+                        {row.tipo === "contratti" && (
                           <FaCheckCircle size={32} color="green" />
                         )}
                         {row.tipo === "incarichi" && (
@@ -189,7 +215,7 @@ export default function AdminHome() {
                     <td>{row.data}</td>
                     <td>{row.agente}</td>
                     <td>
-                      <Button className="lightblu">Dettagli</Button>
+                      <Button className="blu" onClick={() => setSelected(immobili[i])}>Dettagli</Button>
                     </td>
                   </tr>
                 ))}
@@ -197,17 +223,79 @@ export default function AdminHome() {
             </table>
           </div>
 
-          <div className="btn-table">
-            <Button>Mostra altri avvisi</Button>
+          <div className="alerts-cards">
+            {filteredData.map((row, i) => (
+              <div className="alert-card" key={i}>
+                <div className="card-row">
+                  <b>Tipo:</b>{" "}
+                  {filterOptions.find((f) => f.value === row.tipo)?.label ||
+                    row.tipo}
+                </div>
+                <div className="card-row">
+                  <b>Nome proprietario:</b> {row.proprietario || "—"}
+                </div>
+                <div className="card-row">
+                  <b>Data:</b> {row.data || "—"}
+                </div>
+                <div className="card-row">
+                  <b>Agente assegnato:</b> {row.agente || "—"}
+                </div>
+
+                <div className="card-actions">
+                  <Button className="blu" onClick={() => setSelected(immobili[i])}>Dettagli</Button>
+                </div>
+              </div>
+            ))}
           </div>
+
+          {hasMore && (
+            <div className="btn-table">
+              <Button
+                onClick={handleLoadMore}
+                disabled={loading}
+                className="blu"
+              >
+                {loading ? "Caricamento..." : "Mostra altri avvisi"}
+              </Button>
+            </div>
+          )}
         </div>
+
+        {selected && (
+          <div className="modal-overlay" onClick={() => setSelected(null)}>
+            <div className="modal" onClick={(e) => e.stopPropagation()}>
+              <h3>Dettagli Avviso</h3>
+
+              <div className="card-row">
+                <b>Tipo:</b>{" "}
+                {filterOptions.find((f) => f.value === selected.tipo)?.label ||
+                  selected.tipo}
+              </div>
+              <div className="card-row">
+                <b>Nome proprietario:</b> {selected.nomeProprietario || "—"}
+              </div>
+              <div className="card-row">
+                <b>Data:</b> {selected.dataInserimento || "—"}
+              </div>
+              <div className="card-row">
+                <b>Agente assegnato:</b> {selected.agenteAssegnato || "—"}
+              </div>
+
+              <div className="card-actions">
+                <Button className="red" onClick={() => setSelected(null)}>
+                  Chiudi
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Statistiche mensili */}
       <div className="stats-today">
         <h2>Statistiche mensili</h2>
         <div className="card">
-          <h3>Vendite concluse</h3>
+          <h3>Contratti conclusi</h3>
           <p>+ {statistics.contrattiConclusiMensili}</p>
         </div>
         <div className="card">

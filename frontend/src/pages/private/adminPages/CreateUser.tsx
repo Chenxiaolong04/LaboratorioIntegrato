@@ -36,7 +36,7 @@ export default function CreateUser() {
 
   return (
     <section className="create-user">
-      <h2>Crea un nuovo utente</h2>
+      <h2>Crea un profilo</h2>
 
       <form onSubmit={handleSubmit} className="create-user-form">
         <InputGroup
@@ -47,6 +47,21 @@ export default function CreateUser() {
           required={true}
           placeholder="Inserisci il nome"
         />
+
+        <div className="input-group">
+          <label htmlFor="role">Ruolo</label>
+          <select
+            id="role"
+            name="role"
+            value={formData.role}
+            onChange={handleChange}
+            className="input-form"
+            required
+          >
+            <option value="admin">Admin</option>
+            <option value="agente">Agente Immobiliare</option>
+          </select>
+        </div>
 
         <InputGroup
           label="Email"
@@ -68,21 +83,7 @@ export default function CreateUser() {
           placeholder="Inserisci la password"
         />
 
-        <div className="input-group">
-          <label htmlFor="role">Ruolo</label>
-          <select
-            id="role"
-            name="role"
-            value={formData.role}
-            onChange={handleChange}
-            required
-          >
-            <option value="admin">Admin</option>
-            <option value="agente">Agente Immobiliare</option>
-          </select>
-        </div>
-
-        <Button type="submit" className="lightblu">
+        <Button type="submit" className="blu">
           Crea Utente
         </Button>
       </form>

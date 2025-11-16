@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState } from "react";
 import type { ReactNode } from "react";
 
-
 interface FormData {
   address: string;
   name: string;
@@ -10,6 +9,12 @@ interface FormData {
   phone: string;
   type: string;
   status: string;
+  surface: string;
+  floor: string;
+  rooms: string;
+  bathrooms: string;
+  heating: string;
+  features: string[];
 }
 
 interface FormContextType {
@@ -28,6 +33,12 @@ export const FormProvider = ({ children }: { children: ReactNode }) => {
     phone: "",
     type: "",
     status: "",
+    surface: "",
+    floor: "",
+    rooms: "",
+    bathrooms: "",
+    heating: "",
+    features: [],
   });
 
   return (

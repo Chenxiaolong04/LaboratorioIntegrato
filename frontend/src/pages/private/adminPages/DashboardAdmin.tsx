@@ -7,10 +7,12 @@ export default function DashboardAdmin() {
 
   return (
     <PrivateLayout>
-      <div className="header-dashboard">
-        <h1>Bentornato {user?.name}</h1>
-      </div>
+      <div className="dashboard">
+        <div className="header-dashboard">
+          <h1>Bentornato {user?.name}</h1>
+        </div>
       <Outlet />
+      </div>
     </PrivateLayout>
   );
 }

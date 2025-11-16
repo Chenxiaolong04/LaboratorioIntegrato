@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Repository
 public interface ValutazioneJpaRepository extends JpaRepository<Valutazione, Integer> {
@@ -26,4 +27,9 @@ public interface ValutazioneJpaRepository extends JpaRepository<Valutazione, Int
      * Spring genera automaticamente: WHERE nome = ? AND dataValutazione >= ?
      */
     Long countByStatoValutazioneNomeAndDataValutazioneAfter(String nome, LocalDate data);
+    
+    /**
+     * Trova tutte le valutazioni con uno specifico stato
+     */
+    List<Valutazione> findByStatoValutazioneNome(String nome);
 }

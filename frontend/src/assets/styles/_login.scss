@@ -2,7 +2,7 @@
 @use "./variables" as var;
 
 .login-page {
-  height: 100vh;
+  height: calc(100vh - 200px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -25,7 +25,7 @@
     gap: 2rem;
 
     h1 {
-      font-size: var.$fs-mb-title;
+      font-size: var.$fs-mb-section-title;
       color: var.$palette-blu;
       line-height: 2;
       text-align: center;
@@ -44,6 +44,11 @@
 
       .input-form {
         width: 100%;
+      }
+
+      .error-message {
+        color: red;
+        text-align: center;
       }
     }
 

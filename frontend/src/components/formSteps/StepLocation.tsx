@@ -1,6 +1,6 @@
 import React, { useState, useImperativeHandle, forwardRef } from "react";
 import InputGroup from "../InputGroup";
-import TestImage from "../../assets/img/test-image.jpg";
+import FormMap from "../../assets/img/form-img/form-map.webp";
 import { useFormContext } from "../../context/FormContext";
 
 const indirizzoRegex =
@@ -54,7 +54,12 @@ const StepLocation = forwardRef<StepLocationRef, StepLocationProps>(
 
         {error && <p className="error-message">{error}</p>}
 
-        <img className="map" src={TestImage} alt="" />
+        <img
+          className="map"
+          src={FormMap}
+          alt="mappa posizione immobile"
+          loading="lazy"
+        />
       </div>
     );
   }

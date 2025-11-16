@@ -1,11 +1,11 @@
-@use './variables' as var;
+@use "./variables" as var;
 
 .create-user {
   margin-top: 2rem;
   padding: 3rem;
-  background: var.$palette-gray;
+  background-color: white;
   border-radius: 12px;
-  max-width: 500px;
+  max-width: 1000px;
 
   h2 {
     font-size: var.$fs-mb-section-title;
@@ -14,9 +14,10 @@
   }
 
   .create-user-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(6, auto);
+    gap: 1.5rem;
 
     .input-group {
       display: flex;
@@ -30,23 +31,28 @@
       input,
       select {
         padding: 0.6rem;
-        border: 1px solid #ccc;
+        background-color: #d9d9d9;
         border-radius: 8px;
+      }
+
+      select {
+        border: none;
       }
     }
 
-    .btn-primary {
-      margin-top: 1rem;
-      padding: 0.7rem;
-      background: #007bff;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: 0.2s;
+    button[type="submit"] {
+      grid-column: 1 / 2;
+      justify-self: center;
+    }
+  }
 
-      &:hover {
-        background: #0056b3;
+  @media (min-width: 768px) {
+    .create-user-form {
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(3, auto);
+
+      button[type="submit"] {
+        grid-column: 1 / 3;
       }
     }
   }

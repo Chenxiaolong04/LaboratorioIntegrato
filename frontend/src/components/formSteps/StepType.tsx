@@ -1,7 +1,10 @@
 import React, { useState, useImperativeHandle, forwardRef } from "react";
 import { useFormContext } from "../../context/FormContext";
 import CardInput from "../CardInput";
-import TestImage from "../../assets/img/test-image.jpg";
+import AppartamentoImg from "../../assets/img/form-img/appartamento.webp";
+import VillaImg from "../../assets/img/form-img/villa.webp";
+import LoftImg from "../../assets/img/form-img/loft.webp";
+import AtticoImg from "../../assets/img/form-img/attico.webp";
 
 export interface StepTypeRef {
   validate: () => boolean;
@@ -34,16 +37,23 @@ const StepType = forwardRef<StepTypeRef, StepTypeProps>(
       },
     }));
 
+    const types = [
+      { text: "Appartamento", img: AppartamentoImg },
+      { text: "Villa", img: VillaImg },
+      { text: "Loft", img: LoftImg },
+      { text: "Attico", img: AtticoImg },
+    ];
+
     return (
       <div className="step">
         <h2>Tipologia dell'immobile</h2>
 
         <div className="card-group-input">
-          {["Appartamento", "Villa", "Monolocale", "Attico"].map((text) => (
+          {types.map(({ text, img }) => (
             <CardInput
               key={text}
               text={text}
-              img={TestImage}
+              img={img}
               isActive={selectedType === text}
               onClick={() => handleSelect(text)}
             />

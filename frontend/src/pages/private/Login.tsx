@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { loginUser } from "../../services/api";
+import { loginUser, type LoginResponse } from "../../services/api";
 import { useAuth } from "../../context/AuthContext";
 import Button from "../../components/Button";
 import Input from "../../components/Input";
 import Loader from "../../components/Loader";
-import Logo from '../../assets/img/logo.svg'
+import Logo from "../../assets/img/logo.svg";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -20,16 +20,23 @@ export default function Login() {
     setError("");
     setLoading(true);
 
-    // Simula che la richiesta al backend duri almeno due secondi giusto per far vedere il loader anche se sono in localhost
     const timeout = new Promise((res) => setTimeout(res, 2000));
 
     try {
-      const userData = await loginUser(email, password);
+      let userData: LoginResponse | null = null;
 
-      await timeout
+      try {
+        userData = await loginUser(email, password);
+      } catch {
+        await timeout;
+        setError("Si è verificato un errore del server. Riprova più tardi.");
+        return;
+      }
+
+      await timeout;
 
       if (!userData.success) {
-        setError(userData.message || "Credenziali non valide");
+        setError("Email o password non corretti.");
         return;
       }
 
@@ -40,20 +47,13 @@ export default function Login() {
         role: userData.roles.includes("ROLE_ADMIN") ? "admin" : "agente",
       });
 
-      if (userData.roles.includes("ROLE_ADMIN")) {
-        navigate("/admin");
-      } else {
-        navigate("/agente");
-      }
-    } catch (err) {
-      console.error(err);
-      setError("Errore durante il login");
+      navigate(userData.roles.includes("ROLE_ADMIN") ? "/admin" : "/agente");
     } finally {
       setLoading(false);
     }
   };
 
-  if (loading) return <Loader />
+  if (loading) return <Loader />;
 
   return (
     <section className="login-page">
@@ -61,9 +61,7 @@ export default function Login() {
         <img src={Logo} alt="logo" />
       </Link>
       <div className="login-container">
-        <h1>
-          Accedi al tuo account
-        </h1>
+        <h1>Accedi al tuo account</h1>
 
         <form className="login-form" onSubmit={handleSubmit}>
           <div className="input-button">
