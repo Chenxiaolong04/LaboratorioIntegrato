@@ -3,6 +3,7 @@ package com.immobiliaris.demo.service;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.immobiliaris.demo.dto.PropertyRequest;
@@ -13,9 +14,14 @@ import com.immobiliaris.demo.repository.PropertyRepository;
 public class PropertyService {
 
     private final PropertyRepository repository;
+    private final EmailService emailService;
 
-    public PropertyService(PropertyRepository repository){
+    @Value("${app.admin.email:admin@immobiliaris.com}")
+    private String adminEmail;
+
+    public PropertyService(PropertyRepository repository, EmailService emailService){
         this.repository = repository;
+        this.emailService = emailService;
     }
 
     public Property createProperty(PropertyRequest request) {
@@ -36,7 +42,27 @@ public class PropertyService {
         p.setCreatedAt(LocalDate.now());
         p.setPrice(null);
 
-        return repository.save(p);
+        Property savedProperty = repository.save(p);
+
+        // Invia email di conferma all'utente
+        if (request.getContactEmail() != null && !request.getContactEmail().isEmpty()) {
+            emailService.sendConfirmationEmail(
+                request.getContactEmail(),
+                request.getContactName(),
+                savedProperty
+            );
+        }
+
+        // Invia notifica all'admin
+        emailService.sendInternalNotification(
+            adminEmail,
+            savedProperty,
+            request.getContactName(),
+            request.getContactEmail(),
+            request.getContactPhone()
+        );
+
+        return savedProperty;
     }
 
     public List<Property> getAllProperties() {
