@@ -25,6 +25,7 @@ export default function AdminHome() {
   const [statistics, setStatistics] = useState<
     DashboardData["statistics"] | null
   >(null);
+  const [selected, setSelected] = useState<Immobile | null>(null);
   const [immobili, setImmobili] = useState<Immobile[]>([]);
   const [nextOffset, setNextOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
@@ -103,7 +104,7 @@ export default function AdminHome() {
             <div className="data-card">
               <h3>{statistics.contrattiConclusi}</h3>
               <Link to="/admin/contratti">
-                <FaSquareArrowUpRight size={50} color="#348AA7" />
+                <FaSquareArrowUpRight size={50} color="white" />
               </Link>
             </div>
           </div>
@@ -118,7 +119,7 @@ export default function AdminHome() {
             <div className="data-card">
               <h3>{statistics.valutazioniInCorso}</h3>
               <Link to="/admin/incarichi">
-                <FaSquareArrowUpRight size={50} color="#348AA7" />
+                <FaSquareArrowUpRight size={50} color="white" />
               </Link>
             </div>
           </div>
@@ -133,13 +134,12 @@ export default function AdminHome() {
             <div className="data-card">
               <h3>{statistics.valutazioniConAI}</h3>
               <Link to="/admin/valutazioniAI">
-                <FaSquareArrowUpRight size={50} color="#348AA7" />
+                <FaSquareArrowUpRight size={50} color="white" />
               </Link>
             </div>
           </div>
         </div>
 
-        {/* Tabella avvisi */}
         <div className="table-container">
           <h2>Ultimi avvisi</h2>
           <div className="filter-buttons">
@@ -215,7 +215,7 @@ export default function AdminHome() {
                     <td>{row.data}</td>
                     <td>{row.agente}</td>
                     <td>
-                      <Button className="lightblu">Dettagli</Button>
+                      <Button className="blu" onClick={() => setSelected(immobili[i])}>Dettagli</Button>
                     </td>
                   </tr>
                 ))}
@@ -223,14 +223,72 @@ export default function AdminHome() {
             </table>
           </div>
 
+          <div className="alerts-cards">
+            {filteredData.map((row, i) => (
+              <div className="alert-card" key={i}>
+                <div className="card-row">
+                  <b>Tipo:</b>{" "}
+                  {filterOptions.find((f) => f.value === row.tipo)?.label ||
+                    row.tipo}
+                </div>
+                <div className="card-row">
+                  <b>Nome proprietario:</b> {row.proprietario || "—"}
+                </div>
+                <div className="card-row">
+                  <b>Data:</b> {row.data || "—"}
+                </div>
+                <div className="card-row">
+                  <b>Agente assegnato:</b> {row.agente || "—"}
+                </div>
+
+                <div className="card-actions">
+                  <Button className="blu" onClick={() => setSelected(immobili[i])}>Dettagli</Button>
+                </div>
+              </div>
+            ))}
+          </div>
+
           {hasMore && (
             <div className="btn-table">
-              <Button onClick={handleLoadMore} disabled={loading} className="blu">
+              <Button
+                onClick={handleLoadMore}
+                disabled={loading}
+                className="blu"
+              >
                 {loading ? "Caricamento..." : "Mostra altri avvisi"}
               </Button>
             </div>
           )}
         </div>
+
+        {selected && (
+          <div className="modal-overlay" onClick={() => setSelected(null)}>
+            <div className="modal" onClick={(e) => e.stopPropagation()}>
+              <h3>Dettagli Avviso</h3>
+
+              <div className="card-row">
+                <b>Tipo:</b>{" "}
+                {filterOptions.find((f) => f.value === selected.tipo)?.label ||
+                  selected.tipo}
+              </div>
+              <div className="card-row">
+                <b>Nome proprietario:</b> {selected.nomeProprietario || "—"}
+              </div>
+              <div className="card-row">
+                <b>Data:</b> {selected.dataInserimento || "—"}
+              </div>
+              <div className="card-row">
+                <b>Agente assegnato:</b> {selected.agenteAssegnato || "—"}
+              </div>
+
+              <div className="card-actions">
+                <Button className="red" onClick={() => setSelected(null)}>
+                  Chiudi
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Statistiche mensili */}

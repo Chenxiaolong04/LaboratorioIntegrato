@@ -96,7 +96,6 @@ export async function getAdminDashboard(
 
 // --- CONTRATTI CONCLUSI REQUEST --- //
 export type ContrattoChiuso = {
-  id: number;
   numeroContratto: string;
   dataInizio: string;
   dataFine: string;
@@ -120,5 +119,131 @@ export async function getContrattiChiusi(
   return apiFetch<ContrattiResponse>(
     `/admin/contratti/chiusi?offset=${offset}&limit=${limit}`,
     { method: "GET" }
+  );
+}
+
+// --- VALUTAZIONI AI REQUEST --- //
+export interface ValutazioneAI {
+  id: number;
+  prezzoAI: number | null;
+  dataValutazione: string;
+  descrizione: string | null;
+
+  // Immobile
+  tipo: string | null;
+  via: string | null;
+  citta: string | null;
+  cap: string | null;
+  provincia: string | null;
+  metratura: number | null;
+  condizioni: string | null;
+  stanze: number | null;
+  bagni: number | null;
+  piano: number | null;
+  ascensore: boolean | null;
+  garage: boolean | null;
+  giardino: boolean | null;
+  balcone: boolean | null;
+  terrazzo: boolean | null;
+  cantina: boolean | null;
+  riscaldamento: string | null;
+
+  // Proprietario
+  nomeProprietario: string | null;
+  emailProprietario: string | null;
+  telefonoProprietario: string | null;
+
+  dataInserimento: string | null;
+}
+
+export interface ValutazioniAIResponse {
+  valutazioni: ValutazioneAI[];
+  nextOffset: number;
+  hasMore: boolean;
+  pageSize: number;
+}
+
+export async function getValutazioniSoloAI(
+  offset = 0,
+  limit = 10
+): Promise<ValutazioniAIResponse> {
+  return apiFetch(
+    `/admin/valutazioni/solo-ai?offset=${offset}&limit=${limit}`,
+    { method: "GET" }
+  );
+}
+
+export async function deleteValutazioneAI(id: number) {
+  return apiFetch(`/admin/valutazioni/solo-ai/${id}`, {
+    method: "DELETE",
+  });
+}
+
+// --- INCARICHI REQUEST --- //
+export interface Incarichi {
+  id: number;
+  prezzoAI: number | null;
+  prezzoUmano: number | null;
+  dataValutazione: string;
+  statoValutazione: string | null;
+  descrizione: string | null;
+
+  // Agente
+  nomeAgente: string | null;
+  emailAgente: string | null;
+
+  // Immobile
+  tipo: string | null;
+  via: string | null;
+  citta: string | null;
+  cap: string | null;
+  provincia: string | null;
+  metratura: number | null;
+  condizioni: string | null;
+  stanze: number | null;
+  bagni: number | null;
+  piano: number | null;
+  ascensore: boolean | null;
+  garage: boolean | null;
+  giardino: boolean | null;
+  balcone: boolean | null;
+  terrazzo: boolean | null;
+  cantina: boolean | null;
+  riscaldamento: string | null;
+
+  // Proprietario
+  nomeProprietario: string | null;
+  emailProprietario: string | null;
+  telefonoProprietario: string | null;
+
+  // Immobile extra
+  dataInserimento: string | null;
+}
+
+export interface incarichiResponse {
+  valutazioni: Incarichi[];
+  nextOffset: number;
+  hasMore: boolean;
+  pageSize: number;
+}
+
+export async function getIncarichi(
+  offset = 0,
+  limit = 10
+): Promise<incarichiResponse> {
+  return apiFetch<incarichiResponse>(
+    `/admin/valutazioni/in-verifica?offset=${offset}&limit=${limit}`,
+    {
+      method: "GET",
+    }
+  );
+}
+
+export async function deleteIncarichi(id: number) {
+  return apiFetch<{ success: boolean; message: string }>(
+    `/admin/valutazioni/in-verifica/${id}`,
+    {
+      method: "DELETE",
+    }
   );
 }

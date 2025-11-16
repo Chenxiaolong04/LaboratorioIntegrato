@@ -1,70 +1,52 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SearchBar from "../../components/SearchBar";
 import Button from "../../components/Button";
 import { FaX } from "react-icons/fa6";
 import { MdPersonAdd } from "react-icons/md";
-
-const data = [
-  {
-    proprietario: "Giovanni Esposito",
-    data: "08/11/2025 - 16:40:02",
-    prezzoAI: "400.000 €",
-    indirizzo: "Via Jacopo Durandi 8",
-    tipologia: "Appartamento",
-  },
-  {
-    proprietario: "Carla Rossi",
-    data: "07/11/2025 - 14:20:01",
-    prezzoAI: "400.000 €",
-    indirizzo: "Via Jacopo Durandi 8",
-    tipologia: "Appartamento",
-  },
-  {
-    proprietario: "Anna Verdi",
-    data: "06/11/2025 - 09:10:12",
-    prezzoAI: "400.000 €",
-    indirizzo: "Via Jacopo Durandi 8",
-    tipologia: "Appartamento",
-  },
-  {
-    proprietario: "Anna Verdi",
-    data: "06/11/2025 - 09:10:12",
-    prezzoAI: "400.000 €",
-    indirizzo: "Via Jacopo Durandi 8",
-    tipologia: "Appartamento",
-  },
-  {
-    proprietario: "Anna Verdi",
-    data: "06/11/2025 - 09:10:12",
-    prezzoAI: "400.000 €",
-    indirizzo: "Via Jacopo Durandi 8",
-    tipologia: "Appartamento",
-  },
-  {
-    proprietario: "Giovanni Esposito",
-    data: "08/11/2025 - 16:40:02",
-    prezzoAI: "400.000 €",
-    indirizzo: "Via Jacopo Durandi 8",
-    tipologia: "Appartamento",
-  },
-  {
-    proprietario: "Carla Rossi",
-    data: "07/11/2025 - 14:20:01",
-    prezzoAI: "400.000 €",
-    indirizzo: "Via Jacopo Durandi 8",
-    tipologia: "Appartamento",
-  },
-  {
-    proprietario: "Anna Verdi",
-    data: "06/11/2025 - 09:10:12",
-    prezzoAI: "400.000 €",
-    indirizzo: "Via Jacopo Durandi 8",
-    tipologia: "Appartamento",
-  },
-];
+import {
+  getValutazioniSoloAI,
+  deleteValutazioneAI,
+  type ValutazioneAI,
+} from "../../services/api";
 
 export default function EvaluationsAI() {
+  const [valutazioni, setValutazioni] = useState<ValutazioneAI[]>([]);
+  const [selected, setSelected] = useState<ValutazioneAI | null>(null);
+
   const [searchQuery, setSearchQuery] = useState("");
+  const [offset, setOffset] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      const res = await getValutazioniSoloAI(0, 10);
+      setValutazioni(res.valutazioni);
+      setOffset(res.nextOffset);
+      setHasMore(res.hasMore);
+    })();
+  }, []);
+
+  async function loadMore() {
+    const res = await getValutazioniSoloAI(offset, 10);
+    setValutazioni((prev) => [...prev, ...res.valutazioni]);
+    setOffset(res.nextOffset);
+    setHasMore(res.hasMore);
+  }
+
+  async function handleDelete(id: number) {
+    if (!confirm("Vuoi davvero eliminare questa valutazione?")) return;
+
+    await deleteValutazioneAI(id);
+
+    setValutazioni((prev) => prev.filter((v) => v.id !== id));
+  }
+
+  console.log({ valutazioni });
+
+  const filtered = valutazioni.filter((v) =>
+    (v.nomeProprietario ?? "").toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div className="dashboard-container">
       <div className="table-container">
@@ -89,37 +71,142 @@ export default function EvaluationsAI() {
                 <th>Azioni</th>
               </tr>
             </thead>
+
             <tbody>
-              {data
-                .filter((row) =>
-                  row.proprietario
-                    .toLowerCase()
-                    .includes(searchQuery.toLowerCase())
-                )
-                .map((row, i) => (
-                  <tr key={i}>
-                    <td>{row.proprietario}</td>
-                    <td>{row.data}</td>
-                    <td>{row.prezzoAI}</td>
-                    <td>{row.indirizzo}</td>
-                    <td>{row.tipologia}</td>
-                    <td>
-                      <div className="action-buttons">
-                        <Button className="lightblu" title="Maggiori dettagli sulla valutazione">Dettagli</Button>
-                        <Button className="blu" title="Assegna agente immobiliare"><MdPersonAdd size={28} color={'white'}/></Button>
-                        <Button className="red" title="Elimina valutazione"><FaX /></Button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+              {filtered.map((row) => (
+                <tr key={row.id}>
+                  <td>{row.nomeProprietario || "—"}</td>
+                  <td>{row.dataValutazione?.split("T")[0]}</td>
+                  <td>{row.prezzoAI ? row.prezzoAI + " €" : "—"}</td>
+                  <td>{row.via ? `${row.via}, ${row.citta}` : "—"}</td>
+                  <td>{row.tipo || "—"}</td>
+
+                  <td>
+                    <div className="action-buttons">
+                      <Button
+                        className="lightblu"
+                        onClick={() => setSelected(row)}
+                      >
+                        Dettagli
+                      </Button>
+
+                      <Button
+                        className="blu"
+                        title="Assegna agente immobiliare"
+                      >
+                        <MdPersonAdd size={28} color={"white"} />
+                      </Button>
+
+                      <Button
+                        className="red"
+                        title="Elimina valutazione"
+                        onClick={() => handleDelete(row.id)}
+                      >
+                        <FaX />
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
 
-        <div className="btn-table">
-          <Button>Mostra altre valutazioni</Button>
+        <div className="evaluations-cards">
+          {filtered.map((row) => (
+            <div className="evaluation-card" key={row.id}>
+              <div className="card-row">
+                <b>Nome:</b> {row.nomeProprietario || "—"}
+              </div>
+              <div className="card-row">
+                <b>Data:</b> {row.dataValutazione?.split("T")[0]}
+              </div>
+              <div className="card-row">
+                <b>Prezzo AI:</b> {row.prezzoAI ? row.prezzoAI + " €" : "—"}
+              </div>
+              <div className="card-row">
+                <b>Indirizzo:</b> {row.via ? `${row.via}, ${row.citta}` : "—"}
+              </div>
+              <div className="card-row">
+                <b>Tipologia:</b> {row.tipo || "—"}
+              </div>
+
+              <div className="card-actions">
+                <Button className="lightblu" onClick={() => setSelected(row)}>
+                  Dettagli
+                </Button>
+
+                <Button className="blu">
+                  <MdPersonAdd size={24} color="white" />
+                </Button>
+
+                <Button className="red" onClick={() => handleDelete(row.id)}>
+                  <FaX />
+                </Button>
+              </div>
+            </div>
+          ))}
         </div>
+
+        {hasMore && (
+          <div className="btn-table">
+            <Button onClick={loadMore}>Mostra altre valutazioni</Button>
+          </div>
+        )}
       </div>
+
+      {selected && (
+        <div className="modal-overlay" onClick={() => setSelected(null)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <h3>Dettagli Valutazione</h3>
+
+            <p>
+              <b>ID:</b> {selected.id}
+            </p>
+            <p>
+              <b>Descrizione:</b> {selected.descrizione}
+            </p>
+            <p>
+              <b>Prezzo AI:</b> {selected.prezzoAI} €
+            </p>
+
+            <h4>Dati immobile</h4>
+            <p>
+              <b>Tipo:</b> {selected.tipo}
+            </p>
+            <p>
+              <b>Indirizzo:</b> {selected.via}, {selected.citta}
+            </p>
+            <p>
+              <b>Metratura:</b> {selected.metratura} m²
+            </p>
+            <p>
+              <b>Stanze:</b> {selected.stanze}
+            </p>
+            <p>
+              <b>Bagni:</b> {selected.bagni}
+            </p>
+            <p>
+              <b>Piano:</b> {selected.piano}
+            </p>
+
+            <h4>Proprietario</h4>
+            <p>
+              <b>Nome:</b> {selected.nomeProprietario}
+            </p>
+            <p>
+              <b>Email:</b> {selected.emailProprietario}
+            </p>
+            <p>
+              <b>Telefono:</b> {selected.telefonoProprietario}
+            </p>
+
+            <Button className="red" onClick={() => setSelected(null)}>
+              Chiudi
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

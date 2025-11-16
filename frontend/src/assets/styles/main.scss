@@ -53,9 +53,13 @@ body {
   font-family: "Sora", sans-serif;
 }
 
+main {
+  padding-top: 86px;
+}
+
 section,
 header,
-.navbar,
+.navbar-container,
 footer {
   padding: 1rem;
   width: 100%;
