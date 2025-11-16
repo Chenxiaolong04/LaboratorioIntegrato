@@ -20,19 +20,19 @@ export default function NavbarPublic() {
 
   return (
     <nav className="navbar">
-      <Link to={'/'}><img src={logo} alt="logo" /></Link>
+      <Link to={'/'}><img src={logo} alt="Logo Immobiliaris" title="Logo Immobiliaris" /></Link>
 
       {/* Links desktop */}
       <div className="links-desktop-navbar">
         <ul>
           <li>
-            <a href="#">Home</a>
+            <a href="#" title="Vai alla homepage" >Home</a>
           </li>
           <li>
-            <a href="#">Chi siamo</a>
+            <a href="#" title="Scopri chi siamo" >Chi siamo</a>
           </li>
           <li>
-            <a href="#">Contatti</a>
+            <a href="#" title="Contattaci" >Contatti</a>
           </li>
           <li>
             <Button className="btn-cta-navbar lightblu">
@@ -56,17 +56,17 @@ export default function NavbarPublic() {
       <div className={`menu-overlay ${menuOpen ? "active" : ""}`}>
         <ul>
           <li>
-            <a href="#" onClick={handleLinkClick}>
+            <a href="#" title="Vai alla homepage" onClick={handleLinkClick}>
               Home
             </a>
           </li>
           <li>
-            <a href="#" onClick={handleLinkClick}>
+            <a href="#" title="Scopri chi siamo" onClick={handleLinkClick}>
               Chi siamo
             </a>
           </li>
           <li>
-            <a href="#" onClick={handleLinkClick}>
+            <a href="#" title="Contattaci" onClick={handleLinkClick}>
               Contatti
             </a>
           </li>

@@ -27,7 +27,7 @@ export default function Steps() {
               </p>
             </div>
           </div>
-          <img src={Step1Image} alt="" />
+          <img src={Step1Image} alt="Step 1 del processo" title="Step 1 – Immobiliaris" />
         </div>
         <div className="step">
           <div className="step-container">
@@ -45,7 +45,7 @@ export default function Steps() {
               </p>
             </div>
           </div>
-          <img src={Step1Image} alt="" />
+          <img src={Step1Image} alt="Step 2 del processo" title="Step 2 – Immobiliaris" />
         </div>
         <div className="step">
           <div className="step-container">
@@ -62,7 +62,7 @@ export default function Steps() {
               </p>
             </div>
           </div>
-          <img src={Step1Image} alt="" />
+          <img src={Step1Image} alt="Step 3 del processo" title="Step 3 – Immobiliaris" />
         </div>
       </div>
       
