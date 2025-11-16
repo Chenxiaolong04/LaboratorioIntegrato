@@ -551,26 +551,31 @@ Modifica i campi di una valutazione in verifica e dell'immobile collegato per ID
 
 ---
 
-### GET `/api/agent/dashboard`
-**Richiede:** `ROLE_AGENT`
+### PUT `/api/admin/valutazioni/solo-ai/{id}/assegna-agente`
+**Richiede:** `ROLE_ADMIN`
+
+Assegna un agente (già presente nel DB) a una valutazione con stato "solo_AI". Quando l'agente viene assegnato, lo stato della valutazione passa automaticamente a "in_verifica".
+
+**Path Parameters:**
+- `id` (required): ID della valutazione AI da aggiornare
+
+**Request Body:**
+```json
+{
+  "idAgente": 123
+}
+```
 
 **Response (200 OK):**
 ```json
 {
-  "statistics": {
-    "contrattiConclusi": 2,
-    "valutazioniInCorso": 1,
-    "valutazioniConAI": 3
-  }
+  "success": true,
+  "message": "Agente assegnato con successo"
 }
 ```
 
-**Statistiche personali dell'agente:**
-**Note:** 
-- Le statistiche dell'agente sono **solo totali**, senza statistiche mensili
-- L'agente vede solo le **proprie statistiche**, non quelle globali
-
-**Response (403):** Se non hai ROLE_AGENT
+**Errori:**
+- `500` - Valutazione non trovata, agente non trovato, oppure la valutazione non è di tipo solo_AI
 
 ---
 
@@ -593,6 +598,7 @@ Modifica i campi di una valutazione in verifica e dell'immobile collegato per ID
 | `/api/agent/dashboard` | GET | ✅ Sì | AGENT | Dashboard agente (statistiche personali) |
 | `/api/mail/send` | POST | ❌ No* | - | Invia email (⚠️ proteggere in prod) |
 | `/api/mail/test` | GET | ❌ No | - | Verifica mail endpoint |
+| `/api/admin/valutazioni/solo-ai/{id}/assegna-agente` | PUT | ✅ Sì | ADMIN | Assegna agente a valutazione AI e cambia stato in_verifica |
 
 ---
 
