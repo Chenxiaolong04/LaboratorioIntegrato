@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { loginUser } from "../../services/api";
+import { loginUser, type LoginResponse } from "../../services/api";
 import { useAuth } from "../../context/AuthContext";
 import Button from "../../components/Button";
 import Input from "../../components/Input";
@@ -23,12 +23,20 @@ export default function Login() {
     const timeout = new Promise((res) => setTimeout(res, 2000));
 
     try {
-      const userData = await loginUser(email, password).catch(() => null);
+      let userData: LoginResponse | null = null;
+
+      try {
+        userData = await loginUser(email, password);
+      } catch {
+        await timeout;
+        setError("Si è verificato un errore del server. Riprova più tardi.");
+        return;
+      }
 
       await timeout;
 
-      if (!userData || !userData.success) {
-        setError(userData?.message || "Credenziali non valide");
+      if (!userData.success) {
+        setError("Email o password non corretti.");
         return;
       }
 

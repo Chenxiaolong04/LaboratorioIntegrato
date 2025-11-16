@@ -54,7 +54,10 @@ export default function NavbarPrivate() {
               <Link to={"/admin"}>Dashboard</Link>
             </li>
             <li>
-              <Link to={"/admin/create-user"}>Crea profilo</Link>
+              <Link to={"/admin/users"}>Gestione Utenti</Link>
+            </li>
+            <li>
+              <Link to={"/admin/create-user"}>Crea utente</Link>
             </li>
             <li>
               <Link to={"/admin/evaluationsAI"}>Valutazioni AI</Link>
@@ -78,19 +81,34 @@ export default function NavbarPrivate() {
         <div className={`menu-overlay ${menuOpen ? "active" : ""}`}>
           <ul>
             <li>
-              <Link to={"/admin"} onClick={handleLinkClick}>Dashboard</Link>
+              <Link to={"/admin"} onClick={handleLinkClick}>
+                Dashboard
+              </Link>
             </li>
             <li>
-              <Link to={"/admin/create-user"} onClick={handleLinkClick}>Crea profilo</Link>
+              <Link to={"/admin/users"} onClick={handleLinkClick}>
+                Gestione Utenti
+              </Link>
             </li>
             <li>
-              <Link to={"/admin/evaluationsAI"} onClick={handleLinkClick}>Valutazioni AI</Link>
+              <Link to={"/admin/create-user"} onClick={handleLinkClick}>
+                Crea profilo
+              </Link>
             </li>
             <li>
-              <Link to={"/admin/assignments"} onClick={handleLinkClick}>Incarichi</Link>
+              <Link to={"/admin/evaluationsAI"} onClick={handleLinkClick}>
+                Valutazioni AI
+              </Link>
             </li>
             <li>
-              <Link to={"/admin/contracts"} onClick={handleLinkClick}>Contratti</Link>
+              <Link to={"/admin/assignments"} onClick={handleLinkClick}>
+                Incarichi
+              </Link>
+            </li>
+            <li>
+              <Link to={"/admin/contracts"} onClick={handleLinkClick}>
+                Contratti
+              </Link>
             </li>
           </ul>
         </div>
@@ -100,7 +118,7 @@ export default function NavbarPrivate() {
               className="icon-btn"
               onClick={() => setNotificationsOpen(!notificationsOpen)}
             >
-              <FaBell size={20} />
+              <FaBell size={20} color="white" />
               {notifications.length > 0 && (
                 <span className="badge">{notifications.length}</span>
               )}
@@ -118,7 +136,7 @@ export default function NavbarPrivate() {
               </div>
             )}
           </div>
-            <img src={logo} alt="logo" />
+          <Link to={'/'}><img src={logo} alt="logo" /></Link>
         </div>
       </div>
     </nav>

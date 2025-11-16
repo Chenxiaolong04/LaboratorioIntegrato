@@ -49,8 +49,6 @@ export default function AssignmentsAdmin() {
     setIncarichi((prev) => prev.filter((v) => v.id !== id));
   }
 
-  console.log(incarichi);
-
   const filteredIncarichi = incarichi.filter((c) =>
     (c.nomeProprietario || "").toLowerCase().includes(searchQuery.toLowerCase())
   );

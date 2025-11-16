@@ -12,6 +12,7 @@ import AdminHome from "./pages/private/adminPages/AdminHome";
 import AssignmentsAdmin from "./pages/private/adminPages/AssignmentsAdmin";
 import EvaluationsAI from "./pages/private/EvaluationsAI";
 import ContractsAdmin from "./pages/private/adminPages/ContractsAdmin";
+import Users from "./pages/private/adminPages/Users";
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
           }
         >
           <Route index element={<AdminHome />} />
+          <Route path="users" element={<Users />} />
           <Route path="create-user" element={<CreateUser />} />
           <Route path="contracts" element={<ContractsAdmin />} />
           <Route path="assignments" element={<AssignmentsAdmin />} />

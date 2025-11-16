@@ -94,6 +94,57 @@ export async function getAdminDashboard(
   );
 }
 
+// --- USERS REQUEST --- //
+export type TipoUtente = {
+  idTipo: number;
+  nomeTipo: string;
+};
+
+export type Users = {
+  idUtente: number;
+  nome: string;
+  cognome: string;
+  email: string;
+  telefono: string;
+  via: string;
+  citta: string;
+  cap: string;
+  dataRegistrazione: string;
+  tipoUtente: TipoUtente;
+};
+
+export async function getUsers(): Promise<Users[]> {
+  return apiFetch<Users[]>(`/admin/users`, { method: "GET" });
+}
+
+// --- REGISTER USER REQUEST --- //
+export type RegisterUserRequest = {
+  nome: string;
+  cognome: string;
+  email: string;
+  password: string;
+  tipoUtente: TipoUtente;
+};
+
+export async function registerUser(
+  nome: string,
+  cognome: string,
+  email: string,
+  password: string,
+  tipoUtente: TipoUtente
+): Promise<RegisterUserRequest[]> {
+  return apiFetch<RegisterUserRequest[]>(`/admin/user-register`, {
+    method: "POST",
+    body: {
+      nome,
+      cognome,
+      email,
+      password,
+      tipoUtente,
+    },
+  });
+}
+
 // --- CONTRATTI CONCLUSI REQUEST --- //
 export type ContrattoChiuso = {
   numeroContratto: string;
