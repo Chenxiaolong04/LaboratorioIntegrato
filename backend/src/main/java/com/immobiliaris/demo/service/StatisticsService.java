@@ -1,6 +1,7 @@
 package com.immobiliaris.demo.service;
 
 import com.immobiliaris.demo.entity.Immobile;
+import com.immobiliaris.demo.entity.StatoValutazione;
 import com.immobiliaris.demo.entity.Valutazione;
 import com.immobiliaris.demo.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -609,7 +610,7 @@ public class StatisticsService {
     /**
      * Assegna un agente a una valutazione solo_AI e cambia lo stato in "in_verifica"
      */
-    public void assegnaAgenteValutazioneAI(Integer idValutazione, Integer idAgente) {
+    public void assegnaAgenteValutazioneAI(Integer idValutazione, Long idAgente) {
         Valutazione valutazione = valutazioneRepository.findById(idValutazione)
             .orElseThrow(() -> new RuntimeException("Valutazione non trovata"));
         if (!"solo_AI".equalsIgnoreCase(valutazione.getStatoValutazione().getNome())) {

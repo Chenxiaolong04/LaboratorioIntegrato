@@ -62,7 +62,244 @@ Verifica se l'utente è autenticato
 
 ---
 
-### GET `/api/auth/user`
+### POST `/api/users/register`
+Registrazione nuovo utente (Solo Admin) ⚠️ **MODIFICATO**
+
+**Implementato da:** Simone
+
+**Richiede:** `ROLE_ADMIN` ⚠️ **NUOVO**
+
+**Request:**
+```json
+{
+  "nome": "Mario",
+  "cognome": "Rossi",
+  "email": "mario.rossi@example.com",
+  "password": "Password123!",
+  "tipoUtente": {
+    "idTipo": 1,
+    "nomeTipo": "Admin"
+  }
+}
+```
+
+**Parameters:**
+- `nome` (required): Nome dell'utente
+- `cognome` (required): Cognome dell'utente
+- `email` (required, unique): Email dell'utente
+- `password` (required): Password (verrà hashata con BCrypt)
+- `tipoUtente` (required) ⚠️ **MODIFICATO**: Oggetto con dati tipo utente nel body JSON
+  - `idTipo` (required): ID del tipo utente
+    - `1` = ADMIN
+    - `2` = AGENT
+  - `nomeTipo` (optional): Nome del tipo utente
+
+**Response (200 OK):**
+```json
+{
+  "idUtente": 5,
+  "nome": "Mario",
+  "cognome": "Rossi",
+  "email": "mario.rossi@example.com",
+  "dataRegistrazione": "2025-11-11",
+  "tipoUtente": {
+    "idTipo": 1,
+    "nomeTipo": "Admin"
+  }
+}
+```
+
+**Response (400 Bad Request):**
+```json
+{
+  "success": false,
+  "message": "Email già registrata"
+}
+```
+
+**Response (403 Forbidden):** ⚠️ **NUOVO**
+```json
+{
+  "success": false,
+  "message": "Accesso negato. Solo l'amministratore può registrare nuovi utenti."
+}
+```
+
+**Response (500 Server Error):**
+```json
+{
+  "success": false,
+  "message": "Tipo utente non trovato"
+}
+```
+
+**Note:**
+- ⚠️ **MODIFICATO**: Solo utenti con `ROLE_ADMIN` possono accedere a questo endpoint
+- ⚠️ **MODIFICATO**: Il `tipoUtente` viene passato nel **body JSON** (non nell'URL come prima)
+- ⚠️ **MODIFICATO**: Gli agenti non possono più creare nuovi utenti
+- ✅ La password viene automaticamente hashata con BCrypt
+- ✅ La data di registrazione viene impostata automaticamente
+- ✅ L'email deve essere unica nel sistema
+
+---
+
+### GET `/api/users`
+Ottieni lista di tutti gli utenti
+
+**Implementato da:** Simone
+
+**Richiede:** `ROLE_ADMIN`
+
+**Response (200 OK):**
+```json
+[
+  {
+    "idUtente": 1,
+    "nome": "Admin",
+    "cognome": "Test",
+    "email": "admin@test.com",
+    "telefono": "3201234567",
+    "via": "Via Roma 1",
+    "citta": "Milano",
+    "cap": "20100",
+    "dataRegistrazione": "2025-11-01",
+    "tipoUtente": {
+      "idTipo": 1,
+      "nomeTipo": "Admin"
+    }
+  },
+  {
+    "idUtente": 2,
+    "nome": "Agent",
+    "cognome": "Verdi",
+    "email": "agent@test.com",
+    "telefono": "3209876543",
+    "via": "Via Milano 2",
+    "citta": "Roma",
+    "cap": "00100",
+    "dataRegistrazione": "2025-11-02",
+    "tipoUtente": {
+      "idTipo": 2,
+      "nomeTipo": "Agent"
+    }
+  }
+]
+```
+
+**Response (403):** Se non hai ROLE_ADMIN
+
+---
+
+### GET `/api/users/{id}`
+Ottieni dettagli di un utente specifico
+
+**Implementato da:** Simone
+
+**Richiede:** `ROLE_ADMIN`
+
+**Path Parameters:**
+- `id` (required): ID dell'utente
+
+**Response (200 OK):**
+```json
+{
+  "idUtente": 1,
+  "nome": "Admin",
+  "cognome": "Test",
+  "email": "admin@test.com",
+  "telefono": "3201234567",
+  "via": "Via Roma 1",
+  "citta": "Milano",
+  "cap": "20100",
+  "dataRegistrazione": "2025-11-01",
+  "tipoUtente": {
+    "idTipo": 1,
+    "nomeTipo": "Admin"
+  }
+}
+```
+
+**Response (404 Not Found):**
+```json
+{
+  "message": "Utente non trovato"
+}
+```
+
+**Response (403):** Se non hai ROLE_ADMIN
+
+---
+
+### PUT `/api/users/{id}`
+Aggiorna dati di un utente
+
+**Implementato da:** Simone
+
+**Richiede:** `ROLE_ADMIN`
+
+**Path Parameters:**
+- `id` (required): ID dell'utente da aggiornare
+
+**Request:**
+```json
+{
+  "nome": "Mario",
+  "cognome": "Bianchi",
+  "email": "mario.bianchi@example.com",
+  "password": "NewPassword123!",
+  "telefono": "3305555555",
+  "via": "Via Napoli 10",
+  "citta": "Napoli",
+  "cap": "80100",
+  "tipoUtente": {
+    "idTipo": 2,
+    "nomeTipo": "Agent"
+  }
+}
+```
+
+**Parameters:**
+- `nome` (optional): Nuovo nome
+- `cognome` (optional): Nuovo cognome
+- `email` (optional): Nuova email
+- `password` (optional): Nuova password (verrà hashata)
+- `telefono` (optional): Nuovo numero di telefono
+- `via` (optional): Nuovo indirizzo
+- `citta` (optional): Nuova città
+- `cap` (optional): Nuovo CAP
+- `tipoUtente` (optional): Nuovo tipo utente
+
+**Response (200 OK):**
+```json
+{
+  "idUtente": 1,
+  "nome": "Mario",
+  "cognome": "Bianchi",
+  "email": "mario.bianchi@example.com",
+  "telefono": "3305555555",
+  "via": "Via Napoli 10",
+  "citta": "Napoli",
+  "cap": "80100",
+  "dataRegistrazione": "2025-11-01",
+  "tipoUtente": {
+    "idTipo": 2,
+    "nomeTipo": "Agent"
+  }
+}
+```
+
+**Response (404 Not Found):**
+```json
+{
+  "message": "Utente non trovato"
+}
+```
+
+**Response (403):** Se non hai ROLE_ADMIN
+
+**Note:**
+- Se la password non viene fornita, rimane invariata
+- Solo i campi forniti vengono aggiornati
 Ottieni informazioni utente loggato
 
 **Response (200 OK):**

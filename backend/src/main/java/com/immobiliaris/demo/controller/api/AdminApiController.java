@@ -174,7 +174,8 @@ public class AdminApiController {
             @PathVariable Integer id,
             @RequestBody Map<String, Object> body) {
         try {
-            Integer idAgente = (Integer) body.get("idAgente");
+            // Converti il valore JSON (che può essere Integer) in Long
+            Long idAgente = ((Number) body.get("idAgente")).longValue();
             statisticsService.assegnaAgenteValutazioneAI(id, idAgente);
             return ResponseEntity.ok(Map.of("success", true, "message", "Agente assegnato con successo"));
         } catch (Exception e) {
