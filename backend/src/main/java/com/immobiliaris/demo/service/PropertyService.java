@@ -1,6 +1,7 @@
 package com.immobiliaris.demo.service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
@@ -25,7 +26,9 @@ public class PropertyService {
         p.setProvince(request.getProvince());
         p.setType(request.getType());
         p.setSquareMeters(request.getSquareMeters());
+        p.setStreet(request.getStreet());
         p.setRooms(request.getRooms());
+        p.setBathrooms(request.getBathrooms());
         p.setFloor(request.getFloor());
         p.setElevator(request.getElevator());
         p.setGarage(request.getGarage());
@@ -34,6 +37,10 @@ public class PropertyService {
         p.setPrice(null);
 
         return repository.save(p);
+    }
+
+    public List<Property> getAllProperties() {
+        return repository.findAll();
     }
 
 }
