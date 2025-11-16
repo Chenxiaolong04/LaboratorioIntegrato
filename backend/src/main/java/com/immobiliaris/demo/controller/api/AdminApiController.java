@@ -146,4 +146,21 @@ public class AdminApiController {
             return ResponseEntity.status(500).body(Map.of("success", false, "message", "Errore eliminazione valutazione: " + e.getMessage()));
         }
     }
+
+    /**
+     * Modifica una valutazione in verifica per ID
+     * Esempio: PUT /api/admin/valutazioni/in-verifica/7
+     */
+    @PutMapping("/valutazioni/in-verifica/{id}")
+    public ResponseEntity<Object> updateValutazioneInVerifica(
+            @PathVariable Integer id,
+            @RequestBody Map<String, Object> updates) {
+        try {
+            statisticsService.updateValutazione(id, updates);
+            return ResponseEntity.ok(Map.of("success", true, "message", "Valutazione aggiornata con successo"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(Map.of("success", false, "message", "Errore aggiornamento valutazione: " + e.getMessage()));
+        }
+    }
 }

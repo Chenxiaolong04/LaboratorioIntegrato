@@ -27,6 +27,9 @@ public class StatisticsService {
 
     @Autowired
     private ImmobileJpaRepository immobileRepository;
+    
+    @Autowired
+    private ImmobileJpaRepository immobileJpaRepository;
 
     @Autowired
     private UtenteRepository utenteRepository;
@@ -486,5 +489,111 @@ public class StatisticsService {
      */
     public void deleteValutazione(Integer id) {
         valutazioneRepository.deleteById(id);
+    }
+
+    /**
+     * Aggiorna i campi di una valutazione e dell'immobile collegato
+     */
+    public void updateValutazione(Integer id, Map<String, Object> updates) {
+        Valutazione valutazione = valutazioneRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Valutazione non trovata"));
+        
+        Immobile immobile = valutazione.getImmobile();
+        boolean immobileModificato = false;
+        
+        // Aggiorna campi della valutazione
+        if (updates.containsKey("prezzoAI")) {
+            valutazione.setPrezzoAI((Integer) updates.get("prezzoAI"));
+        }
+        if (updates.containsKey("prezzoUmano")) {
+            valutazione.setPrezzoUmano((Integer) updates.get("prezzoUmano"));
+        }
+        if (updates.containsKey("dataValutazione")) {
+            String dataStr = (String) updates.get("dataValutazione");
+            valutazione.setDataValutazione(LocalDate.parse(dataStr));
+        }
+        if (updates.containsKey("descrizione")) {
+            valutazione.setDescrizione((String) updates.get("descrizione"));
+        }
+        
+        // Aggiorna campi dell'immobile
+        if (updates.containsKey("tipo")) {
+            immobile.setTipologia((String) updates.get("tipo"));
+            immobileModificato = true;
+        }
+        if (updates.containsKey("via")) {
+            immobile.setVia((String) updates.get("via"));
+            immobileModificato = true;
+        }
+        if (updates.containsKey("citta")) {
+            immobile.setCitta((String) updates.get("citta"));
+            immobileModificato = true;
+        }
+        if (updates.containsKey("cap")) {
+            immobile.setCap((String) updates.get("cap"));
+            immobileModificato = true;
+        }
+        if (updates.containsKey("provincia")) {
+            immobile.setProvincia((String) updates.get("provincia"));
+            immobileModificato = true;
+        }
+        if (updates.containsKey("metratura")) {
+            immobile.setMetratura((Integer) updates.get("metratura"));
+            immobileModificato = true;
+        }
+        if (updates.containsKey("condizioni")) {
+            immobile.setCondizioni((String) updates.get("condizioni"));
+            immobileModificato = true;
+        }
+        if (updates.containsKey("stanze")) {
+            immobile.setStanze((Integer) updates.get("stanze"));
+            immobileModificato = true;
+        }
+        if (updates.containsKey("bagni")) {
+            immobile.setBagni((Integer) updates.get("bagni"));
+            immobileModificato = true;
+        }
+        if (updates.containsKey("piano")) {
+            immobile.setPiano((Integer) updates.get("piano"));
+            immobileModificato = true;
+        }
+        if (updates.containsKey("ascensore")) {
+            immobile.setAscensore((Boolean) updates.get("ascensore"));
+            immobileModificato = true;
+        }
+        if (updates.containsKey("garage")) {
+            immobile.setGarage((Boolean) updates.get("garage"));
+            immobileModificato = true;
+        }
+        if (updates.containsKey("giardino")) {
+            immobile.setGiardino((Boolean) updates.get("giardino"));
+            immobileModificato = true;
+        }
+        if (updates.containsKey("balcone")) {
+            immobile.setBalcone((Boolean) updates.get("balcone"));
+            immobileModificato = true;
+        }
+        if (updates.containsKey("terrazzo")) {
+            immobile.setTerrazzo((Boolean) updates.get("terrazzo"));
+            immobileModificato = true;
+        }
+        if (updates.containsKey("cantina")) {
+            immobile.setCantina((Boolean) updates.get("cantina"));
+            immobileModificato = true;
+        }
+        if (updates.containsKey("riscaldamento")) {
+            immobile.setRiscaldamento((String) updates.get("riscaldamento"));
+            immobileModificato = true;
+        }
+        if (updates.containsKey("descrizioneImmobile")) {
+            immobile.setDescrizione((String) updates.get("descrizioneImmobile"));
+            immobileModificato = true;
+        }
+        
+        // Salva le modifiche
+        if (immobileModificato) {
+            immobileJpaRepository.save(immobile);
+        }
+        valutazioneRepository.save(valutazione);
     }
 }

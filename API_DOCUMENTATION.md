@@ -477,6 +477,80 @@ Elimina una valutazione in verifica per ID riga per riga dall'elenco.
 
 ---
 
+### PUT `/api/admin/valutazioni/in-verifica/{id}`
+**Richiede:** `ROLE_ADMIN`
+
+Modifica i campi di una valutazione in verifica e dell'immobile collegato per ID.
+
+**Path Parameters:**
+- `id` (required): ID della valutazione da modificare
+
+**Request Body:**
+```json
+{
+  "prezzoAI": 220000,
+  "prezzoUmano": 225000,
+  "dataValutazione": "2024-01-15",
+  "descrizione": "Valutazione aggiornata dall'admin",
+  "tipo": "Appartamento",
+  "via": "Via Roma 123",
+  "citta": "Milano",
+  "cap": "20100",
+  "provincia": "MI",
+  "metratura": 85,
+  "condizioni": "Buone",
+  "stanze": 3,
+  "bagni": 2,
+  "piano": 2,
+  "ascensore": true,
+  "garage": true,
+  "giardino": false,
+  "balcone": true,
+  "terrazzo": false,
+  "cantina": true,
+  "riscaldamento": "Autonomo",
+  "descrizioneImmobile": "Appartamento ristrutturato"
+}
+```
+
+**Campi modificabili della valutazione:**
+- `prezzoAI` (opzionale): Nuovo prezzo AI
+- `prezzoUmano` (opzionale): Nuovo prezzo umano
+- `dataValutazione` (opzionale): Nuova data valutazione (formato ISO: YYYY-MM-DD)
+- `descrizione` (opzionale): Nuova descrizione valutazione
+
+**Campi modificabili dell'immobile:**
+- `tipo` (opzionale): Tipologia immobile
+- `via` (opzionale): Indirizzo
+- `citta` (opzionale): Città
+- `cap` (opzionale): CAP
+- `provincia` (opzionale): Provincia (sigla)
+- `metratura` (opzionale): Superficie in mq
+- `condizioni` (opzionale): Stato di conservazione
+- `stanze` (opzionale): Numero stanze
+- `bagni` (opzionale): Numero bagni
+- `piano` (opzionale): Piano
+- `ascensore` (opzionale): Presenza ascensore (boolean)
+- `garage` (opzionale): Presenza garage (boolean)
+- `giardino` (opzionale): Presenza giardino (boolean)
+- `balcone` (opzionale): Presenza balcone (boolean)
+- `terrazzo` (opzionale): Presenza terrazzo (boolean)
+- `cantina` (opzionale): Presenza cantina (boolean)
+- `riscaldamento` (opzionale): Tipo di riscaldamento
+- `descrizioneImmobile` (opzionale): Descrizione immobile
+
+**Response (200 OK):**
+```json
+{
+  "success": true,
+  "message": "Valutazione aggiornata con successo"
+}
+```
+
+**Response (403):** Se non hai ROLE_ADMIN
+
+---
+
 ### GET `/api/agent/dashboard`
 **Richiede:** `ROLE_AGENT`
 
@@ -515,6 +589,7 @@ Elimina una valutazione in verifica per ID riga per riga dall'elenco.
 | `/api/admin/valutazioni/solo-ai/{id}` | DELETE | ✅ Sì | ADMIN | Elimina valutazione AI per ID |
 | `/api/admin/valutazioni/in-verifica` | GET | ✅ Sì | ADMIN | Lista valutazioni in verifica con TUTTI i campi (offset/limit load-more) |
 | `/api/admin/valutazioni/in-verifica/{id}` | DELETE | ✅ Sì | ADMIN | Elimina valutazione in verifica per ID |
+| `/api/admin/valutazioni/in-verifica/{id}` | PUT | ✅ Sì | ADMIN | Modifica valutazione e immobile per ID |
 | `/api/agent/dashboard` | GET | ✅ Sì | AGENT | Dashboard agente (statistiche personali) |
 | `/api/mail/send` | POST | ❌ No* | - | Invia email (⚠️ proteggere in prod) |
 | `/api/mail/test` | GET | ❌ No | - | Verifica mail endpoint |
