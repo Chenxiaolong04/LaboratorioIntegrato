@@ -54,9 +54,10 @@ public class SecurityConfig {
 
         http
             .cors(cors -> cors.configurationSource(this.corsConfigurationSource))
-            .csrf(csrf -> csrf.disable())  // Disabilita CSRF per API REST (usa JWT in produzione)
+            .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/", "/api/auth/**", "/api/mail/**", "/login", "/error", "/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
+                .requestMatchers("/api/users/register").hasRole("ADMIN")
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/agent/**").hasRole("AGENT")
                 .requestMatchers("/admin/**").hasRole("ADMIN")
@@ -75,7 +76,7 @@ public class SecurityConfig {
                 .permitAll()
             )
             .exceptionHandling(ex -> ex
-                .accessDeniedPage("/error")  // Reindirizza a /error per 403 Forbidden
+                .accessDeniedPage("/error")
                 .authenticationEntryPoint((request, response, authException) -> {
                     // Non reindirizzare le API REST, ritorna 401
                     String requestUri = request.getRequestURI();
