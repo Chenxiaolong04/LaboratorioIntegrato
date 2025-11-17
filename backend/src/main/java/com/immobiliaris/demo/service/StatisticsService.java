@@ -16,6 +16,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 import com.immobiliaris.demo.entity.Contratto;
+import com.immobiliaris.demo.entity.User;
 
 @Service
 public class StatisticsService {
@@ -34,12 +35,6 @@ public class StatisticsService {
 
     @Autowired
     private UtenteRepository utenteRepository;
-
-    @Autowired
-    private ValutazioneJpaRepository valutazioneJpaRepository;
-
-    @Autowired
-    private ImmobileJpaRepository immobileJpaRepository;
 
     @Autowired
     private StatoValutazioneRepository statoValutazioneRepository;
@@ -384,6 +379,7 @@ public class StatisticsService {
         result.put("nextOffset", offset + limit);
         result.put("hasMore", (offset + limit) < totalValutazioni);
         result.put("pageSize", valutazioniBatch.size());
+        result.put("agents", getAllAgents());
 
         return result;
     }
@@ -602,7 +598,7 @@ public class StatisticsService {
 
         // Salva le modifiche
         if (immobileModificato) {
-            immobileJpaRepository.save(immobile);
+            immobileRepository.save(immobile);
         }
         valutazioneRepository.save(valutazione);
     }
@@ -624,5 +620,21 @@ public class StatisticsService {
             .orElseThrow(() -> new RuntimeException("Stato 'in_verifica' non trovato"));
         valutazione.setStatoValutazione(nuovoStato);
         valutazioneRepository.save(valutazione);
+    }
+
+    /**
+     * Recupera tutti gli agenti dal database
+     * Filtra gli utenti con idTipo = 2 (Agenti)
+     * @return Lista di mappe con nome e cognome concatenati
+     */
+    public List<Map<String, String>> getAllAgents() {
+        return userRepository.findAll().stream()
+                .filter(user -> user.getTipoUtente() != null && user.getTipoUtente().getIdTipo() == 2)
+                .map(user -> {
+                    Map<String, String> agentMap = new LinkedHashMap<>();
+                    agentMap.put("nomeCognome", user.getNome() + " " + user.getCognome());
+                    return agentMap;
+                })
+                .collect(Collectors.toList());
     }
 }

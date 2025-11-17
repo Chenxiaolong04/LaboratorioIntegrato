@@ -34,6 +34,9 @@ public class AdminApiController {
             response.put("hasMore", immobiliLoad.get("hasMore"));
             response.put("pageSize", immobiliLoad.get("pageSize"));
 
+            // Ottieni tutti gli agenti dal database
+            response.put("agents", statisticsService.getAllAgents());
+
         } catch (Exception e) {
             // Se c'è errore, ritorna almeno le info base
             System.err.println("Errore caricamento dashboard: " + e.getMessage());
