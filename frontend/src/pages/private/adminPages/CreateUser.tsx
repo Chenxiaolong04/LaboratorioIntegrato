@@ -1,22 +1,39 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import InputGroup from "../../../components/InputGroup";
 import Button from "../../../components/Button";
+import { registerUser } from "../../../services/api";
+import { FaCheckCircle } from "react-icons/fa";
 
-type UserRole = "admin" | "agente";
+interface UserRole {
+  idTipo: number;
+  nome: string;
+  role: string;
+}
 
 interface CreateUserFormData {
   name: string;
+  surname: string;
   email: string;
   password: string;
-  role: UserRole;
+  telefono: string;
+  tipoUtente: UserRole;
 }
 
 export default function CreateUser() {
+  const [showModal, setShowModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+
   const [formData, setFormData] = useState<CreateUserFormData>({
     name: "",
+    surname: "",
     email: "",
     password: "",
-    role: "agente",
+    telefono: "",
+    tipoUtente: {
+      idTipo: 1,
+      nome: "Admin",
+      role: "ADMIN",
+    },
   });
 
   const handleChange = (
@@ -26,12 +43,43 @@ export default function CreateUser() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // TODO: invia i dati al backend
-    console.log("Dati utente creato:", formData);
-    alert(`Utente "${formData.name}" di tipo "${formData.role}" creato!`);
+    try {
+      await registerUser(
+        formData.name,
+        formData.surname,
+        formData.email,
+        formData.password,
+        formData.telefono,
+        formData.tipoUtente
+      );
+
+      setModalMessage(
+        `L'utente "${formData.name}" è stato creato con successo!`
+      );
+      setShowModal(true);
+
+      // Reset form
+      setFormData({
+        name: "",
+        surname: "",
+        email: "",
+        password: "",
+        telefono: "",
+        tipoUtente: {
+          idTipo: 1,
+          nome: "Admin",
+          role: "ADMIN",
+        },
+      });
+    } catch (error) {
+      console.error("Errore durante la registrazione:", error);
+
+      setModalMessage("Errore durante la creazione dell'utente.");
+      setShowModal(true);
+    }
   };
 
   return (
@@ -48,20 +96,14 @@ export default function CreateUser() {
           placeholder="Inserisci il nome"
         />
 
-        <div className="input-group">
-          <label htmlFor="role">Ruolo</label>
-          <select
-            id="role"
-            name="role"
-            value={formData.role}
-            onChange={handleChange}
-            className="input-form"
-            required
-          >
-            <option value="admin">Admin</option>
-            <option value="agente">Agente Immobiliare</option>
-          </select>
-        </div>
+        <InputGroup
+          label="Cognome"
+          name="surname"
+          value={formData.surname}
+          onChange={handleChange}
+          required={true}
+          placeholder="Inserisci il cognome"
+        />
 
         <InputGroup
           label="Email"
@@ -83,10 +125,61 @@ export default function CreateUser() {
           placeholder="Inserisci la password"
         />
 
+        <InputGroup
+          label="Telefono"
+          name="telefono"
+          type="tel"
+          value={formData.telefono}
+          onChange={handleChange}
+          required={true}
+          placeholder="Inserisci il numero di telefono"
+        />
+
+        <div className="input-group">
+          <label htmlFor="role">Ruolo</label>
+          <select
+            id="role"
+            name="tipoUtente"
+            value={formData.tipoUtente.role}
+            onChange={(e) => {
+              const value = e.target.value;
+
+              setFormData((prev) => ({
+                ...prev,
+                tipoUtente:
+                  value === "ADMIN"
+                    ? { idTipo: 1, nome: "Admin", role: "ADMIN" }
+                    : { idTipo: 2, nome: "Agente Immobiliare", role: "AGENTE" },
+              }));
+            }}
+            className="input-form"
+            required
+          >
+            <option value="ADMIN">Admin</option>
+            <option value="AGENTE">Agente Immobiliare</option>
+          </select>
+        </div>
+
         <Button type="submit" className="blu">
           Crea Utente
         </Button>
       </form>
+
+      {showModal && (
+        <div className="modal-overlay" onClick={() => setShowModal(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <FaCheckCircle size={150} color="#348AA7" />
+            <p>{modalMessage}</p>
+
+            <Button
+              onClick={() => setShowModal(false)}
+              className="modal-btn blu"
+            >
+              Chiudi
+            </Button>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

@@ -1,64 +1,36 @@
 import { useEffect, useState } from "react";
 import SearchBar from "../../../components/SearchBar";
-import { getUsers, type Users } from "../../../services/api";
+import {
+  getUsers,
+  updateUser,
+  type UpdateUserRequest,
+  type Users,
+} from "../../../services/api";
 import Button from "../../../components/Button";
 import { FaX } from "react-icons/fa6";
+import InputGroup from "../../../components/InputGroup";
 
 export default function Users() {
   const [searchQuery, setSearchQuery] = useState("");
-  // const [users, setUsers] = useState<Users[]>([]);
+  const [editingUser, setEditingUser] = useState<Users | null>(null);
+  const [editFormData, setEditFormData] = useState<UpdateUserRequest | null>(
+    null
+  );
+  const [users, setUsers] = useState<Users[]>([]);
   const [selectedUser, setSelectedUser] = useState<Users | null>(null);
 
-  const fakeUsers = [
-    {
-      idUtente: 1,
-      nome: "Admin",
-      cognome: "Test",
-      email: "admin@test.com",
-      telefono: "3201234567",
-      via: "Via Roma 1",
-      citta: "Milano",
-      cap: "20100",
-      dataRegistrazione: "2025-11-01",
-      tipoUtente: {
-        idTipo: 1,
-        nomeTipo: "Admin",
-      },
-    },
-    {
-      idUtente: 2,
-      nome: "Agent",
-      cognome: "Verdi",
-      email: "agent@test.com",
-      telefono: "3209876543",
-      via: "Via Milano 2",
-      citta: "Roma",
-      cap: "00100",
-      dataRegistrazione: "2025-11-02",
-      tipoUtente: {
-        idTipo: 2,
-        nomeTipo: "Agent",
-      },
-    },
-  ];
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await getUsers();
+        setUsers(res);
+      } catch (err) {
+        console.error("Errore caricamento utenti:", err);
+      }
+    })();
+  }, []);
 
-  // useEffect(() => {
-  //   (async () => {
-  //     try {
-  //       const res = await getUsers();
-  //       setUsers(res);
-  //     } catch (err) {
-  //       console.error("Errore caricamento utenti:", err);
-  //     }
-  //   })();
-  // }, []);
-
-  // const filteredUsers = users.filter((u) =>
-  //   (u.nome + " " + u.cognome).toLowerCase().includes(searchQuery.toLowerCase())
-  // );
-
-  // MOMENTO USO I DATI FINTI PERCHÉ IL BACKEND NON È PRONTO
-  const filteredUsers = fakeUsers.filter((u) =>
+  const filteredUsers = users.filter((u) =>
     (u.nome + " " + u.cognome).toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -93,7 +65,7 @@ export default function Users() {
                   <td>{row.cognome || "-"}</td>
                   <td>{row.email || "-"}</td>
                   <td>{row.telefono || "-"}</td>
-                  <td>{row.tipoUtente.nomeTipo || "-"}</td>
+                  <td>{row.tipoUtente.nome || "-"}</td>
                   <td>
                     <div className="action-buttons">
                       <Button
@@ -102,6 +74,23 @@ export default function Users() {
                         onClick={() => setSelectedUser(row)}
                       >
                         Dettagli
+                      </Button>
+                      <Button
+                        className="blu"
+                        title="Modifica dati dell'utente"
+                        onClick={() => {
+                          setEditingUser(row);
+                          setEditFormData({
+                            nome: row.nome,
+                            cognome: row.cognome,
+                            email: row.email,
+                            telefono: row.telefono,
+                            via: row.via,
+                            tipoUtente: { idTipo: row.tipoUtente.idTipo },
+                          });
+                        }}
+                      >
+                        Modifica
                       </Button>
                       <Button className="red" title="Elimina utente">
                         <FaX />
@@ -134,7 +123,7 @@ export default function Users() {
               </div>
               <div className="card-row">
                 <b>Ruolo:</b>
-                <span>{row.tipoUtente.nomeTipo || "-"}</span>
+                <span>{row.tipoUtente.nome || "-"}</span>
               </div>
 
               <div className="card-actions">
@@ -144,6 +133,23 @@ export default function Users() {
                   onClick={() => setSelectedUser(row)}
                 >
                   Dettagli
+                </Button>
+                <Button
+                  className="blu"
+                  title="Modifica dati dell'utente"
+                  onClick={() => {
+                    setEditingUser(row);
+                    setEditFormData({
+                      nome: row.nome,
+                      cognome: row.cognome,
+                      email: row.email,
+                      telefono: row.telefono,
+                      via: row.via,
+                      tipoUtente: { idTipo: row.tipoUtente.idTipo },
+                    });
+                  }}
+                >
+                  Modifica
                 </Button>
                 <Button className="red" title="Elimina incarico">
                   <FaX />
@@ -190,12 +196,161 @@ export default function Users() {
               <b>Data registrazione:</b> {selectedUser.dataRegistrazione}
             </p>
             <p>
-              <b>Ruolo:</b> {selectedUser.tipoUtente.nomeTipo}
+              <b>Ruolo:</b> {selectedUser.tipoUtente.nome}
             </p>
 
             <Button className="red" onClick={() => setSelectedUser(null)}>
               Chiudi
             </Button>
+          </div>
+        </div>
+      )}
+
+      {editingUser && editFormData && (
+        <div className="modal-overlay" onClick={() => setEditingUser(null)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <h3>Modifica Utente</h3>
+
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+
+                if (!editingUser || !editFormData) return;
+
+                // controlla se c'è almeno un campo modificato
+                const hasChanges =
+                  editFormData.nome !== editingUser.nome ||
+                  editFormData.cognome !== editingUser.cognome ||
+                  editFormData.email !== editingUser.email ||
+                  editFormData.telefono !== editingUser.telefono ||
+                  editFormData.via !== editingUser.via ||
+                  editFormData.tipoUtente?.idTipo !==
+                    editingUser.tipoUtente.idTipo;
+
+                if (!hasChanges) {
+                  alert("Devi modificare almeno un campo prima di salvare.");
+                  return;
+                }
+
+                try {
+                  const updated = await updateUser(
+                    editingUser.idUtente,
+                    editFormData
+                  );
+                  setUsers((prev) =>
+                    prev.map((u) =>
+                      u.idUtente === updated.idUtente ? updated : u
+                    )
+                  );
+                  setEditingUser(null);
+                } catch (err) {
+                  console.error("Errore aggiornamento:", err);
+                  alert("Errore durante la modifica dell'utente.");
+                }
+              }}
+            >
+              <div className="row">
+                <InputGroup
+                  label="Nome"
+                  name="nome"
+                  value={editFormData.nome || ""}
+                  required={false}
+                  onChange={(e) =>
+                    setEditFormData((prev) => ({
+                      ...prev,
+                      nome: e.target.value,
+                    }))
+                  }
+                />
+                <InputGroup
+                  label="Cognome"
+                  name="cognome"
+                  value={editFormData.cognome || ""}
+                  required={false}
+                  onChange={(e) =>
+                    setEditFormData((prev) => ({
+                      ...prev,
+                      cognome: e.target.value,
+                    }))
+                  }
+                />
+              </div>
+              <div className="row">
+                <InputGroup
+                  label="Email"
+                  name="email"
+                  type="email"
+                  value={editFormData.email || ""}
+                  required={false}
+                  onChange={(e) =>
+                    setEditFormData((prev) => ({
+                      ...prev,
+                      email: e.target.value,
+                    }))
+                  }
+                />
+                <InputGroup
+                  label="Telefono"
+                  name="telefono"
+                  value={editFormData.telefono || ""}
+                  required={false}
+                  onChange={(e) =>
+                    setEditFormData((prev) => ({
+                      ...prev,
+                      telefono: e.target.value,
+                    }))
+                  }
+                />
+              </div>
+              <div className="row">
+                <InputGroup
+                  label="Via"
+                  name="via"
+                  value={editFormData.via || ""}
+                  required={false}
+                  onChange={(e) =>
+                    setEditFormData((prev) => ({
+                      ...prev,
+                      via: e.target.value,
+                    }))
+                  }
+                />
+                <div className="input-group">
+                  <label htmlFor="role">Ruolo</label>
+                  <select
+                    id="role"
+                    value={editFormData.tipoUtente?.idTipo}
+                    required={false}
+                    className="btn gray"
+                    onChange={(e) => {
+                      const idTipo = parseInt(e.target.value);
+                      setEditFormData((prev) => ({
+                        ...prev,
+                        tipoUtente: {
+                          idTipo,
+                          nome: idTipo === 1 ? "Admin" : "Agente Immobiliare",
+                          role: idTipo === 1 ? "ADMIN" : "AGENTE",
+                        },
+                      }));
+                    }}
+                  >
+                    <option value={1}>Admin</option>
+                    <option value={2}>Agente Immobiliare</option>
+                  </select>
+                </div>
+              </div>
+
+              <Button type="submit" className="blu">
+                Salva modifiche
+              </Button>
+              <Button
+                type="button"
+                className="red"
+                onClick={() => setEditingUser(null)}
+              >
+                Annulla
+              </Button>
+            </form>
           </div>
         </div>
       )}

@@ -2,35 +2,36 @@ import { useEffect, useState } from "react";
 import SearchBar from "../../../components/SearchBar";
 import Button from "../../../components/Button";
 import {
-  getIncarichiByAgente, // <-- NUOVA API: Filtra per l'agente loggato
-  deleteIncarichi,      // Mantenuta per simulare una possibile cancellazione (se permessa)
+  getIncarichiByAgente,
+  deleteIncarichi,
   type Incarichi,
   type incarichiResponse,
 } from "../../../services/api";
 
-// --- SIMULAZIONE ID AGENTE LOGGATO ---
-// Deve essere recuperato dal contesto o dal token di autenticazione.
-const AGENTE_CORRENTE_ID = "ID_O_NOME_AGENTE_LOGGATO"; 
-// ------------------------------------
+const AGENTE_CORRENTE_ID = "ID_O_NOME_AGENTE_LOGGATO";
 
 export default function AssignmentsAgent() {
   const [searchQuery, setSearchQuery] = useState("");
   const [incarichi, setIncarichi] = useState<Incarichi[]>([]);
-  const [selectedIncarico, setSelectedIncarico] =
-    useState<Incarichi | null>(null);
+  const [selectedIncarico, setSelectedIncarico] = useState<Incarichi | null>(
+    null
+  );
   const [nextOffset, setNextOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     (async () => {
-      if (!AGENTE_CORRENTE_ID) return; // Protezione
+      if (!AGENTE_CORRENTE_ID) return;
 
       setLoading(true);
       try {
-        // !!! CHIAMATA API FILTRATA: mostriamo solo gli incarichi dell'agente corrente
-        const res: incarichiResponse = await getIncarichiByAgente(0, 10, AGENTE_CORRENTE_ID); 
-        
+        const res: incarichiResponse = await getIncarichiByAgente(
+          0,
+          10,
+          AGENTE_CORRENTE_ID
+        );
+
         setIncarichi(res.valutazioni);
         setNextOffset(res.nextOffset);
         setHasMore(res.hasMore);
@@ -47,7 +48,6 @@ export default function AssignmentsAgent() {
 
     setLoading(true);
     try {
-      // !!! CHIAMATA API FILTRATA: mostriamo solo gli incarichi dell'agente corrente
       const res: incarichiResponse = await getIncarichiByAgente(
         nextOffset,
         10,
@@ -76,11 +76,14 @@ export default function AssignmentsAgent() {
   }
 
   // Filtriamo per Proprietario o Stato Valutazione
-  const filteredIncarichi = incarichi.filter((v) =>
-    (v.nomeProprietario || "")
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase()) ||
-    (v.statoValutazione || "").toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredIncarichi = incarichi.filter(
+    (v) =>
+      (v.nomeProprietario || "")
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
+      (v.statoValutazione || "")
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -103,7 +106,6 @@ export default function AssignmentsAgent() {
                 <th>Prezzo AI</th>
                 <th>Prezzo Umano</th>
                 <th>Stato</th>
-                {/* Rimuoviamo Agente Assegnato, perché in questa vista è sempre l'agente corrente */}
                 <th>Azioni</th>
               </tr>
             </thead>
@@ -138,7 +140,6 @@ export default function AssignmentsAgent() {
           </table>
         </div>
 
-        {/* Vista mobile (incarichi-cards) */}
         <div className="incarichi-cards">
           {filteredIncarichi.map((row) => (
             <div className="incarico-card" key={row.id}>
@@ -188,7 +189,6 @@ export default function AssignmentsAgent() {
         )}
       </div>
 
-      {/* Modale Dettagli Incarico */}
       {selectedIncarico && (
         <div
           className="modal-overlay"
@@ -209,8 +209,7 @@ export default function AssignmentsAgent() {
             <p>
               <b>Stato:</b> {selectedIncarico.statoValutazione}
             </p>
-            {/* ... Aggiungere altri dettagli rilevanti come l'indirizzo e il proprietario ... */}
-            
+
             <h4>Immobile</h4>
             <p>
               <b>Tipo:</b> {selectedIncarico.tipo}
@@ -218,7 +217,7 @@ export default function AssignmentsAgent() {
             <p>
               <b>Indirizzo:</b> {selectedIncarico.via}, {selectedIncarico.citta}
             </p>
-            
+
             <h4>Proprietario</h4>
             <p>
               <b>Nome:</b> {selectedIncarico.nomeProprietario}

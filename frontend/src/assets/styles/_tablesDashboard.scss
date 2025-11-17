@@ -128,13 +128,19 @@
       border-radius: 10px;
     }
 
-    .evaluations-cards, .contract-cards, .alerts-cards, .assignments-cards {
+    .evaluations-cards,
+    .contract-cards,
+    .alerts-cards,
+    .assignments-cards {
       display: none;
       flex-direction: column;
       gap: 1rem;
       margin-top: 1rem;
 
-      .evaluation-card, .contract-card, .alert-card, .assignment-card {
+      .evaluation-card,
+      .contract-card,
+      .alert-card,
+      .assignment-card {
         background: white;
         color: black;
         border-radius: 12px;
@@ -173,7 +179,10 @@
         display: none;
       }
 
-      .evaluations-cards, .contract-cards, .alerts-cards, .assignments-cards {
+      .evaluations-cards,
+      .contract-cards,
+      .alerts-cards,
+      .assignments-cards {
         display: flex;
       }
     }
@@ -184,10 +193,9 @@
     inset: 0;
     background: rgba(0, 0, 0, 0.55);
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
     z-index: 999;
-
     backdrop-filter: blur(3px);
     animation: fadeIn 0.25s ease forwards;
   }
@@ -195,8 +203,7 @@
   .modal {
     background: #fff;
     color: black;
-    width: 520px;
-    max-width: 92%;
+    width: 90%;
     padding: 2rem 2.2rem;
     border-radius: 14px;
     box-shadow: 0 0 30px rgba(0, 0, 0, 0.25);
@@ -228,8 +235,30 @@
     }
 
     button {
-      margin-top: 1.6rem;
       width: 100%;
+    }
+
+    form {
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      gap: 1rem;
+
+      .row {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+
+        .input-group {
+          width: 100%;
+        }
+      }
+
+      select {
+        font-size: 1rem;
+        padding: 1rem;
+      }
     }
   }
 

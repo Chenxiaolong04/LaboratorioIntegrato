@@ -37,9 +37,6 @@ export async function apiFetch<TResponse, TBody = unknown>(
   return res.json() as Promise<TResponse>;
 }
 
-// ----------------------------------------------------------------------
-// --- LOGIN REQUEST ---
-// ----------------------------------------------------------------------
 export type LoginResponse = {
   username: string;
   roles: string[];
@@ -60,30 +57,17 @@ export async function loginUser(
   );
 }
 
-// ----------------------------------------------------------------------
-// --- TIPI BASE ---
-// ----------------------------------------------------------------------
 export type Immobile = {
   tipo: string;
   nomeProprietario: string;
   dataInserimento: string;
   agenteAssegnato: string | null;
-  // Assumo l'aggiunta di ID, via e città per coerenza con gli altri tipi
   id: number;
   via: string;
   citta: string;
 };
 
-export type TipoUtente = {
-  idTipo: number;
-  nomeTipo: string;
-};
-
-// ----------------------------------------------------------------------
-// --- DASHBOARD ADMIN REQUEST ---
-// ----------------------------------------------------------------------
-
-export type DashboardData = {
+export type AdminDashboardData = {
   statistics: {
     contrattiConclusi: number;
     valutazioniInCorso: number;
@@ -101,8 +85,8 @@ export type DashboardData = {
 export async function getAdminDashboard(
   offset = 0,
   limit = 10
-): Promise<DashboardData> {
-  return apiFetch<DashboardData>(
+): Promise<AdminDashboardData> {
+  return apiFetch<AdminDashboardData>(
     `/admin/dashboard?offset=${offset}&limit=${limit}`,
     {
       method: "GET",
@@ -110,18 +94,12 @@ export async function getAdminDashboard(
   );
 }
 
-// ----------------------------------------------------------------------
-// --- DASHBOARD AGENTE REQUEST (NUOVO) ---
-// ----------------------------------------------------------------------
-
 export type AgenteDashboardData = {
   statistics: {
-    // Statistiche Personali dell'Agente
     mieiContrattiConclusi: number;
     mieiIncarichiInCorso: number;
     mieiContrattiConclusiMensili: number;
     mieiIncarichiNuoviMensili: number;
-    // Statistiche Generali (aziendali)
     valutazioniConAI: number;
     valutazioniConAIMensili: number;
   };
@@ -144,9 +122,12 @@ export async function getAgenteDashboard(
   );
 }
 
-// ----------------------------------------------------------------------
-// --- USERS REQUEST ---
-// ----------------------------------------------------------------------
+export type TipoUtente = {
+  idTipo: number;
+  nome: string;
+  role: string;
+};
+
 export type Users = {
   idUtente: number;
   nome: string;
@@ -161,17 +142,15 @@ export type Users = {
 };
 
 export async function getUsers(): Promise<Users[]> {
-  return apiFetch<Users[]>(`/admin/users`, { method: "GET" });
+  return apiFetch<Users[]>(`/users`, { method: "GET" });
 }
 
-// ----------------------------------------------------------------------
-// --- REGISTER USER REQUEST ---
-// ----------------------------------------------------------------------
 export type RegisterUserRequest = {
   nome: string;
   cognome: string;
   email: string;
   password: string;
+  telefono: string;
   tipoUtente: TipoUtente;
 };
 
@@ -180,23 +159,44 @@ export async function registerUser(
   cognome: string,
   email: string,
   password: string,
+  telefono: string,
   tipoUtente: TipoUtente
 ): Promise<RegisterUserRequest[]> {
-  return apiFetch<RegisterUserRequest[]>(`/admin/user-register`, {
+  return apiFetch<RegisterUserRequest[]>(`/users/register`, {
     method: "POST",
     body: {
       nome,
       cognome,
       email,
       password,
+      telefono,
       tipoUtente,
     },
   });
 }
 
-// ----------------------------------------------------------------------
-// --- CONTRATTI CONCLUSI REQUEST ---
-// ----------------------------------------------------------------------
+
+export type UpdateUserRequest = {
+  nome?: string;
+  cognome?: string;
+  email?: string;
+  telefono?: string;
+  via?: string;
+  password?: string;
+  tipoUtente?: { idTipo?: number; nome?: string; role?: string };
+};
+
+export async function updateUser(
+  id: number,
+  updatedUser: UpdateUserRequest
+): Promise<Users> {
+  return apiFetch<Users>(`/users/${id}`, {
+    method: "PUT",
+    body: updatedUser,
+  });
+}
+
+
 export type ContrattoChiuso = {
   numeroContratto: string;
   dataInizio: string;
@@ -205,8 +205,7 @@ export type ContrattoChiuso = {
   nomeProprietario: string | null;
   dataInserimento: string | null;
   agenteAssegnato: string | null;
-  // Aggiunto per coerenza con ValutazioneAI, assumendo che i dettagli immobiliari siano necessari
-  via: string | null; 
+  via: string | null;
   citta: string | null;
 };
 
@@ -227,9 +226,6 @@ export async function getContrattiChiusi(
   );
 }
 
-// ----------------------------------------------------------------------
-// --- CONTRATTI AGENTE (CONCLUSI) REQUEST (NUOVO) ---
-// ----------------------------------------------------------------------
 export async function getContrattiChiusiByAgente(
   offset: number = 0,
   limit: number = 10,
@@ -241,16 +237,12 @@ export async function getContrattiChiusiByAgente(
   );
 }
 
-// ----------------------------------------------------------------------
-// --- VALUTAZIONI AI REQUEST ---
-// ----------------------------------------------------------------------
 export interface ValutazioneAI {
   id: number;
   prezzoAI: number | null;
   dataValutazione: string;
   descrizione: string | null;
 
-  // Immobile
   tipo: string | null;
   via: string | null;
   citta: string | null;
@@ -269,7 +261,6 @@ export interface ValutazioneAI {
   cantina: boolean | null;
   riscaldamento: string | null;
 
-  // Proprietario
   nomeProprietario: string | null;
   emailProprietario: string | null;
   telefonoProprietario: string | null;
@@ -300,35 +291,28 @@ export async function deleteValutazioneAI(id: number) {
   });
 }
 
-// ----------------------------------------------------------------------
-// --- AZIONE AGENTE: PRENDI INCARICO (NUOVO) ---
-// ----------------------------------------------------------------------
-
 export interface AssignIncaricoRequest {
-    agenteId: string;
-    agenteNome: string;
+  agenteId: string;
+  agenteNome: string;
 }
 
 export async function assignIncaricoToMe(
-    valutazioneId: number,
-    agenteId: string,
-    agenteNome: string
+  valutazioneId: number,
+  agenteId: string,
+  agenteNome: string
 ): Promise<{ success: boolean; message: string }> {
-    return apiFetch<{ success: boolean; message: string }, AssignIncaricoRequest>(
-        `/agente/incarico/prendi/${valutazioneId}`,
-        {
-            method: "POST",
-            body: {
-                agenteId: agenteId,
-                agenteNome: agenteNome,
-            },
-        }
-    );
+  return apiFetch<{ success: boolean; message: string }, AssignIncaricoRequest>(
+    `/agente/incarico/prendi/${valutazioneId}`,
+    {
+      method: "POST",
+      body: {
+        agenteId: agenteId,
+        agenteNome: agenteNome,
+      },
+    }
+  );
 }
 
-// ----------------------------------------------------------------------
-// --- INCARICHI REQUEST (ADMIN) ---
-// ----------------------------------------------------------------------
 export interface Incarichi {
   id: number;
   prezzoAI: number | null;
@@ -337,11 +321,9 @@ export interface Incarichi {
   statoValutazione: string | null;
   descrizione: string | null;
 
-  // Agente
   nomeAgente: string | null;
   emailAgente: string | null;
 
-  // Immobile
   tipo: string | null;
   via: string | null;
   citta: string | null;
@@ -360,12 +342,10 @@ export interface Incarichi {
   cantina: boolean | null;
   riscaldamento: string | null;
 
-  // Proprietario
   nomeProprietario: string | null;
   emailProprietario: string | null;
   telefonoProprietario: string | null;
 
-  // Immobile extra
   dataInserimento: string | null;
 }
 
@@ -388,9 +368,6 @@ export async function getIncarichi(
   );
 }
 
-// ----------------------------------------------------------------------
-// --- INCARICHI AGENTE (ASSEGNATI) REQUEST (NUOVO) ---
-// ----------------------------------------------------------------------
 export async function getIncarichiByAgente(
   offset: number = 0,
   limit: number = 10,

@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 import SearchBar from "../../../components/SearchBar";
 import {
   getAdminDashboard,
-  type DashboardData,
+  type AdminDashboardData,
   type Immobile,
 } from "../../../services/api";
 
@@ -23,7 +23,7 @@ export default function AdminHome() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [statistics, setStatistics] = useState<
-    DashboardData["statistics"] | null
+    AdminDashboardData["statistics"] | null
   >(null);
   const [selected, setSelected] = useState<Immobile | null>(null);
   const [immobili, setImmobili] = useState<Immobile[]>([]);

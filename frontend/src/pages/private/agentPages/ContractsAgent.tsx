@@ -2,15 +2,12 @@ import { useEffect, useState } from "react";
 import SearchBar from "../../../components/SearchBar";
 import Button from "../../../components/Button";
 import {
-  getContrattiChiusiByAgente, // <-- NUOVA API: Filtra per l'agente loggato
+  getContrattiChiusiByAgente,
   type ContrattoChiuso,
   type ContrattiResponse,
 } from "../../../services/api";
 
-// --- SIMULAZIONE ID AGENTE LOGGATO ---
-// Deve essere recuperato dal contesto o dal token di autenticazione.
-const AGENTE_CORRENTE_ID = "ID_O_NOME_AGENTE_LOGGATO"; 
-// ------------------------------------
+const AGENTE_CORRENTE_ID = "ID_O_NOME_AGENTE_LOGGATO";
 
 export default function ContractsAgent() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -23,11 +20,10 @@ export default function ContractsAgent() {
 
   useEffect(() => {
     (async () => {
-      if (!AGENTE_CORRENTE_ID) return; // Protezione
+      if (!AGENTE_CORRENTE_ID) return;
 
       setLoading(true);
       try {
-        // !!! CHIAMATA API FILTRATA: mostra i contratti conclusi dall'agente corrente
         const res: ContrattiResponse = await getContrattiChiusiByAgente(
           0,
           10,
@@ -50,7 +46,6 @@ export default function ContractsAgent() {
 
     setLoading(true);
     try {
-      // !!! CHIAMATA API FILTRATA
       const res: ContrattiResponse = await getContrattiChiusiByAgente(
         nextOffset,
         10,
@@ -67,11 +62,8 @@ export default function ContractsAgent() {
     }
   }
 
-  // Il filtro resta sul nome del Proprietario
   const filteredContratti = contratti.filter((c) =>
-    (c.nomeProprietario || "")
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase())
+    (c.nomeProprietario || "").toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -93,7 +85,6 @@ export default function ContractsAgent() {
                 <th>Nome proprietario</th>
                 <th>Data inizio</th>
                 <th>Data fine</th>
-                {/* Rimuoviamo Agente assegnato, perché qui è sempre l'agente corrente */}
                 <th>Tipo immobile</th>
                 <th>Azioni</th>
               </tr>
@@ -105,7 +96,7 @@ export default function ContractsAgent() {
                   <td>{c.nomeProprietario || "-"}</td>
                   <td>{c.dataInizio || "-"}</td>
                   <td>{c.dataFine || "-"}</td>
-                  <td>{c.tipo || "-"}</td> 
+                  <td>{c.tipo || "-"}</td>
                   <td>
                     <div className="action-buttons">
                       <Button
@@ -189,9 +180,10 @@ export default function ContractsAgent() {
               <b>Tipo:</b> {selectedContract.tipo || "-"}
             </p>
             <p>
-              <b>Indirizzo:</b> {selectedContract.via || "-"}, {selectedContract.citta || "-"}
+              <b>Indirizzo:</b> {selectedContract.via || "-"},{" "}
+              {selectedContract.citta || "-"}
             </p>
-            
+
             <h4>Proprietario</h4>
             <p>
               <b>Nome:</b> {selectedContract.nomeProprietario || "-"}

@@ -41,8 +41,6 @@ export default function EvaluationsAI() {
     setValutazioni((prev) => prev.filter((v) => v.id !== id));
   }
 
-  console.log({ valutazioni });
-
   const filtered = valutazioni.filter((v) =>
     (v.nomeProprietario ?? "").toLowerCase().includes(searchQuery.toLowerCase())
   );

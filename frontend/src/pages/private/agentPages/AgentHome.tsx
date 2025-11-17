@@ -7,37 +7,18 @@ import Button from "../../../components/Button";
 import { Link } from "react-router-dom";
 import SearchBar from "../../../components/SearchBar";
 import {
-  // ATTENZIONE: Usa la nuova API per l'Agente!
-  getAgenteDashboard, 
-  // Definisci un nuovo tipo per i dati della Dashboard Agente nel tuo services/api
-  type AgenteDashboardData, 
+  getAgenteDashboard,
+  type AgenteDashboardData,
   type Immobile,
 } from "../../../services/api";
 
-// --- SIMULAZIONE ID AGENTE LOGGATO ---
-// Questo dovrebbe essere recuperato dal contesto o dal token di autenticazione.
-const AGENTE_CORRENTE_ID = "ID_O_NOME_AGENTE_LOGGATO"; 
+const AGENTE_CORRENTE_ID = "ID_O_NOME_AGENTE_LOGGATO";
 
 const filterOptions = [
   { label: "Miei Contratti", value: "contratti" },
   { label: "Miei Incarichi", value: "incarichi" },
   { label: "Valutazioni AI (Generali)", value: "valutazioni" },
 ];
-
-// Assumiamo che la struttura dei dati dell'Agente sia simile a questa (da definire in api.ts):
-// type AgenteDashboardData = {
-//     statistics: {
-//         mieiContrattiConclusi: number; // Filtrato
-//         mieiIncarichiInCorso: number; // Filtrato
-//         valutazioniConAI: number; // Generale
-//         mieiContrattiConclusiMensili: number; // Filtrato
-//         mieiIncarichiNuoviMensili: number; // Filtrato
-//         valutazioniConAIMensili: number; // Generale
-//     };
-//     immobili: Immobile[];
-//     nextOffset: number;
-//     hasMore: boolean;
-// };
 
 export default function AgenteHome() {
   const [filter, setFilter] = useState<string | null>(null);
@@ -54,13 +35,12 @@ export default function AgenteHome() {
 
   useEffect(() => {
     async function fetchInitialData() {
-      if (!AGENTE_CORRENTE_ID) return; // Non caricare se l'agente non è identificato
-      
+      if (!AGENTE_CORRENTE_ID) return;
+
       setLoading(true);
       try {
-        // !!! CHIAMATA API MODIFICATA: includi l'ID dell'agente
-        const data = await getAgenteDashboard(0, 10, AGENTE_CORRENTE_ID); 
-        
+        const data = await getAgenteDashboard(0, 10, AGENTE_CORRENTE_ID);
+
         setStatistics(data.statistics);
         setImmobili(data.immobili);
         setNextOffset(data.nextOffset);
@@ -78,9 +58,8 @@ export default function AgenteHome() {
     if (!hasMore || !AGENTE_CORRENTE_ID) return;
     setLoading(true);
     try {
-      // !!! CHIAMATA API MODIFICATA: includi l'ID dell'agente
-      const data = await getAgenteDashboard(nextOffset, 10, AGENTE_CORRENTE_ID); 
-      
+      const data = await getAgenteDashboard(nextOffset, 10, AGENTE_CORRENTE_ID);
+
       setImmobili((prev) => [...prev, ...data.immobili]);
       setNextOffset(data.nextOffset);
       setHasMore(data.hasMore);
@@ -96,7 +75,7 @@ export default function AgenteHome() {
   const mappedData = immobili.map((i) => ({
     tipo:
       i.tipo.toLowerCase() === "appartamento"
-        ? "contratti" // Se hai bisogno di re-mappare i tipi in base all'API
+        ? "contratti"
         : i.tipo.toLowerCase() === "villa"
         ? "incarichi"
         : "valutazioni",
@@ -112,8 +91,7 @@ export default function AgenteHome() {
       return (
         d.tipo.toLowerCase().includes(query) ||
         d.proprietario.toLowerCase().includes(query) ||
-        // Manteniamo la ricerca per agente per coerenza, anche se su questa vista l'agente è spesso l'utente stesso
-        d.agente.toLowerCase().includes(query) || 
+        d.agente.toLowerCase().includes(query) ||
         d.data.toLowerCase().includes(query)
       );
     });
@@ -122,51 +100,45 @@ export default function AgenteHome() {
     <div className="dashboard-container">
       <div className="general-latest-container">
         <div className="general-dashboard">
-          {/* CARD 1: CONTRATTI (DATI FILTRATI PER AGENTE) */}
           <div className="general-container">
             <div className="title-card">
               <span>
                 <FaCheckCircle size={36} color="green" />
               </span>
-              <h3>Miei Contratti conclusi</h3> 
+              <h3>Miei Contratti conclusi</h3>
             </div>
             <div className="data-card">
-              {/* USARE LA STATISTICA FILTRATA */}
-              <h3>{statistics.mieiContrattiConclusi}</h3> 
+              <h3>{statistics.mieiContrattiConclusi}</h3>
               <Link to="/agente/contratti">
                 <FaSquareArrowUpRight size={50} color="white" />
               </Link>
             </div>
           </div>
 
-          {/* CARD 2: INCARICHI (DATI FILTRATI PER AGENTE) */}
           <div className="general-container">
             <div className="title-card">
               <span>
                 <TbProgressCheck size={36} color="orange" />
               </span>
-              <h3>Miei Incarichi in corso</h3> 
+              <h3>Miei Incarichi in corso</h3>
             </div>
             <div className="data-card">
-              {/* USARE LA STATISTICA FILTRATA */}
-              <h3>{statistics.mieiIncarichiInCorso}</h3> 
+              <h3>{statistics.mieiIncarichiInCorso}</h3>
               <Link to="/agente/incarichi">
                 <FaSquareArrowUpRight size={50} color="white" />
               </Link>
             </div>
           </div>
 
-          {/* CARD 3: VALUTAZIONI AI (DATI GENERALI - COME RICHIESTO) */}
           <div className="general-container">
             <div className="title-card">
               <span>
                 <PiWarningCircleBold size={36} color="gray" />
               </span>
-              <h3>Valutazioni AI (Generali)</h3> 
+              <h3>Valutazioni AI (Generali)</h3>
             </div>
             <div className="data-card">
-              {/* USARE LA STATISTICA GENERALE */}
-              <h3>{statistics.valutazioniConAI}</h3> 
+              <h3>{statistics.valutazioniConAI}</h3>
               <Link to="/agente/valutazioniAI">
                 <FaSquareArrowUpRight size={50} color="white" />
               </Link>
@@ -174,18 +146,15 @@ export default function AgenteHome() {
           </div>
         </div>
 
-        {/* TABELLA ULTIMI AVVISI (RESTA GRAFICAMENTE UGUALE) */}
         <div className="table-container">
           <h2>Ultimi avvisi</h2>
-          
-          {/* Filtri e SearchBar restano uguali */}
+
           <div className="filter-buttons">
             <SearchBar
               placeholder="Cerca un proprietario"
               onSearch={(query) => setSearchQuery(query)}
             />
-            {/* ... Dropdown filtri ... */}
-             <div className="dropdown">
+            <div className="dropdown">
               <Button
                 onClick={() => setDropdownOpen(!dropdownOpen)}
                 className="blu"
@@ -216,7 +185,7 @@ export default function AgenteHome() {
               </Button>
             )}
           </div>
-          
+
           <div className="table-wrapper">
             <table className="alerts-table">
               <thead>
@@ -252,15 +221,19 @@ export default function AgenteHome() {
                     <td>{row.data}</td>
                     <td>{row.agente}</td>
                     <td>
-                      <Button className="blu" onClick={() => setSelected(immobili[i])}>Dettagli</Button>
+                      <Button
+                        className="blu"
+                        onClick={() => setSelected(immobili[i])}
+                      >
+                        Dettagli
+                      </Button>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-          
-          {/* Alerts Card (Vista Mobile) - Resta uguale */}
+
           <div className="alerts-cards">
             {filteredData.map((row, i) => (
               <div className="alert-card" key={i}>
@@ -280,12 +253,16 @@ export default function AgenteHome() {
                 </div>
 
                 <div className="card-actions">
-                  <Button className="blu" onClick={() => setSelected(immobili[i])}>Dettagli</Button>
+                  <Button
+                    className="blu"
+                    onClick={() => setSelected(immobili[i])}
+                  >
+                    Dettagli
+                  </Button>
                 </div>
               </div>
             ))}
           </div>
-
 
           {hasMore && (
             <div className="btn-table">
@@ -300,7 +277,6 @@ export default function AgenteHome() {
           )}
         </div>
 
-        {/* Modal Dettagli - Resta uguale */}
         {selected && (
           <div className="modal-overlay" onClick={() => setSelected(null)}>
             <div className="modal" onClick={(e) => e.stopPropagation()}>
@@ -331,22 +307,18 @@ export default function AgenteHome() {
         )}
       </div>
 
-      {/* Statistiche mensili (DATI FILTRATI PER AGENTE) */}
       <div className="stats-today">
         <h2>Statistiche mensili</h2>
         <div className="card">
           <h3>Miei Contratti conclusi</h3>
-          {/* USARE STATISTICHE FILTRATE */}
           <p>+ {statistics.mieiContrattiConclusiMensili}</p>
         </div>
         <div className="card">
           <h3>Miei Incarichi nuovi</h3>
-          {/* USARE STATISTICHE FILTRATE */}
           <p>+ {statistics.mieiIncarichiNuoviMensili}</p>
         </div>
         <div className="card">
           <h3>Valutazioni AI effettuate</h3>
-          {/* USARE STATISTICHE GENERALI */}
           <p>+ {statistics.valutazioniConAIMensili}</p>
         </div>
       </div>
