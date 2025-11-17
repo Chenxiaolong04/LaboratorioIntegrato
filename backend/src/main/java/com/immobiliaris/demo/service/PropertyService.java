@@ -8,19 +8,36 @@ import org.springframework.stereotype.Service;
 
 import com.immobiliaris.demo.dto.PropertyRequest;
 import com.immobiliaris.demo.model.Property;
+import com.immobiliaris.demo.model.StatoImmobile;
+import com.immobiliaris.demo.model.User;
 import com.immobiliaris.demo.repository.PropertyRepository;
+import com.immobiliaris.demo.repository.StatoImmobileRepository;
+import com.immobiliaris.demo.repository.UserRepository;
 
 @Service
 public class PropertyService {
 
     private final PropertyRepository repository;
+    private final StatoImmobileRepository statoImmobileRepository;
+    private final UserRepository userRepository;
     private final EmailService emailService;
 
-    @Value("${app.admin.email:admin@immobiliaris.com}")
+    @Value("${app.mail.from:darkshadowsean@gmail.com}")
     private String adminEmail;
+    
+    @Value("${app.default.stato-immobile-id:1}")
+    private Integer defaultStatoId;
+    
+    @Value("${app.default.user-id:1}")
+    private Long defaultUserId;
 
-    public PropertyService(PropertyRepository repository, EmailService emailService){
+    public PropertyService(PropertyRepository repository, 
+                          StatoImmobileRepository statoImmobileRepository,
+                          UserRepository userRepository,
+                          EmailService emailService){
         this.repository = repository;
+        this.statoImmobileRepository = statoImmobileRepository;
+        this.userRepository = userRepository;
         this.emailService = emailService;
     }
 
@@ -31,16 +48,26 @@ public class PropertyService {
         p.setCity(request.getCity());
         p.setProvince(request.getProvince());
         p.setType(request.getType());
-        p.setSquareMeters(request.getSquareMeters());
+        p.setSquareMeters(request.getSquareMeters() != null ? request.getSquareMeters() : 0);
         p.setStreet(request.getStreet());
-        p.setRooms(request.getRooms());
-        p.setBathrooms(request.getBathrooms());
-        p.setFloor(request.getFloor());
-        p.setElevator(request.getElevator());
-        p.setGarage(request.getGarage());
+        p.setRooms(request.getRooms() != null ? request.getRooms() : 0);
+        p.setBathrooms(request.getBathrooms() != null ? request.getBathrooms() : 0);
+        p.setFloor(request.getFloor() != null ? request.getFloor() : 0);
+        p.setElevator(request.getElevator() != null ? request.getElevator() : false);
+        p.setGarage(request.getGarage() != null ? request.getGarage() : false);
         p.setDescription(request.getDescription());            
         p.setCreatedAt(LocalDate.now());
-        p.setPrice(null);
+        p.setPrice(null); // Il prezzo verrà calcolato successivamente dall'AI
+        
+        // Imposta stato immobile di default (ID 1 = "In Valutazione")
+        StatoImmobile defaultStato = statoImmobileRepository.findById(defaultStatoId)
+            .orElseThrow(() -> new RuntimeException("Stato immobile non trovato (ID: " + defaultStatoId + ")"));
+        p.setStatoImmobile(defaultStato);
+        
+        // Imposta utente di sistema per richieste pubbliche (ID 1 = utente "Sistema")
+        User systemUser = userRepository.findById(defaultUserId)
+            .orElseThrow(() -> new RuntimeException("Utente di sistema non trovato (ID: " + defaultUserId + ")"));
+        p.setUtente(systemUser);
 
         Property savedProperty = repository.save(p);
 
