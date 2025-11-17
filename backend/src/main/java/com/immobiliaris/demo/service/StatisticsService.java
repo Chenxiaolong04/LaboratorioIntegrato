@@ -384,6 +384,7 @@ public class StatisticsService {
         result.put("nextOffset", offset + limit);
         result.put("hasMore", (offset + limit) < totalValutazioni);
         result.put("pageSize", valutazioniBatch.size());
+        result.put("agents", getAllAgents());
 
         return result;
     }
@@ -624,5 +625,21 @@ public class StatisticsService {
             .orElseThrow(() -> new RuntimeException("Stato 'in_verifica' non trovato"));
         valutazione.setStatoValutazione(nuovoStato);
         valutazioneRepository.save(valutazione);
+    }
+
+    /**
+     * Recupera tutti gli agenti dal database
+     * Filtra gli utenti con idTipo = 2 (Agenti)
+     * @return Lista di mappe con nome e cognome concatenati
+     */
+    public List<Map<String, String>> getAllAgents() {
+        return userRepository.findAll().stream()
+                .filter(user -> user.getTipoUtente() != null && user.getTipoUtente().getIdTipo() == 2)
+                .map(user -> {
+                    Map<String, String> agentMap = new LinkedHashMap<>();
+                    agentMap.put("nomeCognome", user.getNome() + " " + user.getCognome());
+                    return agentMap;
+                })
+                .collect(Collectors.toList());
     }
 }
