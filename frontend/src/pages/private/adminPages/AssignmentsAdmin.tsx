@@ -7,6 +7,7 @@ import {
   getIncarichi,
   type Incarichi,
 } from "../../../services/api";
+import Loader from "../../../components/Loader";
 
 export default function AssignmentsAdmin() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -55,103 +56,113 @@ export default function AssignmentsAdmin() {
 
   return (
     <div className="dashboard-container">
-      <div className="table-container">
-        <h2>Incarichi in corso</h2>
+      {loading && incarichi.length === 0 ? (
+        <Loader />
+      ) : (
+        <div className="table-container">
+          <h2>Incarichi in corso</h2>
 
-        <div className="filter-buttons">
-          <SearchBar
-            placeholder="Cerca un proprietario"
-            onSearch={(query) => setSearchQuery(query)}
-          />
-        </div>
-
-        <div className="table-wrapper">
-          <table className="alerts-table">
-            <thead>
-              <tr>
-                <th>Nome proprietario</th>
-                <th>Prezzo AI</th>
-                <th>Data</th>
-                <th>Agente assegnato</th>
-                <th>Azioni</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredIncarichi.map((row) => (
-                <tr key={row.id}>
-                  <td>{row.nomeProprietario || "-"}</td>
-                  <td>{row.prezzoAI || "-"}</td>
-                  <td>{row.dataInserimento || "-"}</td>
-                  <td>{row.nomeAgente || "-"}</td>
-                  <td>
-                    <div className="action-buttons">
-                      <Button
-                        className="lightblu"
-                        title="Maggiori dettagli sull'incarico"
-                        onClick={() => setSelectedIncarico(row)}
-                      >
-                        Dettagli
-                      </Button>
-                      <Button
-                        className="red"
-                        title="Elimina incarico"
-                        onClick={() => handleDelete(row.id)}
-                      >
-                        <FaX />
-                      </Button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <div className="assignments-cards">
-          {filteredIncarichi.map((row) => (
-            <div className="assignment-card" key={row.id}>
-              <div className="card-row">
-                <b>Proprietario:</b>
-                <span>{row.nomeProprietario || "-"}</span>
-              </div>
-
-              <div className="card-row">
-                <b>Data inserimento:</b>
-                <span>{row.dataInserimento || "-"}</span>
-              </div>
-
-              <div className="card-row">
-                <b>Agente assegnato:</b>
-                <span>{row.nomeAgente || "-"}</span>
-              </div>
-
-              <div className="card-actions">
-                <Button
-                  className="lightblu"
-                  title="Maggiori dettagli sull'incarico"
-                  onClick={() => setSelectedIncarico(row)}
-                >
-                  Dettagli
-                </Button>
-                <Button
-                  className="red"
-                  title="Elimina incarico"
-                  onClick={() => handleDelete(row.id)}
-                >
-                  <FaX />
-                </Button>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {hasMore && (
-          <div className="btn-table">
-            <Button onClick={handleLoadMore} disabled={loading}>
-              {loading ? "Caricamento..." : "Mostra altri incarichi"}
-            </Button>
+          <div className="filter-buttons">
+            <SearchBar
+              placeholder="Cerca un proprietario"
+              onSearch={(query) => setSearchQuery(query)}
+            />
           </div>
-        )}
-      </div>
+
+          <div className="table-wrapper">
+            <table className="alerts-table">
+              <thead>
+                <tr>
+                  <th>Nome proprietario</th>
+                  <th>Prezzo AI</th>
+                  <th>Data</th>
+                  <th>Agente assegnato</th>
+                  <th>Azioni</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredIncarichi.map((row) => (
+                  <tr key={row.id}>
+                    <td>{row.nomeProprietario || "-"}</td>
+                    <td>{row.prezzoAI || "-"}</td>
+                    <td>{row.dataInserimento || "-"}</td>
+                    <td>{row.nomeAgente || "-"}</td>
+                    <td>
+                      <div className="action-buttons">
+                        <Button
+                          className="lightblu"
+                          title="Maggiori dettagli sull'incarico"
+                          onClick={() => setSelectedIncarico(row)}
+                        >
+                          Dettagli
+                        </Button>
+                        <Button
+                          className="blu"
+                          title="Genera contratto dall'incarico"
+                        >
+                          Genera contratto
+                        </Button>
+                        <Button
+                          className="red"
+                          title="Elimina incarico"
+                          onClick={() => handleDelete(row.id)}
+                        >
+                          <FaX />
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="assignments-cards">
+            {filteredIncarichi.map((row) => (
+              <div className="assignment-card" key={row.id}>
+                <div className="card-row">
+                  <b>Proprietario:</b>
+                  <span>{row.nomeProprietario || "-"}</span>
+                </div>
+
+                <div className="card-row">
+                  <b>Data inserimento:</b>
+                  <span>{row.dataInserimento || "-"}</span>
+                </div>
+
+                <div className="card-row">
+                  <b>Agente assegnato:</b>
+                  <span>{row.nomeAgente || "-"}</span>
+                </div>
+
+                <div className="card-actions">
+                  <Button
+                    className="lightblu"
+                    title="Maggiori dettagli sull'incarico"
+                    onClick={() => setSelectedIncarico(row)}
+                  >
+                    Dettagli
+                  </Button>
+                  <Button
+                    className="red"
+                    title="Elimina incarico"
+                    onClick={() => handleDelete(row.id)}
+                  >
+                    <FaX />
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {hasMore && (
+            <div className="btn-table">
+              <Button onClick={handleLoadMore} disabled={loading}>
+                {loading ? "Caricamento..." : "Mostra altri incarichi"}
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
       {selectedIncarico && (
         <div
           className="modal-overlay"

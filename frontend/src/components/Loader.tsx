@@ -1,4 +1,4 @@
-import Logo from "../assets/img/logo.svg";
+import Logo from "../../public/logo.svg";
 
 export default function Loader() {
   return (

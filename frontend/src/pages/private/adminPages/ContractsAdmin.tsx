@@ -5,6 +5,7 @@ import {
   getContrattiChiusi,
   type ContrattoChiuso,
 } from "../../../services/api";
+import Loader from "../../../components/Loader";
 
 export default function ContractsAdmin() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -36,7 +37,7 @@ export default function ContractsAdmin() {
     setContratti((prev) => [...prev, ...res.contratti]);
     setNextOffset(res.nextOffset);
     setHasMore(res.hasMore);
-  };
+  }
 
   const filteredContratti = contratti.filter((c) =>
     (c.nomeProprietario || "").toLowerCase().includes(searchQuery.toLowerCase())
@@ -44,89 +45,99 @@ export default function ContractsAdmin() {
 
   return (
     <div className="dashboard-container">
-      <div className="table-container">
-        <h2>Contratti conclusi</h2>
+      {loading && contratti.length === 0 ? (
+        <Loader />
+      ) : (
+        <div className="table-container">
+          <h2>Contratti conclusi</h2>
 
-        <div className="filter-buttons">
-          <SearchBar
-            placeholder="Cerca un proprietario"
-            onSearch={(query) => setSearchQuery(query)}
-          />
-        </div>
-
-        <div className="table-wrapper">
-          <table className="alerts-table">
-            <thead>
-              <tr>
-                <th>Nome proprietario</th>
-                <th>Data inizio</th>
-                <th>Data fine</th>
-                <th>Agente assegnato</th>
-                <th>Azioni</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {filteredContratti.map((c) => (
-                <tr key={c.numeroContratto}>
-                  <td>{c.nomeProprietario || "-"}</td>
-                  <td>{c.dataInizio || "-"}</td>
-                  <td>{c.dataFine || "-"}</td>
-                  <td>{c.agenteAssegnato || "-"}</td>
-                  <td>
-                    <div className="action-buttons">
-                      <Button className="lightblu" title="Maggiori dettagli sul contratto">Dettagli</Button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        <div className="contract-cards">
-          {filteredContratti.map((row) => (
-            <div className="contract-card" key={row.numeroContratto}>
-              <div className="card-row">
-                <b>Proprietario:</b>
-                <span>{row.nomeProprietario || "-"}</span>
-              </div>
-
-              <div className="card-row">
-                <b>Data inizio:</b>
-                <span>{row.dataInizio || "-"}</span>
-              </div>
-
-              <div className="card-row">
-                <b>Data fine:</b>
-                <span>{row.dataFine || "-"}</span>
-              </div>
-
-              <div className="card-row">
-                <b>Agente assegnato:</b>
-                <span>{row.agenteAssegnato || "-"}</span>
-              </div>
-
-              <div className="card-actions">
-                <Button
-                  className="lightblu"
-                  onClick={() => setSelectedContract(row)}
-                >
-                  Dettagli
-                </Button>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {hasMore && (
-          <div className="btn-table">
-            <Button onClick={handleLoadMore} disabled={loading}>
-              {loading ? "Caricamento..." : "Mostra altri contratti"}
-            </Button>
+          <div className="filter-buttons">
+            <SearchBar
+              placeholder="Cerca un proprietario"
+              onSearch={(query) => setSearchQuery(query)}
+            />
           </div>
-        )}
-      </div>
+
+          <div className="table-wrapper">
+            <table className="alerts-table">
+              <thead>
+                <tr>
+                  <th>Nome proprietario</th>
+                  <th>Data inizio</th>
+                  <th>Data fine</th>
+                  <th>Agente assegnato</th>
+                  <th>Azioni</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {filteredContratti.map((row) => (
+                  <tr key={row.numeroContratto}>
+                    <td>{row.nomeProprietario || "-"}</td>
+                    <td>{row.dataInizio || "-"}</td>
+                    <td>{row.dataFine || "-"}</td>
+                    <td>{row.agenteAssegnato || "-"}</td>
+                    <td>
+                      <div className="action-buttons">
+                        <Button
+                          className="lightblu"
+                          title="Maggiori dettagli sul contratto"
+                          onClick={() => setSelectedContract(row)}
+                        >
+                          Dettagli
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="contract-cards">
+            {filteredContratti.map((row) => (
+              <div className="contract-card" key={row.numeroContratto}>
+                <div className="card-row">
+                  <b>Proprietario:</b>
+                  <span>{row.nomeProprietario || "-"}</span>
+                </div>
+
+                <div className="card-row">
+                  <b>Data inizio:</b>
+                  <span>{row.dataInizio || "-"}</span>
+                </div>
+
+                <div className="card-row">
+                  <b>Data fine:</b>
+                  <span>{row.dataFine || "-"}</span>
+                </div>
+
+                <div className="card-row">
+                  <b>Agente assegnato:</b>
+                  <span>{row.agenteAssegnato || "-"}</span>
+                </div>
+
+                <div className="card-actions">
+                  <Button
+                    className="lightblu"
+                    onClick={() => setSelectedContract(row)}
+                  >
+                    Dettagli
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {hasMore && (
+            <div className="btn-table">
+              <Button onClick={handleLoadMore} disabled={loading}>
+                {loading ? "Caricamento..." : "Mostra altri contratti"}
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
 
       {selectedContract && (
         <div

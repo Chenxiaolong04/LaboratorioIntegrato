@@ -5,7 +5,7 @@ import { useAuth } from "../../context/AuthContext";
 import Button from "../../components/Button";
 import Input from "../../components/Input";
 import Loader from "../../components/Loader";
-import Logo from "../../assets/img/logo.svg";
+import Logo from "../../../public/logo.svg";
 
 export default function Login() {
   const [email, setEmail] = useState("");

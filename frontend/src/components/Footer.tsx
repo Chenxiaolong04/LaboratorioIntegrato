@@ -7,7 +7,7 @@ import {
   FaEnvelope,
   FaMapLocationDot,
 } from "react-icons/fa6";
-import logo from "../assets/img/logo.svg";
+import logo from "../../public/logo.svg";
 
 export default function Footer() {
   return (

@@ -7,7 +7,7 @@
   .header-dashboard {
     background-color: var.$palette-lightblu;
     color: white;
-    padding-top: 2rem;
+    padding: 2rem 0;
 
     h1 {
       text-align: center;
@@ -18,7 +18,7 @@
   .dashboard-container {
     background-color: var.$palette-lightblu;
     color: white;
-    padding: 1rem;
+    padding: 0 1rem;
     display: flex;
     flex-direction: column;
     gap: 2rem;
@@ -215,7 +215,7 @@
       display: flex;
       flex-direction: row;
       gap: 1rem;
-      padding: 1rem 4rem;
+      padding: 0 4rem;
 
       .general-latest-container {
         width: 80%;

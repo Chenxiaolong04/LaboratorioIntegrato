@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import logo from "../../assets/img/logo.svg";
+import logo from "../../../public/logo.svg";
 import StepLocation, {
   type StepLocationRef,
 } from "../../components/formSteps/StepLocation";

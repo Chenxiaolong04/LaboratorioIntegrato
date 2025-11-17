@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { FaBell } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import logo from "../assets/img/logo.svg";
+import logo from "../../public/logo.svg";
 
 interface Notification {
   id: number;

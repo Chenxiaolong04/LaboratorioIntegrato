@@ -11,6 +11,7 @@ import {
   type DashboardData,
   type Immobile,
 } from "../../../services/api";
+import Loader from "../../../components/Loader";
 
 const filterOptions = [
   { label: "Contratti conclusi", value: "contratti" },
@@ -64,7 +65,7 @@ export default function AdminHome() {
     }
   };
 
-  if (!statistics) return <p>Caricamento...</p>;
+  if (!statistics) return <Loader />;
 
   const mappedData = immobili.map((i) => ({
     tipo:
@@ -103,7 +104,7 @@ export default function AdminHome() {
             </div>
             <div className="data-card">
               <h3>{statistics.contrattiConclusi}</h3>
-              <Link to="/admin/contratti">
+              <Link to="/admin/contracts">
                 <FaSquareArrowUpRight size={50} color="white" />
               </Link>
             </div>
@@ -118,7 +119,7 @@ export default function AdminHome() {
             </div>
             <div className="data-card">
               <h3>{statistics.valutazioniInCorso}</h3>
-              <Link to="/admin/incarichi">
+              <Link to="/admin/assignments">
                 <FaSquareArrowUpRight size={50} color="white" />
               </Link>
             </div>
@@ -133,7 +134,7 @@ export default function AdminHome() {
             </div>
             <div className="data-card">
               <h3>{statistics.valutazioniConAI}</h3>
-              <Link to="/admin/valutazioniAI">
+              <Link to="/admin/evaluationsAI">
                 <FaSquareArrowUpRight size={50} color="white" />
               </Link>
             </div>
