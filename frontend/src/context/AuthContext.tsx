@@ -1,12 +1,11 @@
 // src/context/AuthContext.tsx
-import { createContext, useContext, useState, type ReactNode /*, useEffect */ } from "react";
+import { createContext, useContext, useState, type ReactNode, useEffect } from "react";
 
 type User = {
   id: number;
   name: string;
   email: string;
   role: "admin" | "agente";
-  // token: string;
 };
 
 type AuthContextType = {
@@ -20,21 +19,29 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
 
-  /*
+  // Carica l'utente dal localStorage all'avvio dell'app
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
-    if (storedUser) setUser(JSON.parse(storedUser));
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (e) {
+        console.error("Errore nel parsing dell'utente da localStorage:", e);
+        localStorage.removeItem("user");
+      }
+    }
   }, []);
-  */
 
   const login = (userData: User) => {
     setUser(userData);
-    // localStorage.setItem("user", JSON.stringify(userData)); 
+    // Salva l'utente nel localStorage
+    localStorage.setItem("user", JSON.stringify(userData)); 
   };
 
   const logout = () => {
     setUser(null);
-    // localStorage.removeItem("user"); 
+    // Rimuovi l'utente dal localStorage
+    localStorage.removeItem("user"); 
   };
 
   return (
