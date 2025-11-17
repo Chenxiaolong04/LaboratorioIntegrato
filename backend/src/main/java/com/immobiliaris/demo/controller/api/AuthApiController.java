@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
+import com.immobiliaris.demo.repository.UserRepository;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -24,6 +25,9 @@ public class AuthApiController {
 
     @Autowired
     private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private UserRepository userRepository;
 
     /**
      * API REST per login (React/frontend)
@@ -52,11 +56,16 @@ public class AuthApiController {
                 securityContext
             );
 
-            // Prepara la risposta con info utente
+                // Prepara la risposta con info utente
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("message", "Login effettuato con successo");
-            response.put("username", authentication.getName());
+                // Se possibile, restituisci il nome (campo `Nome`) dell'utente salvato nel DB
+                String principalName = authentication.getName();
+                    String displayName = userRepository.findByEmail(principalName)
+                        .map(u -> u.getNome() + (u.getCognome() != null && !u.getCognome().isEmpty() ? " " + u.getCognome() : ""))
+                        .orElse(principalName);
+                response.put("username", displayName);
             response.put("roles", authentication.getAuthorities().stream()
                     .map(GrantedAuthority::getAuthority)
                     .collect(Collectors.toList()));
@@ -107,7 +116,12 @@ public class AuthApiController {
         }
 
         Map<String, Object> user = new HashMap<>();
-        user.put("username", authentication.getName());
+        // Mostra il nome leggendo il profilo utente dal DB quando possibile
+        String principal = authentication.getName();
+        String display = userRepository.findByEmail(principal)
+            .map(u -> u.getNome() + (u.getCognome() != null && !u.getCognome().isEmpty() ? " " + u.getCognome() : ""))
+            .orElse(principal);
+        user.put("username", display);
         user.put("roles", authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList()));

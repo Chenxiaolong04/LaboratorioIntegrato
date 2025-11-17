@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Repository
 public interface ContrattoJpaRepository extends JpaRepository<Contratto, Integer> {
@@ -26,4 +27,9 @@ public interface ContrattoJpaRepository extends JpaRepository<Contratto, Integer
      * Spring genera automaticamente: WHERE nome = ? AND dataInizio >= ?
      */
     Long countByStatoContrattoNomeAndDataInizioAfter(String nome, LocalDate data);
+
+    /**
+     * Restituisce la lista completa di contratti con lo stato specificato
+     */
+    List<Contratto> findByStatoContrattoNome(String nome);
 }
