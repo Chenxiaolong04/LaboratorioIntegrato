@@ -56,7 +56,7 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(this.corsConfigurationSource))
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/api/auth/**", "/login", "/error", "/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
+                .requestMatchers("/", "/api/auth/**", "/api/mail/**", "/login", "/error", "/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
                 .requestMatchers("/api/users/register").hasRole("ADMIN")
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/agent/**").hasRole("AGENT")
@@ -76,10 +76,16 @@ public class SecurityConfig {
                 .permitAll()
             )
             .exceptionHandling(ex -> ex
-                .accessDeniedPage("/error")  // Reindirizza a /error per 403 Forbidden
+                .accessDeniedPage("/error")
                 .authenticationEntryPoint((request, response, authException) -> {
-                    // Quando non sei autenticato, vai a /error
-                    response.sendRedirect("/error");
+                    // Non reindirizzare le API REST, ritorna 401
+                    String requestUri = request.getRequestURI();
+                    if (requestUri.startsWith("/api/")) {
+                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+                    } else {
+                        // Per le pagine HTML, vai a /error
+                        response.sendRedirect("/error");
+                    }
                 })
             );
 
