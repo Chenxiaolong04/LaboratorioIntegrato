@@ -117,17 +117,6 @@ export default function Footer() {
                 rel="noopener noreferrer"
                 aria-label="Apri la posizione su Google Maps"
               >
-                Via Jacopo Durandi 12, Milano
-              </a>
-            </li>
-            <li>
-              <FaMapLocationDot size={28} />
-              <a
-                href="https://www.google.com/maps?q=Via+pippi+bro+12,+Milano"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Apri la posizione su Google Maps"
-              >
                 Via Jacopo Durandi 12, Torino
               </a>
             </li>
