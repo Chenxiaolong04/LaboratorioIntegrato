@@ -1,6 +1,5 @@
 import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import logo from "../../../public/logo.svg";
 import StepLocation, {
   type StepLocationRef,
 } from "../../components/formSteps/StepLocation";
@@ -25,7 +24,6 @@ export default function MultiStepForm() {
   const [errorType, setErrorType] = useState("");
   const [errorStatus, setErrorStatus] = useState("");
   const [errorGeneral, setErrorGeneral] = useState("");
-  const [errorPlus, setErrorPlus] = useState("");
   const [step, setStep] = useState(0);
 
   const stepLocationRef = useRef<StepLocationRef>(null);
@@ -80,7 +78,7 @@ export default function MultiStepForm() {
         <div className="container">
           <div className="brand">
             <Link to="/">
-              <img className="logo" src={logo} alt="Logo Immobiliaris" />
+              <img className="logo" src='./logo.svg' alt="Logo Immobiliaris" />
             </Link>
             <h2>Immobiliaris</h2>
           </div>
@@ -130,8 +128,6 @@ export default function MultiStepForm() {
             {step === 4 && (
               <StepPlus
                 ref={stepPlusRef}
-                error={errorPlus}
-                setError={setErrorPlus}
               />
             )}
             {step === 5 && <StepContacts />}

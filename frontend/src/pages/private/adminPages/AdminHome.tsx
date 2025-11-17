@@ -84,10 +84,7 @@ export default function AdminHome() {
     .filter((d) => {
       const query = searchQuery.toLowerCase();
       return (
-        d.tipo.toLowerCase().includes(query) ||
-        d.proprietario.toLowerCase().includes(query) ||
-        d.agente.toLowerCase().includes(query) ||
-        d.data.toLowerCase().includes(query)
+        d.proprietario.toLowerCase().includes(query)
       );
     });
 
