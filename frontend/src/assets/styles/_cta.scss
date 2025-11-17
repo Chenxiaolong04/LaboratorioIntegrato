@@ -5,7 +5,7 @@
   .container {
     min-height: 400px;
     background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-      url("../img/cta-homepage.webp");
+      url("../../assets/img/cta-homepage.webp");
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -22,6 +22,11 @@
     h2 {
       font-size: var.$fs-mb-section-title;
       text-align: center;
+    }
+
+    .btn {
+      text-align: center;
+      font-size: var.$fs-mb-section-subtitle;
     }
   }
 }

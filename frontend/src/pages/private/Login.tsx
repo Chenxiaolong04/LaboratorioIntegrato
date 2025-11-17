@@ -5,7 +5,6 @@ import { useAuth } from "../../context/AuthContext";
 import Button from "../../components/Button";
 import Input from "../../components/Input";
 import Loader from "../../components/Loader";
-import Logo from "../../assets/img/logo.svg";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -59,7 +58,7 @@ export default function Login() {
     <section className="login-page">
       <div className="container">
         <Link to={"/"}>
-          <img src={Logo} alt="logo" />
+          <img src='./logo.svg' alt="logo immobiliaris" />
         </Link>
         <div className="login-container">
           <h1>Accedi al tuo account</h1>

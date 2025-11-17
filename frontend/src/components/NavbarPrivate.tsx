@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { FaBell } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import logo from "../assets/img/logo.svg";
 
 interface Notification {
   id: number;
@@ -136,7 +135,7 @@ export default function NavbarPrivate() {
               </div>
             )}
           </div>
-          <Link to={'/'}><img src={logo} alt="logo" /></Link>
+          <Link to={'/'}><img src='./logo.svg' alt="logo immobiliaris" /></Link>
         </div>
       </div>
     </nav>

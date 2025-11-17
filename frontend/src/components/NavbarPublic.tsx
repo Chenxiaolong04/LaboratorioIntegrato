@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import logo from "../assets/img/logo.svg";
 import { Link } from "react-router-dom";
 
 export default function NavbarPublic() {
@@ -22,7 +21,7 @@ export default function NavbarPublic() {
       <div className="navbar-container container">
         <div className="brand">
           <Link to={"/"}>
-            <img src={logo} alt="Logo Immobiliaris" title="Logo Immobiliaris" />
+            <img src='./logo.svg' alt="Logo Immobiliaris" title="Logo Immobiliaris" />
           </Link>
           <h2>Immobiliaris</h2>
         </div>
