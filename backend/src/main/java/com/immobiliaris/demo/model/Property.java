@@ -33,11 +33,17 @@ public class Property {
     @Column(name = "Metratura")
     private int squareMeters;
     
+    @Column(name = "Condizioni")
+    private String condizioni;
+    
     @Column(name = "Stanze")
     private int rooms;
     
     @Column(name = "Bagni")
     private int bathrooms;
+    
+    @Column(name = "Riscaldamento")
+    private String riscaldamento;
     
     @Column(name = "Piano")
     private int floor;
@@ -47,6 +53,18 @@ public class Property {
     
     @Column(name = "Garage")
     private boolean garage;
+    
+    @Column(name = "Giardino")
+    private boolean giardino;
+    
+    @Column(name = "Balcone")
+    private boolean balcone;
+    
+    @Column(name = "Terrazzo")
+    private boolean terrazzo;
+    
+    @Column(name = "Cantina")
+    private boolean cantina;
     
     @Column(name = "Prezzo")
     private Integer price;
