@@ -50,11 +50,17 @@ public class PropertyService {
         p.setType(request.getType());
         p.setSquareMeters(request.getSquareMeters() != null ? request.getSquareMeters() : 0);
         p.setStreet(request.getStreet());
+        p.setCondizioni(request.getCondizioni());
         p.setRooms(request.getRooms() != null ? request.getRooms() : 0);
         p.setBathrooms(request.getBathrooms() != null ? request.getBathrooms() : 0);
+        p.setRiscaldamento(request.getRiscaldamento());
         p.setFloor(request.getFloor() != null ? request.getFloor() : 0);
         p.setElevator(request.getElevator() != null ? request.getElevator() : false);
         p.setGarage(request.getGarage() != null ? request.getGarage() : false);
+        p.setGiardino(request.getGiardino() != null ? request.getGiardino() : false);
+        p.setBalcone(request.getBalcone() != null ? request.getBalcone() : false);
+        p.setTerrazzo(request.getTerrazzo() != null ? request.getTerrazzo() : false);
+        p.setCantina(request.getCantina() != null ? request.getCantina() : false);
         p.setDescription(request.getDescription());            
         p.setCreatedAt(LocalDate.now());
         p.setPrice(null); // Il prezzo verrà calcolato successivamente dall'AI
