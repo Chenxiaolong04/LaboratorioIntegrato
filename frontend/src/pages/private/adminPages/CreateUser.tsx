@@ -136,7 +136,7 @@ export default function CreateUser() {
         />
 
         <div className="input-group">
-          <label htmlFor="role">Ruolo</label>
+          <label htmlFor="role">Ruolo *</label>
           <select
             id="role"
             name="tipoUtente"

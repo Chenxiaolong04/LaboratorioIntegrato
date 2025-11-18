@@ -11,10 +11,10 @@ Immobiliaris è un portale digitale dedicato alla valutazione degli immobili sul
 ### Web Developer
 - Dragos Nedelcu Andrei
 - Mattia Fiore
-- ROdrigo Aguirre
+- Rodrigo Aguirre
 
 ### Software Developer
-- Chen Xiaolong
+- Xiaolong Chen 
 - Simone Crivello
 - Angelo Jimenez
 
