@@ -62,7 +62,244 @@ Verifica se l'utente è autenticato
 
 ---
 
-### GET `/api/auth/user`
+### POST `/api/users/register`
+Registrazione nuovo utente (Solo Admin) ⚠️ **MODIFICATO**
+
+**Implementato da:** Simone
+
+**Richiede:** `ROLE_ADMIN` ⚠️ **NUOVO**
+
+**Request:**
+```json
+{
+  "nome": "Mario",
+  "cognome": "Rossi",
+  "email": "mario.rossi@example.com",
+  "password": "Password123!",
+  "tipoUtente": {
+    "idTipo": 1,
+    "nomeTipo": "Admin"
+  }
+}
+```
+
+**Parameters:**
+- `nome` (required): Nome dell'utente
+- `cognome` (required): Cognome dell'utente
+- `email` (required, unique): Email dell'utente
+- `password` (required): Password (verrà hashata con BCrypt)
+- `tipoUtente` (required) ⚠️ **MODIFICATO**: Oggetto con dati tipo utente nel body JSON
+  - `idTipo` (required): ID del tipo utente
+    - `1` = ADMIN
+    - `2` = AGENT
+  - `nomeTipo` (optional): Nome del tipo utente
+
+**Response (200 OK):**
+```json
+{
+  "idUtente": 5,
+  "nome": "Mario",
+  "cognome": "Rossi",
+  "email": "mario.rossi@example.com",
+  "dataRegistrazione": "2025-11-11",
+  "tipoUtente": {
+    "idTipo": 1,
+    "nomeTipo": "Admin"
+  }
+}
+```
+
+**Response (400 Bad Request):**
+```json
+{
+  "success": false,
+  "message": "Email già registrata"
+}
+```
+
+**Response (403 Forbidden):** ⚠️ **NUOVO**
+```json
+{
+  "success": false,
+  "message": "Accesso negato. Solo l'amministratore può registrare nuovi utenti."
+}
+```
+
+**Response (500 Server Error):**
+```json
+{
+  "success": false,
+  "message": "Tipo utente non trovato"
+}
+```
+
+**Note:**
+- ⚠️ **MODIFICATO**: Solo utenti con `ROLE_ADMIN` possono accedere a questo endpoint
+- ⚠️ **MODIFICATO**: Il `tipoUtente` viene passato nel **body JSON** (non nell'URL come prima)
+- ⚠️ **MODIFICATO**: Gli agenti non possono più creare nuovi utenti
+- ✅ La password viene automaticamente hashata con BCrypt
+- ✅ La data di registrazione viene impostata automaticamente
+- ✅ L'email deve essere unica nel sistema
+
+---
+
+### GET `/api/users`
+Ottieni lista di tutti gli utenti
+
+**Implementato da:** Simone
+
+**Richiede:** `ROLE_ADMIN`
+
+**Response (200 OK):**
+```json
+[
+  {
+    "idUtente": 1,
+    "nome": "Admin",
+    "cognome": "Test",
+    "email": "admin@test.com",
+    "telefono": "3201234567",
+    "via": "Via Roma 1",
+    "citta": "Milano",
+    "cap": "20100",
+    "dataRegistrazione": "2025-11-01",
+    "tipoUtente": {
+      "idTipo": 1,
+      "nomeTipo": "Admin"
+    }
+  },
+  {
+    "idUtente": 2,
+    "nome": "Agent",
+    "cognome": "Verdi",
+    "email": "agent@test.com",
+    "telefono": "3209876543",
+    "via": "Via Milano 2",
+    "citta": "Roma",
+    "cap": "00100",
+    "dataRegistrazione": "2025-11-02",
+    "tipoUtente": {
+      "idTipo": 2,
+      "nomeTipo": "Agent"
+    }
+  }
+]
+```
+
+**Response (403):** Se non hai ROLE_ADMIN
+
+---
+
+### GET `/api/users/{id}`
+Ottieni dettagli di un utente specifico
+
+**Implementato da:** Simone
+
+**Richiede:** `ROLE_ADMIN`
+
+**Path Parameters:**
+- `id` (required): ID dell'utente
+
+**Response (200 OK):**
+```json
+{
+  "idUtente": 1,
+  "nome": "Admin",
+  "cognome": "Test",
+  "email": "admin@test.com",
+  "telefono": "3201234567",
+  "via": "Via Roma 1",
+  "citta": "Milano",
+  "cap": "20100",
+  "dataRegistrazione": "2025-11-01",
+  "tipoUtente": {
+    "idTipo": 1,
+    "nomeTipo": "Admin"
+  }
+}
+```
+
+**Response (404 Not Found):**
+```json
+{
+  "message": "Utente non trovato"
+}
+```
+
+**Response (403):** Se non hai ROLE_ADMIN
+
+---
+
+### PUT `/api/users/{id}`
+Aggiorna dati di un utente
+
+**Implementato da:** Simone
+
+**Richiede:** `ROLE_ADMIN`
+
+**Path Parameters:**
+- `id` (required): ID dell'utente da aggiornare
+
+**Request:**
+```json
+{
+  "nome": "Mario",
+  "cognome": "Bianchi",
+  "email": "mario.bianchi@example.com",
+  "password": "NewPassword123!",
+  "telefono": "3305555555",
+  "via": "Via Napoli 10",
+  "citta": "Napoli",
+  "cap": "80100",
+  "tipoUtente": {
+    "idTipo": 2,
+    "nomeTipo": "Agent"
+  }
+}
+```
+
+**Parameters:**
+- `nome` (optional): Nuovo nome
+- `cognome` (optional): Nuovo cognome
+- `email` (optional): Nuova email
+- `password` (optional): Nuova password (verrà hashata)
+- `telefono` (optional): Nuovo numero di telefono
+- `via` (optional): Nuovo indirizzo
+- `citta` (optional): Nuova città
+- `cap` (optional): Nuovo CAP
+- `tipoUtente` (optional): Nuovo tipo utente
+
+**Response (200 OK):**
+```json
+{
+  "idUtente": 1,
+  "nome": "Mario",
+  "cognome": "Bianchi",
+  "email": "mario.bianchi@example.com",
+  "telefono": "3305555555",
+  "via": "Via Napoli 10",
+  "citta": "Napoli",
+  "cap": "80100",
+  "dataRegistrazione": "2025-11-01",
+  "tipoUtente": {
+    "idTipo": 2,
+    "nomeTipo": "Agent"
+  }
+}
+```
+
+**Response (404 Not Found):**
+```json
+{
+  "message": "Utente non trovato"
+}
+```
+
+**Response (403):** Se non hai ROLE_ADMIN
+
+**Note:**
+- Se la password non viene fornita, rimane invariata
+- Solo i campi forniti vengono aggiornati
 Ottieni informazioni utente loggato
 
 **Response (200 OK):**
@@ -477,26 +714,105 @@ Elimina una valutazione in verifica per ID riga per riga dall'elenco.
 
 ---
 
-### GET `/api/agent/dashboard`
-**Richiede:** `ROLE_AGENT`
+### PUT `/api/admin/valutazioni/in-verifica/{id}`
+**Richiede:** `ROLE_ADMIN`
+
+Modifica i campi di una valutazione in verifica e dell'immobile collegato per ID.
+
+**Path Parameters:**
+- `id` (required): ID della valutazione da modificare
+
+**Request Body:**
+```json
+{
+  "prezzoAI": 220000,
+  "prezzoUmano": 225000,
+  "dataValutazione": "2024-01-15",
+  "descrizione": "Valutazione aggiornata dall'admin",
+  "tipo": "Appartamento",
+  "via": "Via Roma 123",
+  "citta": "Milano",
+  "cap": "20100",
+  "provincia": "MI",
+  "metratura": 85,
+  "condizioni": "Buone",
+  "stanze": 3,
+  "bagni": 2,
+  "piano": 2,
+  "ascensore": true,
+  "garage": true,
+  "giardino": false,
+  "balcone": true,
+  "terrazzo": false,
+  "cantina": true,
+  "riscaldamento": "Autonomo",
+  "descrizioneImmobile": "Appartamento ristrutturato"
+}
+```
+
+**Campi modificabili della valutazione:**
+- `prezzoAI` (opzionale): Nuovo prezzo AI
+- `prezzoUmano` (opzionale): Nuovo prezzo umano
+- `dataValutazione` (opzionale): Nuova data valutazione (formato ISO: YYYY-MM-DD)
+- `descrizione` (opzionale): Nuova descrizione valutazione
+
+**Campi modificabili dell'immobile:**
+- `tipo` (opzionale): Tipologia immobile
+- `via` (opzionale): Indirizzo
+- `citta` (opzionale): Città
+- `cap` (opzionale): CAP
+- `provincia` (opzionale): Provincia (sigla)
+- `metratura` (opzionale): Superficie in mq
+- `condizioni` (opzionale): Stato di conservazione
+- `stanze` (opzionale): Numero stanze
+- `bagni` (opzionale): Numero bagni
+- `piano` (opzionale): Piano
+- `ascensore` (opzionale): Presenza ascensore (boolean)
+- `garage` (opzionale): Presenza garage (boolean)
+- `giardino` (opzionale): Presenza giardino (boolean)
+- `balcone` (opzionale): Presenza balcone (boolean)
+- `terrazzo` (opzionale): Presenza terrazzo (boolean)
+- `cantina` (opzionale): Presenza cantina (boolean)
+- `riscaldamento` (opzionale): Tipo di riscaldamento
+- `descrizioneImmobile` (opzionale): Descrizione immobile
 
 **Response (200 OK):**
 ```json
 {
-  "statistics": {
-    "contrattiConclusi": 2,
-    "valutazioniInCorso": 1,
-    "valutazioniConAI": 3
-  }
+  "success": true,
+  "message": "Valutazione aggiornata con successo"
 }
 ```
 
-**Statistiche personali dell'agente:**
-**Note:** 
-- Le statistiche dell'agente sono **solo totali**, senza statistiche mensili
-- L'agente vede solo le **proprie statistiche**, non quelle globali
+**Response (403):** Se non hai ROLE_ADMIN
 
-**Response (403):** Se non hai ROLE_AGENT
+---
+
+### PUT `/api/admin/valutazioni/solo-ai/{id}/assegna-agente`
+**Richiede:** `ROLE_ADMIN`
+
+Assegna un agente (già presente nel DB) a una valutazione con stato "solo_AI". Quando l'agente viene assegnato, lo stato della valutazione passa automaticamente a "in_verifica".
+
+**Path Parameters:**
+- `id` (required): ID della valutazione AI da aggiornare
+
+**Request Body:**
+```json
+{
+  "idAgente": 123
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "success": true,
+  "message": "Agente assegnato con successo"
+}
+```
+
+**Errori:**
+- `500` - Valutazione non trovata, agente non trovato, oppure la valutazione non è di tipo solo_AI
 
 ---
 
@@ -515,9 +831,11 @@ Elimina una valutazione in verifica per ID riga per riga dall'elenco.
 | `/api/admin/valutazioni/solo-ai/{id}` | DELETE | ✅ Sì | ADMIN | Elimina valutazione AI per ID |
 | `/api/admin/valutazioni/in-verifica` | GET | ✅ Sì | ADMIN | Lista valutazioni in verifica con TUTTI i campi (offset/limit load-more) |
 | `/api/admin/valutazioni/in-verifica/{id}` | DELETE | ✅ Sì | ADMIN | Elimina valutazione in verifica per ID |
+| `/api/admin/valutazioni/in-verifica/{id}` | PUT | ✅ Sì | ADMIN | Modifica valutazione e immobile per ID |
 | `/api/agent/dashboard` | GET | ✅ Sì | AGENT | Dashboard agente (statistiche personali) |
 | `/api/mail/send` | POST | ❌ No* | - | Invia email (⚠️ proteggere in prod) |
 | `/api/mail/test` | GET | ❌ No | - | Verifica mail endpoint |
+| `/api/admin/valutazioni/solo-ai/{id}/assegna-agente` | PUT | ✅ Sì | ADMIN | Assegna agente a valutazione AI e cambia stato in_verifica |
 
 ---
 

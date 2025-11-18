@@ -3,7 +3,7 @@ import { FaMapLocationDot } from "react-icons/fa6";
 import { GrServices } from "react-icons/gr";
 import { FaBrain } from "react-icons/fa";
 import { FaLongArrowAltRight } from "react-icons/fa";
-import Button from "./Button";
+import { Link } from "react-router-dom";
 
 export default function Reasons() {
   return (
@@ -37,9 +37,9 @@ export default function Reasons() {
             moderno, personalizzato e vicino alle persone.
           </h3>
           <div className="steps-button">
-            <Button className="lightblu">
+            <Link to={'/form'} className="btn lightblu">
               Valuta ora <FaLongArrowAltRight />
-            </Button>
+            </Link>
           </div>
         </div>
       </div>

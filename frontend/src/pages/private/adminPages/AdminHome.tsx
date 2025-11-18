@@ -213,7 +213,7 @@ export default function AdminHome() {
                     <td>{row.data}</td>
                     <td>{row.agente}</td>
                     <td>
-                      <Button className="blu" onClick={() => setSelected(immobili[i])}>Dettagli</Button>
+                      <Button className="lightblu" onClick={() => setSelected(immobili[i])}>Dettagli</Button>
                     </td>
                   </tr>
                 ))}
@@ -240,7 +240,7 @@ export default function AdminHome() {
                 </div>
 
                 <div className="card-actions">
-                  <Button className="blu" onClick={() => setSelected(immobili[i])}>Dettagli</Button>
+                  <Button className="lightblu" onClick={() => setSelected(immobili[i])}>Dettagli</Button>
                 </div>
               </div>
             ))}

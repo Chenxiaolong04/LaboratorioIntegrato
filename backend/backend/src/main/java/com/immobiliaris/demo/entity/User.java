@@ -15,7 +15,11 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Id_utente")
+<<<<<<< HEAD
     private Integer idUtente;
+=======
+    private Long idUtente;
+>>>>>>> main
 
     @Column(name = "CF", length = 16)
     private String cf;

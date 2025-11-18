@@ -30,9 +30,11 @@ export default function InputGroup({
   onChange,
 }: InputGroupProps) {
   const id = name;
+  const displayLabel = required ? `${label} *` : label;
+
   return (
     <div className={`input-group ${className}`}>
-      <Label text={label} htmlFor={id} />
+      <Label text={displayLabel} htmlFor={id} />
       <Input
         id={id}
         name={name}

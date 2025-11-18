@@ -138,7 +138,7 @@ const StepGeneral = forwardRef<StepGeneralRef, StepGeneralProps>(
         />
 
         <div className="input-group">
-          <label htmlFor="heating">Tipo di riscaldamento</label>
+          <label htmlFor="heating">Tipo di riscaldamento *</label>
           <select
             id="heating"
             value={heating}

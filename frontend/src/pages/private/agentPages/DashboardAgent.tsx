@@ -9,7 +9,7 @@ export default function DashboardAgent() {
     <PrivateLayout>
       <div className="dashboard">
         <div className="header-dashboard">
-          <h1>Bentornato {user?.name} Dashboard Agente</h1>
+          <h1>Bentornato {user?.name}</h1>
         </div>
         <Outlet />
       </div>

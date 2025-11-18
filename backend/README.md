@@ -12,6 +12,29 @@ Progetto **Spring Boot** (backend) per la gestione di un'agenzia immobiliare con
 
 ---
 
+## 🧰 Strumenti ed Estensioni VS Code
+
+- **VS Code** aggiornato
+- **Extension Pack for Java** (`vscjava.vscode-java-pack`)
+- **Spring Boot Tools** (`vmware.vscode-spring-boot`)
+- **Debugger for Java** (`vscjava.vscode-java-debug`)
+- **Maven for Java** (`vscjava.vscode-maven`)
+- **Lombok** (dipendenza `org.projectlombok` già inclusa; estensione `gabrielbb.vscode-lombok` consigliata se richiesta da VS Code)
+- Opzionale: **MySQL Workbench** per amministrare il database
+
+---
+
+## ⚙️ Setup
+
+- Installa **JDK 17** e configura `JAVA_HOME` sul sistema
+- Installa **MySQL 8** e crea il DB `AgenziaImmobiliare` con utente `ITS_2025` / password `its_2025`
+- Apri il progetto in **VS Code** e installa le estensioni suggerite sopra
+- Verifica `backend/src/main/resources/application.properties` per credenziali DB e (opzionale) configurazione SMTP
+- Avvia il backend con Maven wrapper: `cd backend` poi `mvnw.cmd spring-boot:run` (Windows) oppure `mvn spring-boot:run`
+- Verifica l’endpoint: `http://localhost:8080/api/auth/check`
+
+---
+
 ## 🗄️ Database MySQL
 
 Il progetto si aspetta:
@@ -76,7 +99,7 @@ LaboratorioIntegrato/
 ├── Modello DB.png                     # Diagramma database
 └── backend/                           # Backend Spring Boot
     ├── src/main/java/com/immobiliaris/imobiliaris/
-    │   ├── config/                    # Spring Security, CORS
+    │   ├── config/                    # Spring Security
     │   ├── controller/api/            # REST API
     │   ├── entity/                    # User, TipoUtente
     │   ├── repository/                # JPA Repository
@@ -92,6 +115,11 @@ LaboratorioIntegrato/
 
 
 
+## 📡 API
+
+Per consultare le API, entra nella root del repository e apri il file `API_DOCUMENTATION.md`.
+
+---
 ## 🔧 Risoluzione Problemi
 
 ### ❌ "Accesso negato" quando avvio mvnw.cmd
@@ -146,7 +174,6 @@ spring.datasource.password=its_2025
 - **Spring Security** con form login e session-based authentication
 - **JPA/Hibernate** per gestione database MySQL
 - **CSRF disabilitato** per API REST
-- **CORS configurato** per accettare richieste da `http://localhost:3000`
 - **BCrypt** per criptazione password (10 rounds)
 
 ---
@@ -155,8 +182,7 @@ spring.datasource.password=its_2025
 
 - Le **password** devono essere criptate con **BCrypt** nel database (10 rounds)
 - L'autenticazione usa **sessioni Spring Security** con cookie `JSESSIONID`
-- **CORS** è configurato per accettare richieste da `http://localhost:3000`
-- Puoi integrare qualsiasi frontend (React, Vue, Angular) usando le API REST
+ 
 
 ---
 
@@ -190,19 +216,8 @@ mvn spring-boot:run
 
 Per problemi:
 1. Verifica i **log del backend** nel terminale
-2. Apri la **console del browser** (F12) per errori React
-3. Controlla che **MySQL sia avviato** e gli utenti esistano
-4. Verifica che le **password siano criptate BCrypt**
+2. Controlla che **MySQL sia avviato** e gli utenti esistano
+3. Verifica che le **password siano criptate BCrypt**
 
 ---
-
-## 📅 Link Meet
-
-- Meet Generale: https://meet.google.com/oop-qhkv-qiq
-- Meet Backend: https://meet.google.com/cre-qsxn-fzy
-- Meet Frontend: https://meet.google.com/pjq-wvqf-wim
-- Meet Digital strategist: https://meet.google.com/tct-qggm-cyc
-
----
-
 **Progetto pronto! 🚀**

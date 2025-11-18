@@ -34,6 +34,12 @@ public class AdminApiController {
             response.put("hasMore", immobiliLoad.get("hasMore"));
             response.put("pageSize", immobiliLoad.get("pageSize"));
 
+<<<<<<< HEAD
+=======
+            // Ottieni tutti gli agenti dal database
+            response.put("agents", statisticsService.getAllAgents());
+
+>>>>>>> main
         } catch (Exception e) {
             // Se c'è errore, ritorna almeno le info base
             System.err.println("Errore caricamento dashboard: " + e.getMessage());
@@ -146,4 +152,44 @@ public class AdminApiController {
             return ResponseEntity.status(500).body(Map.of("success", false, "message", "Errore eliminazione valutazione: " + e.getMessage()));
         }
     }
+<<<<<<< HEAD
+=======
+
+    /**
+     * Modifica una valutazione in verifica per ID
+     * Esempio: PUT /api/admin/valutazioni/in-verifica/7
+     */
+    @PutMapping("/valutazioni/in-verifica/{id}")
+    public ResponseEntity<Object> updateValutazioneInVerifica(
+            @PathVariable Integer id,
+            @RequestBody Map<String, Object> updates) {
+        try {
+            statisticsService.updateValutazione(id, updates);
+            return ResponseEntity.ok(Map.of("success", true, "message", "Valutazione aggiornata con successo"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(Map.of("success", false, "message", "Errore aggiornamento valutazione: " + e.getMessage()));
+        }
+    }
+
+    /**
+     * Assegna un agente a una valutazione solo_AI
+     * Esempio: PUT /api/admin/valutazioni/solo-ai/{id}/assegna-agente
+     * Body: { "idAgente": 123 }
+     */
+    @PutMapping("/valutazioni/solo-ai/{id}/assegna-agente")
+    public ResponseEntity<Object> assegnaAgenteValutazioneAI(
+            @PathVariable Integer id,
+            @RequestBody Map<String, Object> body) {
+        try {
+            // Converti il valore JSON (che può essere Integer) in Long
+            Long idAgente = ((Number) body.get("idAgente")).longValue();
+            statisticsService.assegnaAgenteValutazioneAI(id, idAgente);
+            return ResponseEntity.ok(Map.of("success", true, "message", "Agente assegnato con successo"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(Map.of("success", false, "message", "Errore assegnazione agente: " + e.getMessage()));
+        }
+    }
+>>>>>>> main
 }
