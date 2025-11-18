@@ -11,11 +11,17 @@ public class PropertyRequest {
     private String province;
     private String type;
     private Integer squareMeters;
+    private String condizioni;
     private Integer rooms;
     private Integer bathrooms;
+    private String riscaldamento;
     private Integer floor;
     private Boolean elevator;
     private Boolean garage;
+    private Boolean giardino;
+    private Boolean balcone;
+    private Boolean terrazzo;
+    private Boolean cantina;
     private String description;
     
     // Contact details (for CRM)
