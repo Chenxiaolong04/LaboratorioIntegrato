@@ -1,6 +1,5 @@
 package com.immobiliaris.demo.service;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -11,9 +10,6 @@ import com.immobiliaris.demo.model.Property;
 public class EmailService {
 
     private final JavaMailSender mailSender;
-    
-    @Value("${app.mail.from}")
-    private String fromEmail;
 
     public EmailService(JavaMailSender mailSender) {
         this.mailSender = mailSender;
@@ -25,9 +21,6 @@ public class EmailService {
     public void sendConfirmationEmail(String to, String contactName, Property property) {
         try {
             SimpleMailMessage message = new SimpleMailMessage();
-            if (fromEmail != null && !fromEmail.isEmpty()) {
-                message.setFrom(fromEmail);
-            }
             message.setTo(to);
             message.setSubject("Conferma ricezione richiesta immobile");
             message.setText(buildEmailContent(contactName, property));
@@ -81,9 +74,6 @@ public class EmailService {
     public void sendInternalNotification(String adminEmail, Property property, String contactName, String contactEmail, String contactPhone) {
         try {
             SimpleMailMessage message = new SimpleMailMessage();
-            if (fromEmail != null && !fromEmail.isEmpty()) {
-                message.setFrom(fromEmail);
-            }
             message.setTo(adminEmail);
             message.setSubject("Nuova richiesta valutazione immobile");
             message.setText(buildInternalNotificationContent(property, contactName, contactEmail, contactPhone));
