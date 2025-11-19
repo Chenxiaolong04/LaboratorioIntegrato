@@ -16,7 +16,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 import com.immobiliaris.demo.entity.Contratto;
-import com.immobiliaris.demo.entity.User;
 
 @Service
 public class StatisticsService {
@@ -35,6 +34,12 @@ public class StatisticsService {
 
     @Autowired
     private UtenteRepository utenteRepository;
+
+    @Autowired
+    private ValutazioneJpaRepository valutazioneJpaRepository;
+
+    @Autowired
+    private ImmobileJpaRepository immobileJpaRepository;
 
     @Autowired
     private StatoValutazioneRepository statoValutazioneRepository;
@@ -598,7 +603,7 @@ public class StatisticsService {
 
         // Salva le modifiche
         if (immobileModificato) {
-            immobileRepository.save(immobile);
+            immobileJpaRepository.save(immobile);
         }
         valutazioneRepository.save(valutazione);
     }
