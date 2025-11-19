@@ -1,0 +1,114 @@
+@use "./variables" as var;
+
+// components global styles
+@use "./button";
+@use "./input";
+@use "./inputGroup";
+@use "./cardInput";
+@use "./searchBar";
+@use "./loader";
+
+// layout
+@use "./navbar";
+@use "./footer";
+
+// homepage sections
+@use "./header";
+@use "./stats";
+@use "./steps";
+@use "./reasons";
+@use "./faq";
+@use "./cta";
+
+// Form
+@use "./stepForm";
+@use "./stepSuccess";
+@use "./stepContacts";
+
+// Login
+@use "./login";
+
+// dashboard Admin
+@use "./adminHome";
+@use "./tablesDashboard";
+@use "./createUser";
+
+// Global resets
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+ul {
+  list-style: none;
+}
+
+body {
+  font-family: "Sora", sans-serif;
+  
+}
+
+main {
+  padding-top: 77px;
+}
+
+.container {
+  padding: 2rem 1rem;
+  width: 100%;
+  margin: 0 auto;
+
+  // Extra small (xs)
+  @media (min-width: 0) {
+    max-width: 100%;
+  }
+
+  // Small (sm)
+  @media (min-width: 576px) {
+    max-width: 540px;
+  }
+
+  // Medium (md)
+  @media (min-width: 768px) {
+    max-width: 720px;
+    padding: 5rem 1rem;
+  }
+
+  // Large (lg)
+  @media (min-width: 992px) {
+    max-width: 960px;
+  }
+
+  // Extra large (xl)
+  @media (min-width: 1200px) {
+    max-width: 1140px;
+  }
+
+  // Extra extra large (xxl)
+  @media (min-width: 1400px) {
+    max-width: 1320px;
+  }
+}
+
+img {
+  width: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Chrome, Safari, Edge */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
