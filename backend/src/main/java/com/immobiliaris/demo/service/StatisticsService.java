@@ -200,7 +200,26 @@ public class StatisticsService {
                 immobileMap.put("nomeProprietario", iObj.getProprietario() != null ? iObj.getProprietario().getNome() + " " + iObj.getProprietario().getCognome() : null);
                 immobileMap.put("dataInserimento", iObj.getDataInserimento());
 
-                String agenteNome = findAgenteForImmobile(iObj.getId());
+                // Recupera stato valutazione e agente dalla tabella Valutazioni usando JPA
+                List<Valutazione> valutazioni = valutazioneJpaRepository.findByImmobileIdOrderByDataValutazioneDesc(iObj.getId());
+                String statoValutazione = null;
+                String agenteNome = null;
+                
+                if (!valutazioni.isEmpty()) {
+                    Valutazione valutazione = valutazioni.get(0); // Prende la più recente
+                    if (valutazione.getStatoValutazione() != null) {
+                        statoValutazione = valutazione.getStatoValutazione().getNome();
+                    }
+                    
+                    // Mostra agente solo se stato valutazione è "in_verifica" o "approvata" (non per "solo_AI")
+                    if (statoValutazione != null && ("in_verifica".equalsIgnoreCase(statoValutazione) || "approvata".equalsIgnoreCase(statoValutazione))) {
+                        if (valutazione.getAgente() != null) {
+                            agenteNome = valutazione.getAgente().getNome() + " " + valutazione.getAgente().getCognome();
+                        }
+                    }
+                }
+                
+                immobileMap.put("statoValutazione", statoValutazione);
                 immobileMap.put("agenteAssegnato", agenteNome);
 
                 items.add(immobileMap);

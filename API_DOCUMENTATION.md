@@ -62,244 +62,7 @@ Verifica se l'utente è autenticato
 
 ---
 
-### POST `/api/users/register`
-Registrazione nuovo utente (Solo Admin) ⚠️ **MODIFICATO**
-
-**Implementato da:** Simone
-
-**Richiede:** `ROLE_ADMIN` ⚠️ **NUOVO**
-
-**Request:**
-```json
-{
-  "nome": "Mario",
-  "cognome": "Rossi",
-  "email": "mario.rossi@example.com",
-  "password": "Password123!",
-  "tipoUtente": {
-    "idTipo": 1,
-    "nomeTipo": "Admin"
-  }
-}
-```
-
-**Parameters:**
-- `nome` (required): Nome dell'utente
-- `cognome` (required): Cognome dell'utente
-- `email` (required, unique): Email dell'utente
-- `password` (required): Password (verrà hashata con BCrypt)
-- `tipoUtente` (required) ⚠️ **MODIFICATO**: Oggetto con dati tipo utente nel body JSON
-  - `idTipo` (required): ID del tipo utente
-    - `1` = ADMIN
-    - `2` = AGENT
-  - `nomeTipo` (optional): Nome del tipo utente
-
-**Response (200 OK):**
-```json
-{
-  "idUtente": 5,
-  "nome": "Mario",
-  "cognome": "Rossi",
-  "email": "mario.rossi@example.com",
-  "dataRegistrazione": "2025-11-11",
-  "tipoUtente": {
-    "idTipo": 1,
-    "nomeTipo": "Admin"
-  }
-}
-```
-
-**Response (400 Bad Request):**
-```json
-{
-  "success": false,
-  "message": "Email già registrata"
-}
-```
-
-**Response (403 Forbidden):** ⚠️ **NUOVO**
-```json
-{
-  "success": false,
-  "message": "Accesso negato. Solo l'amministratore può registrare nuovi utenti."
-}
-```
-
-**Response (500 Server Error):**
-```json
-{
-  "success": false,
-  "message": "Tipo utente non trovato"
-}
-```
-
-**Note:**
-- ⚠️ **MODIFICATO**: Solo utenti con `ROLE_ADMIN` possono accedere a questo endpoint
-- ⚠️ **MODIFICATO**: Il `tipoUtente` viene passato nel **body JSON** (non nell'URL come prima)
-- ⚠️ **MODIFICATO**: Gli agenti non possono più creare nuovi utenti
-- ✅ La password viene automaticamente hashata con BCrypt
-- ✅ La data di registrazione viene impostata automaticamente
-- ✅ L'email deve essere unica nel sistema
-
----
-
-### GET `/api/users`
-Ottieni lista di tutti gli utenti
-
-**Implementato da:** Simone
-
-**Richiede:** `ROLE_ADMIN`
-
-**Response (200 OK):**
-```json
-[
-  {
-    "idUtente": 1,
-    "nome": "Admin",
-    "cognome": "Test",
-    "email": "admin@test.com",
-    "telefono": "3201234567",
-    "via": "Via Roma 1",
-    "citta": "Milano",
-    "cap": "20100",
-    "dataRegistrazione": "2025-11-01",
-    "tipoUtente": {
-      "idTipo": 1,
-      "nomeTipo": "Admin"
-    }
-  },
-  {
-    "idUtente": 2,
-    "nome": "Agent",
-    "cognome": "Verdi",
-    "email": "agent@test.com",
-    "telefono": "3209876543",
-    "via": "Via Milano 2",
-    "citta": "Roma",
-    "cap": "00100",
-    "dataRegistrazione": "2025-11-02",
-    "tipoUtente": {
-      "idTipo": 2,
-      "nomeTipo": "Agent"
-    }
-  }
-]
-```
-
-**Response (403):** Se non hai ROLE_ADMIN
-
----
-
-### GET `/api/users/{id}`
-Ottieni dettagli di un utente specifico
-
-**Implementato da:** Simone
-
-**Richiede:** `ROLE_ADMIN`
-
-**Path Parameters:**
-- `id` (required): ID dell'utente
-
-**Response (200 OK):**
-```json
-{
-  "idUtente": 1,
-  "nome": "Admin",
-  "cognome": "Test",
-  "email": "admin@test.com",
-  "telefono": "3201234567",
-  "via": "Via Roma 1",
-  "citta": "Milano",
-  "cap": "20100",
-  "dataRegistrazione": "2025-11-01",
-  "tipoUtente": {
-    "idTipo": 1,
-    "nomeTipo": "Admin"
-  }
-}
-```
-
-**Response (404 Not Found):**
-```json
-{
-  "message": "Utente non trovato"
-}
-```
-
-**Response (403):** Se non hai ROLE_ADMIN
-
----
-
-### PUT `/api/users/{id}`
-Aggiorna dati di un utente
-
-**Implementato da:** Simone
-
-**Richiede:** `ROLE_ADMIN`
-
-**Path Parameters:**
-- `id` (required): ID dell'utente da aggiornare
-
-**Request:**
-```json
-{
-  "nome": "Mario",
-  "cognome": "Bianchi",
-  "email": "mario.bianchi@example.com",
-  "password": "NewPassword123!",
-  "telefono": "3305555555",
-  "via": "Via Napoli 10",
-  "citta": "Napoli",
-  "cap": "80100",
-  "tipoUtente": {
-    "idTipo": 2,
-    "nomeTipo": "Agent"
-  }
-}
-```
-
-**Parameters:**
-- `nome` (optional): Nuovo nome
-- `cognome` (optional): Nuovo cognome
-- `email` (optional): Nuova email
-- `password` (optional): Nuova password (verrà hashata)
-- `telefono` (optional): Nuovo numero di telefono
-- `via` (optional): Nuovo indirizzo
-- `citta` (optional): Nuova città
-- `cap` (optional): Nuovo CAP
-- `tipoUtente` (optional): Nuovo tipo utente
-
-**Response (200 OK):**
-```json
-{
-  "idUtente": 1,
-  "nome": "Mario",
-  "cognome": "Bianchi",
-  "email": "mario.bianchi@example.com",
-  "telefono": "3305555555",
-  "via": "Via Napoli 10",
-  "citta": "Napoli",
-  "cap": "80100",
-  "dataRegistrazione": "2025-11-01",
-  "tipoUtente": {
-    "idTipo": 2,
-    "nomeTipo": "Agent"
-  }
-}
-```
-
-**Response (404 Not Found):**
-```json
-{
-  "message": "Utente non trovato"
-}
-```
-
-**Response (403):** Se non hai ROLE_ADMIN
-
-**Note:**
-- Se la password non viene fornita, rimane invariata
-- Solo i campi forniti vengono aggiornati
+### GET `/api/auth/user`
 Ottieni informazioni utente loggato
 
 **Response (200 OK):**
@@ -341,12 +104,14 @@ Ottieni informazioni utente loggato
       "tipo": "Appartamento",
       "nomeProprietario": "Mario Rossi",
       "dataInserimento": "2025-11-10",
+      "statoValutazione": "in_verifica",
       "agenteAssegnato": "Luigi Verdi"
     },
     {
       "tipo": "Villa",
       "nomeProprietario": "Anna Bianchi",
       "dataInserimento": "2025-11-09",
+      "statoValutazione": "solo_AI",
       "agenteAssegnato": null
     }
   ],
@@ -377,7 +142,16 @@ Ottieni informazioni utente loggato
 - `tipo`: Tipologia immobile (Appartamento, Villa, Ufficio, ecc.)
 - `nomeProprietario`: Nome completo proprietario
 - `dataInserimento`: Data inserimento immobile
-- `agenteAssegnato`: Nome agente che gestisce (null se non assegnato)
+- `statoValutazione`: Stato della valutazione dell'immobile (recuperato dalla tabella Valutazioni)
+  - `"solo_AI"`: Valutazione effettuata solo dall'intelligenza artificiale
+  - `"in_verifica"`: Valutazione in corso di verifica da parte di un agente
+  - `"approvata"`: Valutazione approvata dall'agente
+- `agenteAssegnato`: Nome completo dell'agente che gestisce la valutazione
+  - Viene mostrato **solo** se `statoValutazione` è `"in_verifica"` o `"approvata"`
+  - Sarà `null` se lo stato è `"solo_AI"` o se non c'è un agente assegnato
+
+**Nota importante sulla logica di visualizzazione:**
+Il sistema recupera lo stato della valutazione dalla tabella `Valutazioni` (non dalla tabella `Immobili`). Per ogni immobile viene cercata la valutazione più recente (ordinata per `Data_valutazione DESC`). L'agente viene mostrato solo quando la valutazione è in fase di verifica umana o è stata approvata, garantendo che le valutazioni AI non mostrino erroneamente un agente assegnato.
 
 **Response (403):** Se non hai ROLE_ADMIN
 
@@ -400,6 +174,7 @@ Endpoint alternativo per paginazione basata su **pagine** (non offset). Utile se
       "tipo": "Appartamento",
       "nomeProprietario": "Mario Rossi",
       "dataInserimento": "2025-11-10",
+      "statoValutazione": "in_verifica",
       "agenteAssegnato": "Luigi Verdi"
     }
   ],
@@ -962,6 +737,59 @@ spring.mail.password=YOUR_MAILTRAP_PASS
 ```
 
 ---
+
+## 🔍 Logica di Gestione Valutazioni e Agenti
+
+### Stato Valutazione
+Lo **stato della valutazione** non è memorizzato direttamente nella tabella `Immobili`, ma viene recuperato dalla tabella `Valutazioni`. Per ogni immobile:
+
+1. Il sistema cerca la valutazione più recente nella tabella `Valutazioni` (ordinata per `Data_valutazione DESC`)
+2. Recupera lo stato della valutazione dal campo `Id_stato_valutazione` che fa riferimento alla tabella `Stati_valutazione`
+
+### Stati Valutazione Disponibili
+- **`solo_AI`**: Valutazione generata esclusivamente dall'intelligenza artificiale, senza intervento umano
+- **`in_verifica`**: Valutazione in fase di controllo da parte di un agente
+- **`approvata`**: Valutazione verificata e approvata dall'agente
+
+### Logica di Visualizzazione Agente
+L'agente viene mostrato **solo** quando la valutazione richiede o ha ricevuto un intervento umano:
+
+- ✅ **Mostra agente** se `statoValutazione` è `"in_verifica"` o `"approvata"`
+  - L'agente viene recuperato dal campo `Id_agente` nella tabella `Valutazioni`
+  - Visualizza: Nome e cognome completo dell'agente
+  
+- ❌ **NON mostra agente** se `statoValutazione` è `"solo_AI"`
+  - Il campo `agenteAssegnato` sarà `null`
+  - Questo garantisce che valutazioni automatiche non mostrino erroneamente un agente
+
+### Implementazione Tecnica
+- **Repository utilizzato**: `ValutazioneJpaRepository` con metodo Spring Data JPA
+- **Query method**: `findByImmobileIdOrderByDataValutazioneDesc(Integer immobileId)`
+- **Vantaggi**:
+  - Usa l'ORM di Spring invece di query SQL dirette
+  - Gestione automatica delle relazioni JPA (`StatoValutazione` e `User`)
+  - Ordinamento automatico per data più recente
+  - Type-safe e manutenibile
+
+### Esempio Pratico
+```java
+// Nel frontend, quando visualizzi un immobile:
+if (immobile.statoValutazione === "solo_AI") {
+  // Mostra badge "Valutato da AI"
+  // Non mostrare nome agente
+} else if (immobile.statoValutazione === "in_verifica") {
+  // Mostra badge "In verifica"
+  // Mostra: "Agente: {immobile.agenteAssegnato}"
+} else if (immobile.statoValutazione === "approvata") {
+  // Mostra badge "Approvata"
+  // Mostra: "Verificato da: {immobile.agenteAssegnato}"
+}
+```
+
+---
+
+
+
 
 
 
