@@ -15,7 +15,6 @@ export default function EvaluationsAI() {
   const { user } = useAuth();
   const [valutazioni, setValutazioni] = useState<(ValutazioneAI & { incaricoAssegnato?: boolean })[]>([]);
   const [selected, setSelected] = useState<ValutazioneAI | null>(null);
-
   const [searchQuery, setSearchQuery] = useState("");
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
@@ -98,12 +97,8 @@ export default function EvaluationsAI() {
       ) : (
         <div className="table-container">
           <h2>Valutazioni AI effettuate</h2>
-
           <div className="filter-buttons">
-            <SearchBar
-              placeholder="Cerca un proprietario"
-              onSearch={setSearchQuery}
-            />
+            <SearchBar placeholder="Cerca un proprietario" onSearch={setSearchQuery} />
           </div>
 
           {/* Table */}
@@ -129,27 +124,15 @@ export default function EvaluationsAI() {
                     <td>{row.tipo || "—"}</td>
                     <td>
                       <div className="action-buttons">
-                        <Button
-                          className="lightblu"
-                          onClick={() => setSelected(row)}
-                        >
+                        <Button className="lightblu" onClick={() => setSelected(row)}>
                           Dettagli
                         </Button>
-
                         {user?.role === "agente" && (
-                          <Button
-                            className="blu"
-                            disabled={!!row.incaricoAssegnato}
-                            onClick={() => handleTakeAssignment(row)}
-                          >
+                          <Button className="blu" disabled={!!row.incaricoAssegnato} onClick={() => handleTakeAssignment(row)}>
                             {row.incaricoAssegnato ? "Incarico preso" : "Prendi incarico"}
                           </Button>
                         )}
-
-                        <Button
-                          className="red"
-                          onClick={() => handleDelete(row.id)}
-                        >
+                        <Button className="red" onClick={() => handleDelete(row.id)}>
                           <FaX />
                         </Button>
                       </div>
@@ -169,20 +152,13 @@ export default function EvaluationsAI() {
                 <div className="card-row"><b>Prezzo AI:</b> {row.prezzoAI ? row.prezzoAI + " €" : "—"}</div>
                 <div className="card-row"><b>Indirizzo:</b> {row.via ? `${row.via}, ${row.citta}` : "—"}</div>
                 <div className="card-row"><b>Tipologia:</b> {row.tipo || "—"}</div>
-
                 <div className="card-actions">
                   <Button className="lightblu" onClick={() => setSelected(row)}>Dettagli</Button>
-
                   {user?.role === "agente" && (
-                    <Button
-                      className="blu"
-                      disabled={!!row.incaricoAssegnato}
-                      onClick={() => handleTakeAssignment(row)}
-                    >
+                    <Button className="blu" disabled={!!row.incaricoAssegnato} onClick={() => handleTakeAssignment(row)}>
                       {row.incaricoAssegnato ? "Incarico preso" : "Prendi incarico"}
                     </Button>
                   )}
-
                   <Button className="red" onClick={() => handleDelete(row.id)}><FaX /></Button>
                 </div>
               </div>
@@ -205,7 +181,6 @@ export default function EvaluationsAI() {
             <p><b>ID:</b> {selected.id}</p>
             <p><b>Descrizione:</b> {selected.descrizione}</p>
             <p><b>Prezzo AI:</b> {selected.prezzoAI} €</p>
-
             <h4>Dati immobile</h4>
             <p><b>Tipo:</b> {selected.tipo}</p>
             <p><b>Indirizzo:</b> {selected.via}, {selected.citta}</p>
@@ -213,12 +188,10 @@ export default function EvaluationsAI() {
             <p><b>Stanze:</b> {selected.stanze}</p>
             <p><b>Bagni:</b> {selected.bagni}</p>
             <p><b>Piano:</b> {selected.piano}</p>
-
             <h4>Proprietario</h4>
             <p><b>Nome:</b> {selected.nomeProprietario}</p>
             <p><b>Email:</b> {selected.emailProprietario}</p>
             <p><b>Telefono:</b> {selected.telefonoProprietario}</p>
-
             <Button className="red" onClick={() => setSelected(null)}>Chiudi</Button>
           </div>
         </div>

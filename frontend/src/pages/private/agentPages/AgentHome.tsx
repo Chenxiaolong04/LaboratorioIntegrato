@@ -102,19 +102,19 @@ export default function AgentHome() {
           {[
             {
               icon: <FaCheckCircle size={36} color="green" />,
-              title: "Miei Contratti conclusi",
+              title: "Contratti conclusi",
               value: statistics.mieiContrattiConclusi,
               link: "/agente/contratti",
             },
             {
               icon: <TbProgressCheck size={36} color="orange" />,
-              title: "Miei Incarichi in corso",
+              title: "Incarichi in corso",
               value: statistics.mieiIncarichiInCorso,
               link: "/agente/incarichi",
             },
             {
               icon: <PiWarningCircleBold size={36} color="gray" />,
-              title: "Valutazioni AI (Generali)",
+              title: "Valutazioni AI",
               value: statistics.valutazioniConAI,
               link: "/agente/valutazioniAI",
             },
@@ -238,15 +238,15 @@ export default function AgentHome() {
       <div className="stats-today">
         <h2>Statistiche mensili</h2>
         <div className="card">
-          <h3>Miei Contratti conclusi</h3>
+          <h3>Contratti conclusi</h3>
           <p>+ {statistics.mieiContrattiConclusiMensili}</p>
         </div>
         <div className="card">
-          <h3>Miei Incarichi nuovi</h3>
+          <h3>Incarichi nuovi</h3>
           <p>+ {statistics.mieiIncarichiNuoviMensili}</p>
         </div>
         <div className="card">
-          <h3>Valutazioni AI effettuate</h3>
+          <h3>Valutazioni AI</h3>
           <p>+ {statistics.valutazioniConAIMensili}</p>
         </div>
       </div>
