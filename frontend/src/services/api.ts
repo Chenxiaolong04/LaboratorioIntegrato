@@ -111,16 +111,16 @@ export type AgenteDashboardData = {
 
 export async function getAgenteDashboard(
   offset: number = 0,
-  limit: number = 10,
-  agenteId: string
+  limit: number = 10
 ): Promise<AgenteDashboardData> {
   return apiFetch<AgenteDashboardData>(
-    `/agente/dashboard/${agenteId}?offset=${offset}&limit=${limit}`,
+    `/agent/dashboard?offset=${offset}&limit=${limit}`,
     {
       method: "GET",
     }
   );
 }
+
 
 export type TipoUtente = {
   idTipo: number;
