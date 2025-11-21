@@ -610,6 +610,8 @@ Assegna un agente (già presente nel DB) a una valutazione con stato "solo_AI". 
 | `/api/agent/dashboard` | GET | ✅ Sì | AGENT | Dashboard agente (statistiche personali) |
 | `/api/mail/send` | POST | ❌ No* | - | Invia email (⚠️ proteggere in prod) |
 | `/api/mail/test` | GET | ❌ No | - | Verifica mail endpoint |
+| `/api/address/validate` | POST | ❌ No | - | Valida indirizzo con Nominatim OpenStreetMap |
+| `/api/address/test` | GET | ❌ No | - | Verifica address validation endpoint |
 | `/api/admin/valutazioni/solo-ai/{id}/assegna-agente` | PUT | ✅ Sì | ADMIN | Assegna agente a valutazione AI e cambia stato in_verifica |
 
 ---
@@ -671,6 +673,102 @@ Assegna un agente (già presente nel DB) a una valutazione con stato "solo_AI". 
    
 6. Logout
    POST /api/auth/logout → Sessione invalidata
+```
+
+---
+
+## 📍 Validazione Indirizzo
+
+### POST `/api/address/validate`
+Valida un indirizzo usando l'API Nominatim di OpenStreetMap
+
+**Regole di validazione:**
+- La città deve essere una tra: Torino, Cuneo, Alessandria, Asti (case insensitive).
+- La via deve iniziare con un tipo valido (es: via, corso, viale, piazza, ecc.) e non deve contenere il nome della città.
+- Se la città non è tra quelle accettate, la risposta sarà sempre `valid: false` e suggerimenti vuoti.
+
+**Autenticazione:** ❌ No
+
+**Request:**
+```json
+{
+  "via": "Via Roma 10",
+  "citta": "Torino",
+  "cap": "10121"
+}
+```
+
+**Parametri:**
+ - `via` (opzionale): Nome della via con numero civico. Deve iniziare con un tipo valido (via, corso, ecc.)
+ - `citta` (opzionale): Nome della città. Solo Torino, Cuneo, Alessandria, Asti sono accettate.
+ - `cap` (opzionale): Codice postale
+
+**Nota:** Almeno uno tra `via`, `citta` o `cap` deve essere presente.
+
+**Response (200 OK) - Indirizzo valido:**
+```json
+{
+  "valid": true,
+  "suggestions": [
+    {
+      "displayName": "Via Roma, Centro, Torino, Piemonte, 10121, Italia",
+      "via": "Via Roma",
+      "citta": "Torino",
+      "cap": "10121",
+      "lat": 45.0703,
+      "lon": 7.6869
+    },
+    {
+      "displayName": "Via Roma, San Salvario, Torino, Piemonte, 10122, Italia",
+      "via": "Via Roma",
+      "citta": "Torino",
+      "cap": "10122",
+      "lat": 45.0625,
+      "lon": 7.6835
+    }
+  ]
+}
+```
+
+**Response (200 OK) - Indirizzo non trovato:**
+```json
+{
+  "valid": false,
+  "suggestions": []
+}
+```
+
+**Response (400 Bad Request) - Parametri mancanti:**
+```json
+{
+  "valid": false,
+  "suggestions": null
+}
+```
+
+**Campi della risposta:**
+ - `valid` (boolean): `true` se l'indirizzo è stato trovato, `false` altrimenti
+ - `suggestions` (array): Lista di indirizzi trovati con dettagli
+
+**Campi di ogni suggestion:**
+ - `displayName`: Nome completo dell'indirizzo formattato
+ - `via`: Nome della via estratto
+ - `citta`: Nome della città estratto
+ - `cap`: Codice postale estratto
+ - `lat`: Latitudine (coordinate geografiche)
+ - `lon`: Longitudine (coordinate geografiche)
+
+**Nota tecnica:**
+L'API utilizza [Nominatim di OpenStreetMap](https://nominatim.openstreetmap.org/), un servizio gratuito di geocoding. Restituisce fino a 5 suggerimenti ordinati per rilevanza. La ricerca è limitata all'Italia (`countrycodes=it`).
+
+---
+
+### GET `/api/address/test`
+Verifica che l'endpoint di validazione indirizzi sia raggiungibile
+
+**Response (200 OK):**
+```
+"Address validation API is working! ✅"
 ```
 
 ---

@@ -1,11 +1,10 @@
-package com.immobiliaris.dto;
+package com.immobiliaris.demo.dto;
 
 public class EmailRequest {
     private String to;
     private String subject;
     private String message;
 
-    // getter e setter obbligatori
     public String getTo() {
         return to;
     }

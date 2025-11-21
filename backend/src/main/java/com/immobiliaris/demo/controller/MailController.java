@@ -3,7 +3,7 @@ package com.immobiliaris.demo.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.immobiliaris.demo.service.EmailService;
-import com.immobiliaris.dto.EmailRequest;
+import com.immobiliaris.demo.dto.EmailRequest;
 
 @RestController
 @RequestMapping("/api/mail")
