@@ -89,7 +89,148 @@ public class StatisticsService {
 
         data.put("ultimi10Immobili", ultimi10Immobili);
 
+        // Aggiungi contratti per mese (ultimi 6 mesi)
+        data.putAll(getContrattiPerMese());
+
+        // Aggiungi top 3 agenti
+        data.putAll(getTop3Agenti());
+
         return data;
+    }
+
+    /**
+     * Contratti stipulati per mese negli ultimi 6 mesi
+     * @return Map con mese e relativi dati (numero contratti, totale prezzo immobili)
+     */
+    public Map<String, Object> getContrattiPerMese() {
+        Map<String, Object> result = new LinkedHashMap<>();
+        List<Map<String, Object>> contrattiMensili = new java.util.ArrayList<>();
+
+        for (int i = 5; i >= 0; i--) {
+            LocalDate inizio = LocalDate.now().minusMonths(i).withDayOfMonth(1);
+            LocalDate fine = inizio.plusMonths(1).minusDays(1);
+
+            List<Contratto> contrattiMese = contrattoRepository.findByStatoContrattoNome("chiuso")
+                    .stream()
+                    .filter(c -> c.getDataInizio() != null && 
+                            !c.getDataInizio().isBefore(inizio) && 
+                            !c.getDataInizio().isAfter(fine))
+                    .collect(Collectors.toList());
+
+            Integer totalePrezzoMese = contrattiMese.stream()
+                    .map(c -> c.getImmobile() != null && c.getImmobile().getPrezzo() != null ? 
+                            c.getImmobile().getPrezzo() : 0)
+                    .reduce(0, Integer::sum);
+
+            Map<String, Object> mese = new LinkedHashMap<>();
+            mese.put("mese", String.format("%02d/%d", inizio.getMonthValue(), inizio.getYear()));
+            mese.put("numeroContratti", (long) contrattiMese.size());
+            mese.put("totalePrezzoImmobili", totalePrezzoMese);
+
+            contrattiMensili.add(mese);
+        }
+
+        result.put("contrattiPerMese", contrattiMensili);
+        return result;
+    }
+
+    /**
+     * Top 3 agenti con più contratti conclusi nel mese corrente
+     * @return Map con agenti, numero contratti e prezzo totale immobili
+     */
+    public Map<String, Object> getTop3Agenti() {
+        Map<String, Object> result = new LinkedHashMap<>();
+
+        LocalDate oggi = LocalDate.now();
+        LocalDate inizio = oggi.withDayOfMonth(1);
+        LocalDate fine = inizio.plusMonths(1).minusDays(1);
+
+        System.out.println("DEBUG: Data inizio mese: " + inizio);
+        System.out.println("DEBUG: Data fine mese: " + fine);
+
+        List<Contratto> tuttiContratti = contrattoRepository.findByStatoContrattoNome("chiuso");
+        System.out.println("DEBUG: Contratti conclusi TOTALI trovati: " + tuttiContratti.size());
+        tuttiContratti.forEach(c -> System.out.println("  - Contratto ID: " + c.getId() + 
+                ", data_inizio: " + c.getDataInizio() + 
+                ", stato: " + (c.getStatoContratto() != null ? c.getStatoContratto().getNome() : "NULL") +
+                ", agente ID: " + (c.getAgente() != null ? c.getAgente().getIdUtente() : "NULL")));
+
+        List<Contratto> contrattiConclusiMese = tuttiContratti.stream()
+                .filter(c -> {
+                    boolean hasData = c.getDataInizio() != null;
+                    boolean isInRange = hasData && !c.getDataInizio().isBefore(inizio) && !c.getDataInizio().isAfter(fine);
+                    if (hasData && isInRange) {
+                        System.out.println("DEBUG MATCH: Contratto " + c.getId() + " del " + c.getDataInizio());
+                    }
+                    return isInRange;
+                })
+                .collect(Collectors.toList());
+
+        System.out.println("DEBUG: Contratti conclusi nel mese corrente (filtrati): " + contrattiConclusiMese.size());
+
+        Map<?, List<Contratto>> agenteContrattiMapRaw = contrattiConclusiMese.stream()
+                .filter(c -> c.getAgente() != null && c.getAgente().getIdUtente() != null)
+                .collect(Collectors.groupingBy(c -> c.getAgente().getIdUtente()));
+
+        System.out.println("Agenti trovati nel mese: " + agenteContrattiMapRaw.size());
+
+        List<Map<String, Object>> top3 = agenteContrattiMapRaw.entrySet().stream()
+                .sorted((a, b) -> Integer.compare(b.getValue().size(), a.getValue().size()))
+                .limit(3)
+                .map(entry -> {
+                    Map<String, Object> agente = new LinkedHashMap<>();
+                    try {
+                        Object keyObj = entry.getKey();
+                        System.out.println("DEBUG: Key object type: " + keyObj.getClass().getName() + ", value: " + keyObj);
+                        
+                        Integer agenteId;
+                        if (keyObj instanceof Long) {
+                            agenteId = ((Long) keyObj).intValue();
+                        } else if (keyObj instanceof Integer) {
+                            agenteId = (Integer) keyObj;
+                        } else {
+                            throw new ClassCastException("Tipo di key non supportato: " + keyObj.getClass().getName());
+                        }
+                        System.out.println("DEBUG: Casting successful, agenteId = " + agenteId);
+                        System.out.println("DEBUG: Cercando agente con ID: " + agenteId);
+                        
+                        com.immobiliaris.demo.entity.User user = userRepository.findById((long) agenteId)
+                                .orElse(null);
+                        
+                        System.out.println("DEBUG: User trovato: " + (user != null ? "SÌ" : "NO"));
+                        
+                        if (user != null) {
+                            System.out.println("DEBUG: Agente trovato: " + user.getNome() + " " + user.getCognome() + 
+                                    " con " + entry.getValue().size() + " contratti nel mese");
+                            
+                            Integer totalePrezzoImmobili = entry.getValue().stream()
+                                    .map(c -> c.getImmobile() != null && c.getImmobile().getPrezzo() != null ? 
+                                            c.getImmobile().getPrezzo() : 0)
+                                    .reduce(0, Integer::sum);
+                            
+                            agente.put("nomeAgente", user.getNome() + " " + user.getCognome());
+                            agente.put("numeroContratti", (long) entry.getValue().size());
+                            agente.put("prezzTotaleImmobili", totalePrezzoImmobili);
+                            
+                            System.out.println("DEBUG: Agente aggiunto a top3. Map size: " + agente.size());
+                        } else {
+                            System.out.println("DEBUG: Agente non trovato con ID: " + agenteId);
+                        }
+                    } catch (ClassCastException e) {
+                        System.err.println("DEBUG: ClassCastException nel casting della key: " + e.getMessage());
+                        e.printStackTrace();
+                    } catch (Exception e) {
+                        System.err.println("DEBUG: Errore nel recupero agente: " + e.getMessage());
+                        e.printStackTrace();
+                    }
+                    return agente;
+                })
+                .filter(m -> !m.isEmpty())
+                .collect(Collectors.toList());
+
+        System.out.println("Top 3 agenti del mese trovati: " + top3.size());
+        result.put("top3Agenti", top3);
+        return result;
     }
 
     /**
@@ -145,9 +286,9 @@ public class StatisticsService {
     public Map<String, Object> getImmobiliPaginated(int page, int size) {
         Map<String, Object> result = new LinkedHashMap<>();
 
-        // Ottieni immobili della pagina con Spring Data JPA
+        // Ottieni immobili della pagina con Spring Data JPA ordinati per ID decrescente
         Pageable pageable = PageRequest.of(page, size);
-        Page<Immobile> immobiliPage = immobileRepository.findAllByOrderByDataInserimentoDesc(pageable);
+        Page<Immobile> immobiliPage = immobileRepository.findAllByOrderByIdDesc(pageable);
 
         // Trasforma in Map per JSON
         List<Map<String, Object>> immobili = immobiliPage.getContent().stream().map(i -> {
@@ -189,7 +330,7 @@ public class StatisticsService {
         long total = immobileRepository.count();
 
         while (items.size() < limit) {
-            Page<Immobile> p = immobileRepository.findAllByOrderByDataInserimentoDesc(PageRequest.of(page, limit));
+            Page<Immobile> p = immobileRepository.findAllByOrderByIdDesc(PageRequest.of(page, limit));
             List<Immobile> content = p.getContent();
             if (content.isEmpty()) break;
 
