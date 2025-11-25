@@ -89,6 +89,17 @@ public class StatisticsService {
 
         data.put("ultimi10Immobili", ultimi10Immobili);
 
+            // Statistiche immobili per tipo (Appartamento, Attico, Villa, Loft)
+            List<Immobile> tuttiImmobili = immobileRepository.findAll();
+            Map<String, Long> immobiliPerTipo = tuttiImmobili.stream()
+                .filter(i -> i.getTipologia() != null)
+                .filter(i -> {
+                    String tipo = i.getTipologia().toLowerCase();
+                    return tipo.equals("appartamento") || tipo.equals("attico") || tipo.equals("villa") || tipo.equals("loft");
+                })
+                .collect(Collectors.groupingBy(i -> i.getTipologia(), Collectors.counting()));
+            data.put("immobiliPerTipo", immobiliPerTipo);
+
         // Aggiungi contratti per mese (ultimi 6 mesi)
         data.putAll(getContrattiPerMese());
 
