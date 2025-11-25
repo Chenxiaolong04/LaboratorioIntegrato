@@ -1,35 +1,33 @@
 import { useEffect, useState } from "react";
 import SearchBar from "../../../components/SearchBar";
 import Button from "../../../components/Button";
+import Loader from "../../../components/Loader";
+import { useAuth } from "../../../context/AuthContext";
 import {
   getContrattiChiusiByAgente,
   type ContrattoChiuso,
   type ContrattiResponse,
 } from "../../../services/api";
 
-const AGENTE_CORRENTE_ID = "ID_O_NOME_AGENTE_LOGGATO";
 
 export default function ContractsAgent() {
+  const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [contratti, setContratti] = useState<ContrattoChiuso[]>([]);
-  const [selectedContract, setSelectedContract] =
-    useState<ContrattoChiuso | null>(null);
+  const [selectedContract, setSelectedContract] = useState<ContrattoChiuso | null>(null);
   const [nextOffset, setNextOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    (async () => {
-      if (!AGENTE_CORRENTE_ID) return;
 
+  useEffect(() => {
+    if (!user) return;
+
+
+    (async () => {
       setLoading(true);
       try {
-        const res: ContrattiResponse = await getContrattiChiusiByAgente(
-          0,
-          10,
-          AGENTE_CORRENTE_ID
-        );
-
+        const res: ContrattiResponse = await getContrattiChiusiByAgente(0, 10, String(user.id));
         setContratti(res.contratti);
         setNextOffset(res.nextOffset);
         setHasMore(res.hasMore);
@@ -39,19 +37,14 @@ export default function ContractsAgent() {
         setLoading(false);
       }
     })();
-  }, []);
+  }, [user]);
 
-  async function handleLoadMore() {
-    if (!hasMore || !AGENTE_CORRENTE_ID) return;
 
+  const handleLoadMore = async () => {
+    if (!hasMore || !user) return;
     setLoading(true);
     try {
-      const res: ContrattiResponse = await getContrattiChiusiByAgente(
-        nextOffset,
-        10,
-        AGENTE_CORRENTE_ID
-      );
-
+      const res: ContrattiResponse = await getContrattiChiusiByAgente(nextOffset, 10, String(user.id));
       setContratti((prev) => [...prev, ...res.contratti]);
       setNextOffset(res.nextOffset);
       setHasMore(res.hasMore);
@@ -60,23 +53,27 @@ export default function ContractsAgent() {
     } finally {
       setLoading(false);
     }
-  }
+  };
+
 
   const filteredContratti = contratti.filter((c) =>
     (c.nomeProprietario || "").toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+
+  if (loading && contratti.length === 0) return <Loader />;
+
 
   return (
     <div className="dashboard-container">
       <div className="table-container">
         <h2>I miei contratti conclusi</h2>
 
+
         <div className="filter-buttons">
-          <SearchBar
-            placeholder="Cerca un proprietario"
-            onSearch={(query) => setSearchQuery(query)}
-          />
+          <SearchBar placeholder="Cerca un proprietario" onSearch={setSearchQuery} />
         </div>
+
 
         <div className="table-wrapper">
           <table className="alerts-table">
@@ -89,7 +86,6 @@ export default function ContractsAgent() {
                 <th>Azioni</th>
               </tr>
             </thead>
-
             <tbody>
               {filteredContratti.map((c) => (
                 <tr key={c.numeroContratto}>
@@ -98,15 +94,9 @@ export default function ContractsAgent() {
                   <td>{c.dataFine || "-"}</td>
                   <td>{c.tipo || "-"}</td>
                   <td>
-                    <div className="action-buttons">
-                      <Button
-                        className="lightblu"
-                        title="Maggiori dettagli sul contratto"
-                        onClick={() => setSelectedContract(c)}
-                      >
-                        Dettagli
-                      </Button>
-                    </div>
+                    <Button className="lightblu" onClick={() => setSelectedContract(c)}>
+                      Dettagli
+                    </Button>
                   </td>
                 </tr>
               ))}
@@ -114,40 +104,31 @@ export default function ContractsAgent() {
           </table>
         </div>
 
+
         <div className="contract-cards">
-          {filteredContratti.map((row) => (
-            <div className="contract-card" key={row.numeroContratto}>
+          {filteredContratti.map((c) => (
+            <div className="contract-card" key={c.numeroContratto}>
               <div className="card-row">
-                <b>Proprietario:</b>
-                <span>{row.nomeProprietario || "-"}</span>
+                <b>Proprietario:</b> {c.nomeProprietario || "-"}
               </div>
-
               <div className="card-row">
-                <b>Tipo:</b>
-                <span>{row.tipo || "-"}</span>
+                <b>Tipo:</b> {c.tipo || "-"}
               </div>
-
               <div className="card-row">
-                <b>Data inizio:</b>
-                <span>{row.dataInizio || "-"}</span>
+                <b>Data inizio:</b> {c.dataInizio || "-"}
               </div>
-
               <div className="card-row">
-                <b>Data fine:</b>
-                <span>{row.dataFine || "-"}</span>
+                <b>Data fine:</b> {c.dataFine || "-"}
               </div>
-
               <div className="card-actions">
-                <Button
-                  className="lightblu"
-                  onClick={() => setSelectedContract(row)}
-                >
+                <Button className="lightblu" onClick={() => setSelectedContract(c)}>
                   Dettagli
                 </Button>
               </div>
             </div>
           ))}
         </div>
+
 
         {hasMore && (
           <div className="btn-table">
@@ -158,39 +139,25 @@ export default function ContractsAgent() {
         )}
       </div>
 
+
       {selectedContract && (
-        <div
-          className="modal-overlay"
-          onClick={() => setSelectedContract(null)}
-        >
+        <div className="modal-overlay" onClick={() => setSelectedContract(null)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <h3>Dettagli Contratto</h3>
-            <p>
-              <b>Numero contratto:</b> {selectedContract.numeroContratto}
-            </p>
-            <p>
-              <b>Data inizio:</b> {selectedContract.dataInizio}
-            </p>
-            <p>
-              <b>Data fine:</b> {selectedContract.dataFine}
-            </p>
+            <p><b>Numero contratto:</b> {selectedContract.numeroContratto}</p>
+            <p><b>Data inizio:</b> {selectedContract.dataInizio}</p>
+            <p><b>Data fine:</b> {selectedContract.dataFine}</p>
+
 
             <h4>Immobile</h4>
-            <p>
-              <b>Tipo:</b> {selectedContract.tipo || "-"}
-            </p>
-            <p>
-              <b>Indirizzo:</b> {selectedContract.via || "-"},{" "}
-              {selectedContract.citta || "-"}
-            </p>
+            <p><b>Tipo:</b> {selectedContract.tipo || "-"}</p>
+            <p><b>Indirizzo:</b> {selectedContract.via || "-"}, {selectedContract.citta || "-"}</p>
+
 
             <h4>Proprietario</h4>
-            <p>
-              <b>Nome:</b> {selectedContract.nomeProprietario || "-"}
-            </p>
-            <p>
-              <b>Data inserimento:</b> {selectedContract.dataInserimento || "-"}
-            </p>
+            <p><b>Nome:</b> {selectedContract.nomeProprietario || "-"}</p>
+            <p><b>Data inserimento:</b> {selectedContract.dataInserimento || "-"}</p>
+
 
             <Button className="red" onClick={() => setSelectedContract(null)}>
               Chiudi
@@ -201,3 +168,6 @@ export default function ContractsAgent() {
     </div>
   );
 }
+
+
+

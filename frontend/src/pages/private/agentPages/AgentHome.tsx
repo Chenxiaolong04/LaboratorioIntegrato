@@ -6,13 +6,14 @@ import { PiWarningCircleBold } from "react-icons/pi";
 import Button from "../../../components/Button";
 import { Link } from "react-router-dom";
 import SearchBar from "../../../components/SearchBar";
+import { useAuth } from "../../../context/AuthContext";
 import {
   getAgenteDashboard,
   type AgenteDashboardData,
   type Immobile,
 } from "../../../services/api";
+import Loader from "../../../components/Loader";
 
-const AGENTE_CORRENTE_ID = "ID_O_NOME_AGENTE_LOGGATO";
 
 const filterOptions = [
   { label: "Miei Contratti", value: "contratti" },
@@ -20,49 +21,52 @@ const filterOptions = [
   { label: "Valutazioni AI (Generali)", value: "valutazioni" },
 ];
 
-export default function AgenteHome() {
+
+export default function AgentHome() {
+  const { user } = useAuth();
   const [filter, setFilter] = useState<string | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [statistics, setStatistics] = useState<
-    AgenteDashboardData["statistics"] | null
-  >(null);
+  const [statistics, setStatistics] = useState<AgenteDashboardData["statistics"] | null>(null);
   const [selected, setSelected] = useState<Immobile | null>(null);
   const [immobili, setImmobili] = useState<Immobile[]>([]);
   const [nextOffset, setNextOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    async function fetchInitialData() {
-      if (!AGENTE_CORRENTE_ID) return;
 
+  useEffect(() => {
+    if (!user) return;
+
+
+    async function fetchInitialData() {
       setLoading(true);
       try {
-        const data = await getAgenteDashboard(0, 10, AGENTE_CORRENTE_ID);
-
+        const data = await getAgenteDashboard(0, 10);
         setStatistics(data.statistics);
-        setImmobili(data.immobili);
-        setNextOffset(data.nextOffset);
-        setHasMore(data.hasMore);
+        setImmobili(data.immobili || []);
+        setNextOffset(data.nextOffset ?? 0);
+        setHasMore(data.hasMore ?? false);
       } catch (err) {
         console.error(err);
       } finally {
         setLoading(false);
       }
     }
+
+
     fetchInitialData();
-  }, []);
+  }, [user]);
+
 
   const handleLoadMore = async () => {
-    if (!hasMore || !AGENTE_CORRENTE_ID) return;
+    if (!hasMore) return;
     setLoading(true);
     try {
-      const data = await getAgenteDashboard(nextOffset, 10, AGENTE_CORRENTE_ID);
-
-      setImmobili((prev) => [...prev, ...data.immobili]);
-      setNextOffset(data.nextOffset);
-      setHasMore(data.hasMore);
+      const data = await getAgenteDashboard(nextOffset, 10);
+      setImmobili((prev) => [...prev, ...(data.immobili || [])]);
+      setNextOffset(data.nextOffset ?? 0);
+      setHasMore(data.hasMore ?? false);
     } catch (err) {
       console.error(err);
     } finally {
@@ -70,19 +74,22 @@ export default function AgenteHome() {
     }
   };
 
-  if (!statistics) return <p>Caricamento...</p>;
 
-  const mappedData = immobili.map((i) => ({
+  if (!statistics) return <Loader />;
+
+
+  const mappedData = (immobili || []).map((i) => ({
     tipo:
-      i.tipo.toLowerCase() === "appartamento"
+      i.tipo?.toLowerCase() === "appartamento"
         ? "contratti"
-        : i.tipo.toLowerCase() === "villa"
+        : i.tipo?.toLowerCase() === "villa"
         ? "incarichi"
         : "valutazioni",
-    proprietario: i.nomeProprietario,
-    data: i.dataInserimento,
+    proprietario: i.nomeProprietario || "-",
+    data: i.dataInserimento || "-",
     agente: i.agenteAssegnato || "-",
   }));
+
 
   const filteredData = mappedData
     .filter((d) => (filter ? d.tipo === filter : true))
@@ -96,70 +103,53 @@ export default function AgenteHome() {
       );
     });
 
+
   return (
     <div className="dashboard-container">
       <div className="general-latest-container">
+        {/* Dashboard cards */}
         <div className="general-dashboard">
-          <div className="general-container">
-            <div className="title-card">
-              <span>
-                <FaCheckCircle size={36} color="green" />
-              </span>
-              <h3>Miei Contratti conclusi</h3>
+          {[
+            {
+              icon: <FaCheckCircle size={36} color="green" />,
+              title: "Contratti conclusi",
+              value: statistics.mieiContrattiConclusi,
+              link: "/agente/contratti",
+            },
+            {
+              icon: <TbProgressCheck size={36} color="orange" />,
+              title: "Incarichi in corso",
+              value: statistics.mieiIncarichiInCorso,
+              link: "/agente/incarichi",
+            },
+            {
+              icon: <PiWarningCircleBold size={36} color="gray" />,
+              title: "Valutazioni AI",
+              value: statistics.valutazioniConAI,
+              link: "/agente/valutazioniAI",
+            },
+          ].map((card, idx) => (
+            <div className="general-container" key={idx}>
+              <div className="title-card">{card.icon}<h3>{card.title}</h3></div>
+              <div className="data-card">
+                <h3>{card.value}</h3>
+                <Link to={card.link}>
+                  <FaSquareArrowUpRight size={50} color="white" />
+                </Link>
+              </div>
             </div>
-            <div className="data-card">
-              <h3>{statistics.mieiContrattiConclusi}</h3>
-              <Link to="/agente/contratti">
-                <FaSquareArrowUpRight size={50} color="white" />
-              </Link>
-            </div>
-          </div>
-
-          <div className="general-container">
-            <div className="title-card">
-              <span>
-                <TbProgressCheck size={36} color="orange" />
-              </span>
-              <h3>Miei Incarichi in corso</h3>
-            </div>
-            <div className="data-card">
-              <h3>{statistics.mieiIncarichiInCorso}</h3>
-              <Link to="/agente/incarichi">
-                <FaSquareArrowUpRight size={50} color="white" />
-              </Link>
-            </div>
-          </div>
-
-          <div className="general-container">
-            <div className="title-card">
-              <span>
-                <PiWarningCircleBold size={36} color="gray" />
-              </span>
-              <h3>Valutazioni AI (Generali)</h3>
-            </div>
-            <div className="data-card">
-              <h3>{statistics.valutazioniConAI}</h3>
-              <Link to="/agente/valutazioniAI">
-                <FaSquareArrowUpRight size={50} color="white" />
-              </Link>
-            </div>
-          </div>
+          ))}
         </div>
 
+
+        {/* Table */}
         <div className="table-container">
           <h2>Ultimi avvisi</h2>
-
           <div className="filter-buttons">
-            <SearchBar
-              placeholder="Cerca un proprietario"
-              onSearch={(query) => setSearchQuery(query)}
-            />
+            <SearchBar placeholder="Cerca un proprietario" onSearch={setSearchQuery} />
             <div className="dropdown">
-              <Button
-                onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="blu"
-              >
-                <FaFilter color={"white"} />
+              <Button onClick={() => setDropdownOpen(!dropdownOpen)} className="blu">
+                <FaFilter color="white" />
               </Button>
               {dropdownOpen && (
                 <ul className="dropdown-menu">
@@ -178,13 +168,9 @@ export default function AgenteHome() {
                 </ul>
               )}
             </div>
-
-            {filter && (
-              <Button className="remove-filter" onClick={() => setFilter(null)}>
-                Rimuovi filtro
-              </Button>
-            )}
+            {filter && <Button className="remove-filter" onClick={() => setFilter(null)}>Rimuovi filtro</Button>}
           </div>
+
 
           <div className="table-wrapper">
             <table className="alerts-table">
@@ -201,30 +187,16 @@ export default function AgenteHome() {
                 {filteredData.map((row, i) => (
                   <tr key={i}>
                     <td>
-                      <div className="cell-content">
-                        {row.tipo === "contratti" && (
-                          <FaCheckCircle size={32} color="green" />
-                        )}
-                        {row.tipo === "incarichi" && (
-                          <TbProgressCheck size={32} color="orange" />
-                        )}
-                        {row.tipo === "valutazioni" && (
-                          <PiWarningCircleBold size={32} color="gray" />
-                        )}
-                        <h3>
-                          {filterOptions.find((f) => f.value === row.tipo)
-                            ?.label || row.tipo}
-                        </h3>
-                      </div>
+                      {row.tipo === "contratti" && <FaCheckCircle size={32} color="green" />}
+                      {row.tipo === "incarichi" && <TbProgressCheck size={32} color="orange" />}
+                      {row.tipo === "valutazioni" && <PiWarningCircleBold size={32} color="gray" />}
+                      <h3>{filterOptions.find((f) => f.value === row.tipo)?.label || row.tipo}</h3>
                     </td>
                     <td>{row.proprietario}</td>
                     <td>{row.data}</td>
                     <td>{row.agente}</td>
                     <td>
-                      <Button
-                        className="blu"
-                        onClick={() => setSelected(immobili[i])}
-                      >
+                      <Button className="blu" onClick={() => setSelected(immobili[i] || null)}>
                         Dettagli
                       </Button>
                     </td>
@@ -234,29 +206,16 @@ export default function AgenteHome() {
             </table>
           </div>
 
+
           <div className="alerts-cards">
             {filteredData.map((row, i) => (
               <div className="alert-card" key={i}>
-                <div className="card-row">
-                  <b>Tipo:</b>{" "}
-                  {filterOptions.find((f) => f.value === row.tipo)?.label ||
-                    row.tipo}
-                </div>
-                <div className="card-row">
-                  <b>Nome proprietario:</b> {row.proprietario || "—"}
-                </div>
-                <div className="card-row">
-                  <b>Data:</b> {row.data || "—"}
-                </div>
-                <div className="card-row">
-                  <b>Agente assegnato:</b> {row.agente || "—"}
-                </div>
-
+                <div className="card-row"><b>Tipo:</b> {filterOptions.find((f) => f.value === row.tipo)?.label || row.tipo}</div>
+                <div className="card-row"><b>Nome proprietario:</b> {row.proprietario || "—"}</div>
+                <div className="card-row"><b>Data:</b> {row.data || "—"}</div>
+                <div className="card-row"><b>Agente assegnato:</b> {row.agente || "—"}</div>
                 <div className="card-actions">
-                  <Button
-                    className="blu"
-                    onClick={() => setSelected(immobili[i])}
-                  >
+                  <Button className="blu" onClick={() => setSelected(immobili[i] || null)}>
                     Dettagli
                   </Button>
                 </div>
@@ -264,64 +223,51 @@ export default function AgenteHome() {
             ))}
           </div>
 
+
           {hasMore && (
             <div className="btn-table">
-              <Button
-                onClick={handleLoadMore}
-                disabled={loading}
-                className="blu"
-              >
+              <Button onClick={handleLoadMore} disabled={loading} className="blu">
                 {loading ? "Caricamento..." : "Mostra altri avvisi"}
               </Button>
             </div>
           )}
         </div>
 
+
         {selected && (
           <div className="modal-overlay" onClick={() => setSelected(null)}>
             <div className="modal" onClick={(e) => e.stopPropagation()}>
               <h3>Dettagli Avviso</h3>
-
-              <div className="card-row">
-                <b>Tipo:</b>{" "}
-                {filterOptions.find((f) => f.value === selected.tipo)?.label ||
-                  selected.tipo}
-              </div>
-              <div className="card-row">
-                <b>Nome proprietario:</b> {selected.nomeProprietario || "—"}
-              </div>
-              <div className="card-row">
-                <b>Data:</b> {selected.dataInserimento || "—"}
-              </div>
-              <div className="card-row">
-                <b>Agente assegnato:</b> {selected.agenteAssegnato || "—"}
-              </div>
-
+              <div className="card-row"><b>Tipo:</b> {filterOptions.find((f) => f.value === selected.tipo)?.label || selected.tipo}</div>
+              <div className="card-row"><b>Nome proprietario:</b> {selected.nomeProprietario || "—"}</div>
+              <div className="card-row"><b>Data:</b> {selected.dataInserimento || "—"}</div>
+              <div className="card-row"><b>Agente assegnato:</b> {selected.agenteAssegnato || "—"}</div>
               <div className="card-actions">
-                <Button className="red" onClick={() => setSelected(null)}>
-                  Chiudi
-                </Button>
+                <Button className="red" onClick={() => setSelected(null)}>Chiudi</Button>
               </div>
             </div>
           </div>
         )}
       </div>
 
+
       <div className="stats-today">
         <h2>Statistiche mensili</h2>
         <div className="card">
-          <h3>Miei Contratti conclusi</h3>
+          <h3>Contratti conclusi</h3>
           <p>+ {statistics.mieiContrattiConclusiMensili}</p>
         </div>
         <div className="card">
-          <h3>Miei Incarichi nuovi</h3>
+          <h3>Incarichi nuovi</h3>
           <p>+ {statistics.mieiIncarichiNuoviMensili}</p>
         </div>
         <div className="card">
-          <h3>Valutazioni AI effettuate</h3>
+          <h3>Valutazioni AI</h3>
           <p>+ {statistics.valutazioniConAIMensili}</p>
         </div>
       </div>
     </div>
   );
 }
+
+
