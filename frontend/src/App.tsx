@@ -15,12 +15,14 @@ import DashboardAgent from "./pages/private/agentPages/DashboardAgent";
 import AgentHome from "./pages/private/agentPages/AgentHome";
 import ContractsAgent from "./pages/private/agentPages/ContractsAgent";
 import AssignmentsAgent from "./pages/private/agentPages/AssignmentsAgent";
+import FormIntro from "./components/FormCheck";
 
 function App() {
   return (
     <>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/form-check" element={<FormIntro />} />
         <Route path="/form" element={<MultiStepForm />} />
         <Route path="/login" element={<Login />} />
 

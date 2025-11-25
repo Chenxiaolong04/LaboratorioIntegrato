@@ -18,6 +18,7 @@ import StepGeneral from "../../components/formSteps/StepGenerals";
 import StepPlus, {
   type StepPlusRef,
 } from "../../components/formSteps/StepPlus";
+import StepProgress from "../../components/StepProgress";
 
 export default function MultiStepForm() {
   const [error, setError] = useState("");
@@ -76,20 +77,22 @@ export default function MultiStepForm() {
     <FormProvider>
       <section className="form-container">
         <div className="container">
-          <div className="brand">
-            <Link to="/">
-              <img className="logo" src='./logo.svg' alt="Logo Immobiliaris" />
-            </Link>
-            <h2>Immobiliaris</h2>
-          </div>
-          {step < totalSteps - 1 && (
-            <div className="progress">
-              <div
-                className="progress-bar"
-                style={{ width: `${((step + 1) / (totalSteps - 1)) * 100}%` }}
-              ></div>
+          <div className="brand-steps-container">
+            <div className="brand">
+              <div className="brand-logo">
+                <Link to="/">
+                  <img
+                    className="logo"
+                    src="./logo.svg"
+                    alt="Logo Immobiliaris"
+                  />
+                </Link>
+                <h2>Immobiliaris</h2>
+              </div>
+              <Link to='/' className="btn lightblu">Torna alla home</Link>
             </div>
-          )}
+            {step < totalSteps - 1 && <StepProgress step={step + 1} />}
+          </div>
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -125,11 +128,7 @@ export default function MultiStepForm() {
                 setError={setErrorGeneral}
               />
             )}
-            {step === 4 && (
-              <StepPlus
-                ref={stepPlusRef}
-              />
-            )}
+            {step === 4 && <StepPlus ref={stepPlusRef} />}
             {step === 5 && <StepContacts />}
             {step === 6 && <StepSuccess />}
             {step < totalSteps - 1 && (

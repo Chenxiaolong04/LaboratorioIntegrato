@@ -6,6 +6,8 @@ import { useFormContext } from "../../context/FormContext";
 const indirizzoRegex =
   /^(via|viale|corso|piazza|largo)\s+[a-zàèéìòù'\s]+[\s,]*\d+[a-zA-Z]?$/i;
 
+const cityRegex = /^[a-zA-Zàèéìòù\s'-]+$/i;
+
 export interface StepLocationRef {
   validate: () => boolean;
 }
@@ -19,17 +21,28 @@ const StepLocation = forwardRef<StepLocationRef, StepLocationProps>(
   ({ error, setError }, ref) => {
     const { formData, setFormData } = useFormContext();
     const [address, setAddress] = useState(formData.address || "");
+    const [city, setCity] = useState(formData.city || "");
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
       setAddress(value);
       setFormData((prev) => ({ ...prev, address: value }));
+    };
+
+    const handleCityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      setCity(value);
+      setFormData((prev) => ({ ...prev, city: value }));
     };
 
     useImperativeHandle(ref, () => ({
       validate: () => {
         if (!indirizzoRegex.test(address)) {
           setError("Inserisci un indirizzo valido (es: Via Roma 10)");
+          return false;
+        }
+        if (!cityRegex.test(city)) {
+          setError("Inserisci una città valida (es: Torino)");
           return false;
         }
         setError("");
@@ -49,16 +62,23 @@ const StepLocation = forwardRef<StepLocationRef, StepLocationProps>(
           autoComplete="street-address"
           value={address}
           required
-          onChange={handleChange}
+          onChange={handleAddressChange}
+        />
+
+        <InputGroup
+          name="city"
+          label="Città"
+          type="text"
+          placeholder="Es: Torino"
+          autoComplete="address-level2"
+          value={city}
+          required
+          onChange={handleCityChange}
         />
 
         {error && <p className="error-message">{error}</p>}
 
-        <img
-          className="map"
-          src={FormMap}
-          alt="mappa posizione immobile"
-        />
+        <img className="map" src={FormMap} alt="mappa posizione immobile" />
       </div>
     );
   }
