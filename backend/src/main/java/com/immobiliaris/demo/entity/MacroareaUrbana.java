@@ -19,6 +19,12 @@ public class MacroareaUrbana {
     private Double quotazione_media;
     private Double quotazione_var;
 
+    @Column(name = "CAP_da")
+    private String cap_da;
+
+    @Column(name = "CAP_a")
+    private String cap_a;
+
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
     
@@ -45,4 +51,11 @@ public class MacroareaUrbana {
     
     public Double getQuotazione_var() { return quotazione_var; }
     public void setQuotazione_var(Double quotazione_var) { this.quotazione_var = quotazione_var; }
+
+    // Getters e Setters
+    public String getCap_da() { return cap_da; }
+    public void setCap_da(String cap_da) { this.cap_da = cap_da; }
+
+    public String getCap_a() { return cap_a; }
+    public void setCap_a(String cap_a) { this.cap_a = cap_a; }
 }

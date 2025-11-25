@@ -332,5 +332,37 @@ VALUES
 ('2025-02-15', '2025-03-15', 4, 'C-2025-003', 3.00, 3, 7, NULL, 7, 3),
 ('2025-03-10', '2025-04-10', 4, 'C-2025-004', 3.50, 4, 7, NULL, 12, 3);
 
+-- =========================================
+-- 🔟 Tabella MacroareaUrbana
+-- =========================================
+CREATE TABLE MacroareaUrbana (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome_macroarea VARCHAR(100) NOT NULL UNIQUE,
+    NTN INT,
+    NTN_var DOUBLE,
+    IMI DOUBLE,
+    IMI_diff DOUBLE,
+    quota_NTN DOUBLE,
+    quotazione_media DOUBLE NOT NULL,
+    quotazione_var DOUBLE,
+    CAP_da CHAR(5),
+    CAP_a CHAR(5)
+);
+
+-- =========================================
+-- Inserimento Macroaree Torino con range CAP
+-- =========================================
+INSERT INTO MacroareaUrbana (nome_macroarea, NTN, NTN_var, IMI, IMI_diff, quota_NTN, quotazione_media, quotazione_var, CAP_da, CAP_a) VALUES
+('Centro Torino', 150, 2.5, 180, 1.8, 60.0, 6500, 3.2, '10100', '10129'),
+('San Salvario', 120, 1.8, 140, 1.2, 50.0, 4800, 2.1, '10123', '10126'),
+('Aurora', 100, 1.2, 120, 0.9, 45.0, 3800, 1.5, '10152', '10156'),
+('Crocetta', 110, 1.5, 130, 1.1, 48.0, 4200, 1.8, '10127', '10129'),
+('Lingotto', 105, 1.3, 125, 1.0, 46.0, 4000, 1.6, '10126', '10126'),
+('Mirafiori', 90, 0.8, 110, 0.7, 40.0, 3200, 0.9, '10135', '10136'),
+('Barriera di Milano', 85, 0.5, 100, 0.4, 35.0, 2800, 0.3, '10154', '10156'),
+('Collina', 95, 0.9, 115, 0.8, 42.0, 3500, 1.1, '10131', '10133'),
+('Vanchiglia', 108, 1.4, 128, 1.05, 47.0, 4100, 1.7, '10124', '10125'),
+('Parella', 98, 1.0, 118, 0.85, 43.0, 3600, 1.2, '10145', '10149');
+
 
 

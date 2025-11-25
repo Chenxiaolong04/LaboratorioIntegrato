@@ -10,6 +10,8 @@ import com.immobiliaris.demo.entity.StatoValutazione;
 import com.immobiliaris.demo.entity.MacroareaUrbana;
 import com.immobiliaris.demo.repository.StatoValutazioneRepository;
 import com.immobiliaris.demo.repository.MacroareaUrbanaRepository;
+import com.immobiliaris.demo.entity.Immobile;
+import com.immobiliaris.demo.repository.ImmobileJpaRepository;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +30,9 @@ public class ValutazioneApiController {
     
     @Autowired
     private MacroareaUrbanaRepository macroareaRepository;
+
+    @Autowired
+    private ImmobileJpaRepository immobileRepository;
 
     @GetMapping("/all")
     public ResponseEntity<?> getAll() {
@@ -98,32 +103,46 @@ public class ValutazioneApiController {
         }
     }
 
-    @PostMapping("/calcola")
-    public ResponseEntity<?> calcolaValutazione(@RequestBody CalcoloRequest request) {
+    @PostMapping("/calcola/{immobileId}")
+    public ResponseEntity<?> calcolaValutazione(@PathVariable Integer immobileId, @RequestBody CalcoloRequest request) {
         try {
-            // Validazioni dati input
-            if(request.idMacroarea == null || request.idMacroarea <= 0) {
+            // Valida immobileId
+            if(immobileId == null || immobileId <= 0) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new Response("error", "ID macroarea obbligatorio e deve essere > 0", null));
+                    .body(new Response("error", "ID immobile obbligatorio", null));
             }
-            if(request.metratura == null || request.metratura <= 0) {
+            
+            // Recupera l'immobile
+            var immobileOpt = immobileRepository.findById(immobileId);
+            if(immobileOpt.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new Response("error", "Immobile non trovato", null));
+            }
+            Immobile immobile = immobileOpt.get();
+            
+            // Usa i dati dell'immobile
+            Integer metratura = immobile.getMetratura();
+            Integer piano = immobile.getPiano();
+            Integer stanze = immobile.getStanze();
+            
+            if(metratura == null || metratura <= 0) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new Response("error", "Metratura deve essere > 0", null));
             }
-            if(request.piano == null || request.piano < 0) {
+            if(piano == null || piano < 0) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new Response("error", "Piano deve essere >= 0", null));
             }
-            if(request.stanze == null || request.stanze <= 0) {
+            if(stanze == null || stanze <= 0) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new Response("error", "Stanze deve essere > 0", null));
             }
 
-            // Recupera la macroarea dal DB
-            var macroareaOpt = macroareaRepository.findById(request.idMacroarea);
+            // Recupera la macroarea dal DB usando il CAP dell'immobile
+            var macroareaOpt = macroareaRepository.findByCapRange(immobile.getCap());
             if(macroareaOpt.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new Response("error", "Macroarea non trovata", null));
+                    .body(new Response("error", "Macroarea non trovata per il CAP: " + immobile.getCap(), null));
             }
             MacroareaUrbana macroarea = macroareaOpt.get();
             
@@ -134,19 +153,19 @@ public class ValutazioneApiController {
             }
 
             // Calcolo: quotazione macroarea * metratura
-            Double prezzo = macroarea.getQuotazione_media() * request.metratura;
+            Double prezzo = macroarea.getQuotazione_media() * metratura;
             
-            // Aggiungi bonus/malus per caratteristiche
-            if(request.ascensore) prezzo += prezzo * 0.08;
-            if(request.balcone) prezzo += prezzo * 0.05;
-            if(request.giardino) prezzo += prezzo * 0.10;
-            if(request.cantina) prezzo -= prezzo * 0.03;
+            // Aggiungi bonus/malus per caratteristiche (usa valori dell'immobile)
+            if(immobile.getAscensore() != null && immobile.getAscensore()) prezzo += prezzo * 0.08;
+            if(immobile.getBalcone() != null && immobile.getBalcone()) prezzo += prezzo * 0.05;
+            if(immobile.getGiardino() != null && immobile.getGiardino()) prezzo += prezzo * 0.10;
+            if(immobile.getCantina() != null && immobile.getCantina()) prezzo -= prezzo * 0.03;
             
             // Bonus per piano
-            prezzo += prezzo * (request.piano * 0.02);
+            prezzo += prezzo * (piano * 0.02);
             
             // Bonus per stanze
-            prezzo += prezzo * (request.stanze * 0.05);
+            prezzo += prezzo * (stanze * 0.05);
             
             Integer prezzoFinale = prezzo.intValue();
             
@@ -154,7 +173,7 @@ public class ValutazioneApiController {
             Valutazione valutazione = new Valutazione();
             valutazione.setPrezzoAI(prezzoFinale);
             valutazione.setDataValutazione(LocalDate.now());
-            valutazione.setImmobile(null); // Opzionale, dipende dal workflow
+            valutazione.setImmobile(immobile); // ← COLLEGATO ALL'IMMOBILE!
             
             // Assegna stato "IN_VERIFICA" automaticamente
             StatoValutazione stato = statoRepository.findByNome("IN_VERIFICA")
@@ -168,7 +187,7 @@ public class ValutazioneApiController {
             valutazione.setStatoValutazione(stato);
             valutazione.setDescrizione(request.descrizione != null ? 
                 request.descrizione : 
-                "Valutazione automatica - Zona: " + macroarea.getNome_macroarea());
+                "Valutazione automatica - Zona: " + macroarea.getNome_macroarea() + " (CAP: " + immobile.getCap() + ")");
             
             Valutazione saved = repository.save(valutazione);
             
@@ -179,6 +198,7 @@ public class ValutazioneApiController {
             result.put("stato", "IN_VERIFICA");
             result.put("macroarea", macroarea.getNome_macroarea());
             result.put("quotazioneZona", macroarea.getQuotazione_media());
+            result.put("immobileId", immobileId);
             
             return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new Response("success", "Valutazione calcolata e salvata", result));
@@ -189,14 +209,6 @@ public class ValutazioneApiController {
     }
 
     static class CalcoloRequest {
-        public Integer idMacroarea;
-        public Integer metratura;
-        public Integer piano;
-        public Integer stanze;
-        public boolean ascensore;
-        public boolean balcone;
-        public boolean giardino;
-        public boolean cantina;
         public String descrizione;
     }
 
