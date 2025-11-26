@@ -16,7 +16,7 @@ public class AddressApiController {
     private AddressValidationService addressValidationService;
 
     /**
-     * Valida un indirizzo usando Nominatim di OpenStreetMap
+     * Valida un indirizzo usando Geoapify API
      * 
      * POST /api/address/validate
      * 

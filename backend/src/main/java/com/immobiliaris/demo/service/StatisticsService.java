@@ -16,9 +16,12 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 import com.immobiliaris.demo.entity.Contratto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class StatisticsService {
+    private static final Logger logger = LoggerFactory.getLogger(StatisticsService.class);
 
     @Autowired
     private ContrattoJpaRepository contrattoRepository;
@@ -128,10 +131,16 @@ public class StatisticsService {
                             !c.getDataInizio().isAfter(fine))
                     .collect(Collectors.toList());
 
+            // Sostituisco unboxing possibly null value
             Integer totalePrezzoMese = contrattiMese.stream()
-                    .map(c -> c.getImmobile() != null && c.getImmobile().getPrezzo() != null ? 
-                            c.getImmobile().getPrezzo() : 0)
-                    .reduce(0, Integer::sum);
+                .map(c -> {
+                    if (c.getImmobile() != null && c.getImmobile().getPrezzo() != null) {
+                        return c.getImmobile().getPrezzo();
+                    } else {
+                        return 0;
+                    }
+                })
+                .reduce(0, Integer::sum);
 
             Map<String, Object> mese = new LinkedHashMap<>();
             mese.put("mese", String.format("%02d/%d", inizio.getMonthValue(), inizio.getYear()));
@@ -194,11 +203,12 @@ public class StatisticsService {
                         Object keyObj = entry.getKey();
                         System.out.println("DEBUG: Key object type: " + keyObj.getClass().getName() + ", value: " + keyObj);
                         
+                        // Sostituisco instanceof con pattern matching
                         Integer agenteId;
-                        if (keyObj instanceof Long) {
-                            agenteId = ((Long) keyObj).intValue();
-                        } else if (keyObj instanceof Integer) {
-                            agenteId = (Integer) keyObj;
+                        if (keyObj instanceof Long l) {
+                            agenteId = l.intValue();
+                        } else if (keyObj instanceof Integer i) {
+                            agenteId = i;
                         } else {
                             throw new ClassCastException("Tipo di key non supportato: " + keyObj.getClass().getName());
                         }
@@ -215,9 +225,14 @@ public class StatisticsService {
                                     " con " + entry.getValue().size() + " contratti nel mese");
                             
                             Integer totalePrezzoImmobili = entry.getValue().stream()
-                                    .map(c -> c.getImmobile() != null && c.getImmobile().getPrezzo() != null ? 
-                                            c.getImmobile().getPrezzo() : 0)
-                                    .reduce(0, Integer::sum);
+                                .map(c -> {
+                                    if (c.getImmobile() != null && c.getImmobile().getPrezzo() != null) {
+                                        return c.getImmobile().getPrezzo();
+                                    } else {
+                                        return 0;
+                                    }
+                                })
+                                .reduce(0, Integer::sum);
                             
                             agente.put("nomeAgente", user.getNome() + " " + user.getCognome());
                             agente.put("numeroContratti", (long) entry.getValue().size());
@@ -229,10 +244,10 @@ public class StatisticsService {
                         }
                     } catch (ClassCastException e) {
                         System.err.println("DEBUG: ClassCastException nel casting della key: " + e.getMessage());
-                        e.printStackTrace();
+                        logger.error("DEBUG: ClassCastException nel casting della key: {}", e.getMessage(), e);
                     } catch (Exception e) {
                         System.err.println("DEBUG: Errore nel recupero agente: " + e.getMessage());
-                        e.printStackTrace();
+                        logger.error("DEBUG: Errore nel recupero agente: {}", e.getMessage(), e);
                     }
                     return agente;
                 })

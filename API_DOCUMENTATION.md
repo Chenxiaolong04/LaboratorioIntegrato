@@ -591,101 +591,10 @@ Assegna un agente (già presente nel DB) a una valutazione con stato "solo_AI". 
 
 ---
 
-## 📊 Riepilogo Endpoints
+## 🏠 Immobili
 
-| Endpoint | Metodo | Auth | Ruolo | Descrizione |
-|----------|--------|------|-------|-------------|
-| `/api/auth/login` | POST | ❌ No | - | Login con credenziali |
-| `/api/auth/logout` | POST | ✅ Sì | - | Logout e invalida sessione |
-| `/api/auth/check` | GET | ❌ No | - | Verifica autenticazione |
-| `/api/auth/user` | GET | ✅ Sì | - | Info utente loggato |
-| `/api/admin/dashboard` | GET | ✅ Sì | ADMIN | Dashboard admin (statistiche + immobili con offset/limit per load-more) |
-| `/api/admin/immobili` | GET | ✅ Sì | ADMIN | Immobili paginated (pagina-based pagination) |
-| `/api/admin/contratti/chiusi` | GET | ✅ Sì | ADMIN | Lista contratti conclusi con dettagli immobili (offset/limit load-more) |
-| `/api/admin/valutazioni/solo-ai` | GET | ✅ Sì | ADMIN | Lista valutazioni generate solo da AI (offset/limit load-more) |
-| `/api/admin/valutazioni/solo-ai/{id}` | DELETE | ✅ Sì | ADMIN | Elimina valutazione AI per ID |
-| `/api/admin/valutazioni/in-verifica` | GET | ✅ Sì | ADMIN | Lista valutazioni in verifica con TUTTI i campi (offset/limit load-more) |
-| `/api/admin/valutazioni/in-verifica/{id}` | DELETE | ✅ Sì | ADMIN | Elimina valutazione in verifica per ID |
-| `/api/admin/valutazioni/in-verifica/{id}` | PUT | ✅ Sì | ADMIN | Modifica valutazione e immobile per ID |
-| `/api/agent/dashboard` | GET | ✅ Sì | AGENT | Dashboard agente (statistiche personali) |
-| `/api/mail/send` | POST | ❌ No* | - | Invia email (⚠️ proteggere in prod) |
-| `/api/mail/test` | GET | ❌ No | - | Verifica mail endpoint |
-| `/api/address/validate` | POST | ❌ No | - | Valida indirizzo con Nominatim OpenStreetMap |
-| `/api/address/test` | GET | ❌ No | - | Verifica address validation endpoint |
-| `/api/admin/valutazioni/solo-ai/{id}/assegna-agente` | PUT | ✅ Sì | ADMIN | Assegna agente a valutazione AI e cambia stato in_verifica |
-
----
-
-## 🛡️ Codici HTTP
-
-- **200** - OK
-- **401** - Non autenticato / Credenziali errate
-- **403** - Autenticato ma senza permessi
-- **500** - Errore server
-
----
-
-## 📝 Note Importanti
-
-### Caricamento progressivo ("Carica altri")
-- Usa `/api/admin/dashboard?offset=X&limit=10` con il valore di `nextOffset` dalla risposta precedente
-- Ogni richiesta aggiunge `pageSize` nuovi immobili
-- Continua finché `hasMore` è `true`
-
-### Statistiche Mensili
-- Statistiche con suffisso `Mensili` contano dati **ultimi 30 giorni**
-- Query SQL: `WHERE Data >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)`
-
-### Campo `agenteAssegnato`
-- Può essere `null` se l'immobile non ha agente
-- Frontend: `agenteAssegnato || "Non assegnato"`
-
-### Autenticazione
-- Usa **sempre** `withCredentials: true` in Axios
-- Backend usa **sessioni con cookie** (non JWT)
-- CORS configurato per `http://localhost:3000`
-
----
-
-## 🔄 Flusso Tipico
-
-```
-1. Login
-   POST /api/auth/login → Cookie sessione salvato
-   
-2. Dashboard Admin
-   GET /api/admin/dashboard?offset=0&limit=10 → Statistiche + primi 10 immobili
-   
-3. Carica altri immobili
-   GET /api/admin/dashboard?offset=10&limit=10 → Immobili 11-20
-   GET /api/admin/dashboard?offset=20&limit=10 → Immobili 21-30
-   (Continua finché hasMore = false)
-   
-4. Visualizza contratti chiusi
-   GET /api/admin/contratti/chiusi?offset=0&limit=10 → Contratti conclusi con dettagli immobili
-   GET /api/admin/contratti/chiusi?offset=10&limit=10 → Prossimi 10 contratti
-   (Continua finché hasMore = false)
-   
-5. Visualizza valutazioni solo AI
-   GET /api/admin/valutazioni/solo-ai?offset=0&limit=10 → Valutazioni generate solo da AI
-   GET /api/admin/valutazioni/solo-ai?offset=10&limit=10 → Prossime 10 valutazioni
-   (Continua finché hasMore = false)
-   
-6. Logout
-   POST /api/auth/logout → Sessione invalidata
-```
-
----
-
-## 📍 Validazione Indirizzo
-
-### POST `/api/address/validate`
-Valida un indirizzo usando l'API Nominatim di OpenStreetMap
-
-**Regole di validazione:**
-- La città deve essere una tra: Torino, Cuneo, Alessandria, Asti (case insensitive).
-- La via deve iniziare con un tipo valido (es: via, corso, viale, piazza, ecc.) e non deve contenere il nome della città.
-- Se la città non è tra quelle accettate, la risposta sarà sempre `valid: false` e suggerimenti vuoti.
+### POST `/api/immobili/save`
+Salva un nuovo immobile nel database.
 
 **Autenticazione:** ❌ No
 
@@ -694,16 +603,83 @@ Valida un indirizzo usando l'API Nominatim di OpenStreetMap
 {
   "via": "Via Roma 10",
   "citta": "Torino",
-  "cap": "10121"
+  "cap": "10154",           // (opzionale, fornito dal frontend se indirizzo valido)
+  "tipologia": "Appartamento",
+  "metratura": 85,
+  "condizioni": "Buone condizioni",
+  "stanze": 3,
+  "bagni": 1,
+  "riscaldamento": "Centralizzato",
+  "id_stato_immobile": 2,
+  "piano": 3,
+  "ascensore": true,
+  "garage": true,
+  "giardino": false,
+  "balcone": true,
+  "terrazzo": false,
+  "cantina": false
 }
 ```
 
-**Parametri:**
- - `via` (opzionale): Nome della via con numero civico. Deve iniziare con un tipo valido (via, corso, ecc.)
- - `citta` (opzionale): Nome della città. Solo Torino, Cuneo, Alessandria, Asti sono accettate.
- - `cap` (opzionale): Codice postale
+**Nota:**  
+- Il campo `cap` viene inserito dal frontend solo se la validazione indirizzo lo restituisce.  
+- Il campo `provincia` viene aggiunto dal backend in automatico in base alla città (`Torino`→`TO`, `Cuneo`→`CN`, ecc.).  
+- L’utente non deve mai inserire manualmente la provincia.
 
-**Nota:** Almeno uno tra `via`, `citta` o `cap` deve essere presente.
+**Response (200 OK):**
+```json
+{
+  "id_immobile": 123,
+  "via": "Via Roma 10",
+  "citta": "Torino",
+  "cap": "10154",
+  "provincia": "TO",
+  "tipologia": "Appartamento",
+  "metratura": 85,
+  "condizioni": "Buone condizioni",
+  "stanze": 3,
+  "bagni": 1,
+  "riscaldamento": "Centralizzato",
+  "id_stato_immobile": 2,
+  "piano": 3,
+  "ascensore": true,
+  "garage": true,
+  "giardino": false,
+  "balcone": true,
+  "terrazzo": false,
+  "cantina": false,
+  "prezzo": null,
+  "descrizione": null,
+  "data_inserimento": "2025-11-26"
+}
+```
+
+**Logica backend:**  
+- La provincia viene impostata automaticamente in base alla città (`Torino` → `TO`, `Cuneo` → `CN`, ecc.).  
+- Il CAP può essere calcolato tramite validazione indirizzo o tabella zone.
+
+---
+
+## 📍 Validazione Indirizzo
+
+### POST `/api/address/validate`
+Valida un indirizzo usando l'API Geoapify
+
+**Regole di validazione:**
+- La città deve essere una tra: Torino, Cuneo, Alessandria, Asti (case insensitive).
+- La via deve iniziare con un tipo valido (es: via, corso, viale, piazza, ecc.) e non deve contenere il nome della città.
+- Se la città non è tra quelle accettate, la risposta sarà sempre `valid: false` e suggerimenti vuoti.
+- Restituisce solo vie che iniziano con la stringa inserita (es: "Via Ernesto L" → tutte le vie che iniziano così).
+
+**Autenticazione:** ❌ No
+
+**Request:**
+```json
+{
+  "via": "Via Ernesto L",
+  "citta": "Torino"
+}
+```
 
 **Response (200 OK) - Indirizzo valido:**
 ```json
@@ -711,20 +687,12 @@ Valida un indirizzo usando l'API Nominatim di OpenStreetMap
   "valid": true,
   "suggestions": [
     {
-      "displayName": "Via Roma, Centro, Torino, Piemonte, 10121, Italia",
-      "via": "Via Roma",
+      "displayName": "Via Ernesto Lancia, Torino, 10154",
+      "via": "Via Ernesto Lancia",
       "citta": "Torino",
-      "cap": "10121",
-      "lat": 45.0703,
-      "lon": 7.6869
-    },
-    {
-      "displayName": "Via Roma, San Salvario, Torino, Piemonte, 10122, Italia",
-      "via": "Via Roma",
-      "citta": "Torino",
-      "cap": "10122",
-      "lat": 45.0625,
-      "lon": 7.6835
+      "cap": "10154",
+      "lat": 45.0801,
+      "lon": 7.6622
     }
   ]
 }
@@ -735,14 +703,6 @@ Valida un indirizzo usando l'API Nominatim di OpenStreetMap
 {
   "valid": false,
   "suggestions": []
-}
-```
-
-**Response (400 Bad Request) - Parametri mancanti:**
-```json
-{
-  "valid": false,
-  "suggestions": null
 }
 ```
 
@@ -757,9 +717,6 @@ Valida un indirizzo usando l'API Nominatim di OpenStreetMap
  - `cap`: Codice postale estratto
  - `lat`: Latitudine (coordinate geografiche)
  - `lon`: Longitudine (coordinate geografiche)
-
-**Nota tecnica:**
-L'API utilizza [Nominatim di OpenStreetMap](https://nominatim.openstreetmap.org/), un servizio gratuito di geocoding. Restituisce fino a 5 suggerimenti ordinati per rilevanza. La ricerca è limitata all'Italia (`countrycodes=it`).
 
 ---
 

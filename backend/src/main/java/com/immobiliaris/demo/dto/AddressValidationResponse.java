@@ -37,6 +37,7 @@ public class AddressValidationResponse {
         private String cap;
         private Double lat;
         private Double lon;
+        private String mapUrl;
 
         public AddressSuggestion() {}
 
@@ -84,6 +85,12 @@ public class AddressValidationResponse {
         }
         public void setLon(Double lon) {
             this.lon = lon;
+        }
+        public String getMapUrl() {
+            return mapUrl;
+        }
+        public void setMapUrl(String mapUrl) {
+            this.mapUrl = mapUrl;
         }
     }
 }
