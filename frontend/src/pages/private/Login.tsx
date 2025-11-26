@@ -3,8 +3,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { loginUser, type LoginResponse } from "../../services/api";
 import { useAuth } from "../../context/AuthContext";
 import Button from "../../components/Button";
-import Input from "../../components/Input";
 import Loader from "../../components/Loader";
+import { MdEmail } from "react-icons/md";
+import InputGroup from "../../components/InputGroup";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -57,14 +58,29 @@ export default function Login() {
   return (
     <section className="login-page">
       <div className="container">
-        <Link to={"/"}>
-          <img src='./logo.svg' alt="logo immobiliaris" />
-        </Link>
+        <div className="login-info">
+          <div className="brand-login">
+            <Link to={"/"}>
+              <img src="./logo.svg" alt="logo immobiliaris" />
+            </Link>
+            <h3>Immobiliaris</h3>
+          </div>
+          <div className="brand-info">
+            <h3>Accedi alla parte riservata al team Immobiliaris</h3>
+            <span>|</span>
+            <p>oppure</p>
+            <span>|</span>
+            <Link to={"/"} className="btn lightblu">
+              Torna alla Home
+            </Link>
+          </div>
+        </div>
         <div className="login-container">
-          <h1>Accedi al tuo account</h1>
+          <h2>Accedi al tuo account</h2>
           <form className="login-form" onSubmit={handleSubmit}>
             <div className="input-button">
-              <Input
+              <InputGroup
+                label="Email"
                 name="email"
                 type="email"
                 placeholder="Inserisci la tua email"
@@ -74,7 +90,8 @@ export default function Login() {
               />
             </div>
             <div className="input-button">
-              <Input
+              <InputGroup
+                label="Password"
                 name="password"
                 type="password"
                 placeholder="Inserisci la tua password"
@@ -84,10 +101,18 @@ export default function Login() {
               />
             </div>
             {error && <p className="error-message">{error}</p>}
-            <Button type="submit" className="lightblu">
+            <Button type="submit" className="blu">
               Accedi
             </Button>
           </form>
+          <div>
+            <h3>Non hai un account?</h3>
+            <p>Chiedi informazioni a</p>
+            <div className="email">
+              <MdEmail size={24} />
+              <a href="mailto:admin@immobiliaris.it">admin@immobiliaris.it</a>
+            </div>
+          </div>
         </div>
       </div>
     </section>

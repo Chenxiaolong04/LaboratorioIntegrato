@@ -7,6 +7,7 @@ import {
   FaEnvelope,
   FaMapLocationDot,
 } from "react-icons/fa6";
+import { Link } from "react-router-dom";
 
 export default function Footer() {
   return (
@@ -77,6 +78,9 @@ export default function Footer() {
             </li>
             <li>
               <a href="/contatti">Contatti</a>
+            </li>
+            <li>
+              <Link to="/login">Area riservata</Link>
             </li>
           </ul>
         </nav>
