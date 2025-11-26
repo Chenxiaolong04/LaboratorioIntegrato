@@ -26,5 +26,11 @@
       list-style-type: disc;
       list-style-position: inside;
     }
+
+    @media (min-width: 768px) {
+      img {
+        width: 50%;
+      }
+    }
   }
 }

@@ -7,6 +7,7 @@ import GiardinoImg from "../../assets/img/form-img/giardino.webp";
 import GarageImg from "../../assets/img/form-img/garage.webp";
 import AscensoreImg from "../../assets/img/form-img/ascensore.webp";
 import CantinaImg from "../../assets/img/form-img/cantina.webp";
+import type { SaveImmobileBody } from "../../services/api";
 
 export interface StepPlusRef {
   validate: () => boolean;

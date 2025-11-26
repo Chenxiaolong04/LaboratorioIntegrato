@@ -19,7 +19,7 @@ import StepPlus, {
   type StepPlusRef,
 } from "../../components/formSteps/StepPlus";
 import StepProgress from "../../components/StepProgress";
-import { saveImmobile } from "../../services/api";
+import { saveImmobile, type SaveImmobileBody } from "../../services/api";
 
 export default function MultiStepForm() {
   const [error, setError] = useState("");
@@ -75,7 +75,16 @@ export default function MultiStepForm() {
   const handleFinalSubmit = async () => {
     console.log("formData al submit:", formData);
     try {
-      const body = {
+      const featuresBool = {
+        ascensore: formData.features.includes("Ascensore"),
+        garage: formData.features.includes("Box garage"),
+        giardino: formData.features.includes("Giardino privato"),
+        balcone: formData.features.includes("Balcone"),
+        terrazzo: formData.features.includes("Terrazzo"),
+        cantina: formData.features.includes("Cantina"),
+      };
+
+      const body: SaveImmobileBody = {
         via: formData.address,
         citta: formData.city,
         cap: formData.cap,
@@ -87,12 +96,7 @@ export default function MultiStepForm() {
         riscaldamento: formData.heating,
         piano: Number(formData.floor),
 
-        ascensore: formData.features.includes("ascensore"),
-        garage: formData.features.includes("garage"),
-        giardino: formData.features.includes("giardino"),
-        balcone: formData.features.includes("balcone"),
-        terrazzo: formData.features.includes("terrazzo"),
-        cantina: formData.features.includes("cantina"),
+        ...featuresBool,
 
         nomeProprietario: formData.name,
         cognomeProprietario: formData.surname,
@@ -101,7 +105,6 @@ export default function MultiStepForm() {
       };
 
       const res = await saveImmobile(body);
-
       console.log("Immobile salvato:", res);
 
       setStep(6);
