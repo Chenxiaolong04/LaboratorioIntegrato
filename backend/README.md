@@ -1,223 +1,113 @@
-# 🏠 Agenzia Immobiliare - Progetto Backend
+# 🏠 Immobiliaris - Portale Immobiliare Digitale
 
-Progetto **Spring Boot** (backend) per la gestione di un'agenzia immobiliare con autenticazione e API REST.
+## Progetto laboratorio integrato ITS ICT 2024/2026 (Web Developer - Software Developer - Digital Strategist)
 
----
-
-## 📋 Prerequisiti
-
-- ✅ **JDK 17** (o superiore)
-- ✅ **Maven 3.8+** (o usa il wrapper `mvnw.cmd` incluso)
-- ✅ **MySQL 8.0+** con database e utenti già configurati
+Immobiliaris è un portale digitale dedicato alla valutazione degli immobili sul territorio piemontese. Il progetto nasce con l’obiettivo di supportare l’agenzia nell’ampliamento verso un pubblico più giovane (35–55 anni), offrendo strumenti moderni, processi automatizzati e un’esperienza utente semplice, veloce e intuitiva.
 
 ---
 
-## 🧰 Strumenti ed Estensioni VS Code
+## 👥 Membri del Gruppo
 
-- **VS Code** aggiornato
-- **Extension Pack for Java** (`vscjava.vscode-java-pack`)
-- **Spring Boot Tools** (`vmware.vscode-spring-boot`)
-- **Debugger for Java** (`vscjava.vscode-java-debug`)
-- **Maven for Java** (`vscjava.vscode-maven`)
-- **Lombok** (dipendenza `org.projectlombok` già inclusa; estensione `gabrielbb.vscode-lombok` consigliata se richiesta da VS Code)
-- Opzionale: **MySQL Workbench** per amministrare il database
+### Web Developer
+- Dragos Nedelcu Andrei
+- Mattia Fiore
+- Rodrigo Aguirre
 
----
+### Software Developer
+- Xiaolong Chen 
+- Simone Crivello
+- Angelo Jimenez
 
-## ⚙️ Setup
-
-- Installa **JDK 17** e configura `JAVA_HOME` sul sistema
-- Installa **MySQL 8** e crea il DB `AgenziaImmobiliare` con utente `ITS_2025` / password `its_2025`
-- Apri il progetto in **VS Code** e installa le estensioni suggerite sopra
-- Verifica `backend/src/main/resources/application.properties` per credenziali DB e (opzionale) configurazione SMTP
-- Avvia il backend con Maven wrapper: `cd backend` poi `mvnw.cmd spring-boot:run` (Windows) oppure `mvn spring-boot:run`
-- Verifica l’endpoint: `http://localhost:8080/api/auth/check`
+### Digital Strategist
+- Sara Auriemma
+- Beatrice Giletta
+- Luca Omegna
 
 ---
 
-## 🗄️ Database MySQL
+## 🎯 Obiettivi del Progetto
 
-Il progetto si aspetta:
-- Database: `AgenziaImmobiliare`
-- Utente: `ITS_2025` / Password: `its_2025`
-
-Verifica configurazione in: `backend/src/main/resources/application.properties`
-
-Spring Boot creerà/aggiornerà automaticamente le tabelle al primo avvio (`spring.jpa.hibernate.ddl-auto=update`).
-
----
-
-## 🚀 Avvio Rapido
-
-### 1. Avvia Backend Spring Boot
-
-**Windows PowerShell:**
-```powershell
-cd backend
-.\mvnw.cmd spring-boot:run
-```
-
-**Windows Command Prompt:**
-```cmd
-cd backend
-mvnw.cmd spring-boot:run
-```
-
-**Oppure con Maven globale:**
-```bash
-cd backend
-mvn spring-boot:run
-```
-
-**Se ricevi "Accesso negato"**, esegui il terminale come **Amministratore**.
-
-Il backend sarà su: **http://localhost:8080**
+- Creare un portale web moderno dedicato ai proprietari che vogliono
+  vendere casa.
+- Offrire un sistema di onboarding guidato tramite form multistep.
+- Fornire una valutazione dell'immobile entro 72 ore, supportata da
+  strumenti digitali.
+- Permettere all'amministrazione interna di gestire le richieste
+  tramite un'area riservata (dashboard).
+- Integrare strategie di comunicazione e lead generation per attrarre
+  nuovi clienti.
+- Definire una brand identity coerente e professionale.
 
 ---
 
-### 2. Test API
+## 🛠️ Funzionalità Principali
 
-Puoi testare le API con:
-- Browser: `http://localhost:8080/api/auth/check`
-- Postman/Insomnia
-- cURL: `curl http://localhost:8080/api/auth/check`
+### 🔹 Per gli utenti (proprietari)
 
-Per accedere usa le credenziali degli utenti presenti nel database.
+- Form multistep per inviare i dati del proprio immobile
+- Descrizione caratteristiche dell'immobile (tipologia, stato,
+  superficie, indirizzo...)
+- Invio della richiesta di valutazione
+- Ricezione di una risposta entro 72 ore
 
-Il sistema riconosce automaticamente i ruoli da `Tipi_utente.Nome`:
-- **"Amministratore"** → Accesso API admin
-- **"Agente"** → Accesso API agente
-- **"Cliente"** → Accesso base
+### 🔹 Per l'amministratore (dashboard)
 
----
-
-## 📂 Struttura Progetto
-
-```
-LaboratorioIntegrato/
-├── README.md                          # Questo file
-├── Modello DB.png                     # Diagramma database
-└── backend/                           # Backend Spring Boot
-    ├── src/main/java/com/immobiliaris/imobiliaris/
-    │   ├── config/                    # Spring Security
-    │   ├── controller/api/            # REST API
-    │   ├── entity/                    # User, TipoUtente
-    │   ├── repository/                # JPA Repository
-    │   └── service/                   # CustomUserDetailsService
-    ├── src/main/resources/
-    │   └── application.properties     # Configurazione DB MySQL
-    ├── mvnw.cmd                       # Maven wrapper Windows
-    ├── mvnw                           # Maven wrapper Linux/Mac
-    └── pom.xml                        # Dipendenze Maven
-```
+- Visualizzazione delle richieste ricevute
+- Stato avanzamento valutazioni
+- Gestione immobili, incarichi e vendite
+- Statistiche e dati riassuntivi (overview attività)
 
 ---
 
+## 🧭 Area Geografica Target
 
-
-## 📡 API
-
-Per consultare le API, entra nella root del repository e apri il file `API_DOCUMENTATION.md`.
-
----
-## 🔧 Risoluzione Problemi
-
-### ❌ "Accesso negato" quando avvio mvnw.cmd
-
-**Causa:** Policy di sicurezza Windows (AppLocker, SmartScreen, Antivirus).
-
-**Soluzioni:**
-1. Esegui il terminale come **Amministratore**
-2. Disabilita temporaneamente l'antivirus
-3. Usa Maven globale: `mvn spring-boot:run` nella cartella `backend/`
+Città medio-grandi del Piemonte: - Torino - Cuneo - Alessandria - Asti
 
 ---
 
-### ❌ Errore connessione database
+## 📣 Strategia Digitale Collegata
 
-**Causa:** MySQL non avviato o credenziali errate.
-
-**Verifica:**
-```bash
-mysql -u ITS_2025 -p
-# Password: its_2025
-```
-
-Controlla anche `backend/src/main/resources/application.properties`:
-```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/AgenziaImmobiliare?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-spring.datasource.username=ITS_2025
-spring.datasource.password=its_2025
-```
+Il progetto include anche: - Realizzazione della brand identity (logo,
+colori, linee guida) - Contenuti ottimizzati SEO - Piano editoriale e
+comunicazione social - Campagne paid (Meta, Google) per generare
+traffico e conversioni - Integrazione con strumenti di CRM e Marketing
+Automation
 
 ---
 
-### ❌ Login fallisce con 401
+## 🧱 Stack Tecnologico Utilizzato
 
-**Causa:** Credenziali errate o password non criptata correttamente.
-
-**Verifica:**
-- L'utente esista nel database
-- La password nel DB sia criptata con **BCrypt** (rounds = 10)
-- I log del backend per dettagli dell'errore
-
-**Per generare password BCrypt:**
-- Online: https://bcrypt-generator.com/ (usa 10 rounds)
-- Oppure da codice Java con `BCryptPasswordEncoder`
+- **Frontend:** HTML5/SCSS/TypeScript/React
+- **Backend:** Java + Spring Boot
+- **Database:** MySQL
+- **Versionamento:** GitHub
+- **Documentazione:** README.md, JSDoc
+- **Gestione progetto:** GitHub Projects
 
 ---
 
-## 🛠️ Dettagli Tecnici
+## 📂 Struttura della Repository
 
-### Backend (Spring Boot 3.5.7)
-- **Java 17**
-- **Spring Security** con form login e session-based authentication
-- **JPA/Hibernate** per gestione database MySQL
-- **CSRF disabilitato** per API REST
-- **BCrypt** per criptazione password (10 rounds)
+    /frontend     → codice interfaccia utente e portale pubblico
+    /backend      → API, logica server e gestione delle valutazioni
+    /docs         → documentazione e materiali aggiuntivi
 
 ---
 
-## 📝 Note Importanti
+## 🚀 Finalità del Progetto
 
-- Le **password** devono essere criptate con **BCrypt** nel database (10 rounds)
-- L'autenticazione usa **sessioni Spring Security** con cookie `JSESSIONID`
- 
-
----
-
-## ✅ Checklist Pre-Avvio
-
-- [ ] MySQL avviato con database `AgenziaImmobiliare`
-- [ ] Utenti e ruoli presenti nel database con password BCrypt
-- [ ] JDK 17 installato e configurato
-- [ ] Maven installato (o usa il wrapper `mvnw.cmd` incluso)
+- Fornire al cliente un portale moderno, veloce e affidabile
+- Digitalizzare il processo di acquisizione immobili
+- Semplificare la gestione interna tramite dashboard amministrativa
+- Migliorare la presenza online e la generazione di contatti
+  qualificati
 
 ---
 
-## 🎯 Quick Start
+## 📑 Note Finali
 
-```powershell
-# Windows PowerShell
-cd backend
-.\mvnw.cmd spring-boot:run
-
-# Oppure con Maven globale
-cd backend
-mvn spring-boot:run
-
-# Backend disponibile su: http://localhost:8080
-# Test API: http://localhost:8080/api/auth/check
-```
-
----
-
-## 📧 Supporto
-
-Per problemi:
-1. Verifica i **log del backend** nel terminale
-2. Controlla che **MySQL sia avviato** e gli utenti esistano
-3. Verifica che le **password siano criptate BCrypt**
-
----
-**Progetto pronto! 🚀**
+- Il progetto include una presentazione finale al cliente.
+- Ogni parte del team contribuisce con un ruolo specifico (Digital,
+  Web Developer, Software Developer).
+- Tutte le scelte tecniche e progettuali seguono gli obiettivi del
+  brief ricevuto.

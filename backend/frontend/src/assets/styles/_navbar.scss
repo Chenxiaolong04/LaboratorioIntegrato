@@ -1,0 +1,293 @@
+@use "./variables" as var;
+
+/* Blocca lo scroll del body quando aperto il menu mobile */
+.no-scroll {
+  overflow: hidden;
+  height: 100vh;
+}
+
+.navbar {
+  position: fixed;
+  top: 0;
+  background-color: white;
+  width: 100%;
+  margin: 0 auto;
+  z-index: 99;
+
+  .navbar-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      img {
+        height: 40px;
+        width: auto;
+      }
+
+      h2 {
+        font-size: var.$fs-mb-section-subtitle;
+      }
+
+      @media (min-width: 768px) {
+        img {
+          height: 60px;
+        }
+        
+        h2 {
+          font-size: var.$fs-dk-section-subtitle;
+        }
+      }
+    }
+
+    .links-desktop-navbar {
+      display: none;
+
+      @media (min-width: 1000px) {
+        display: flex;
+        gap: 2rem;
+
+        ul {
+          display: flex;
+          align-items: center;
+          gap: 2rem;
+          list-style: none;
+          margin: 0;
+          padding: 0;
+
+          li {
+            a {
+              font-size: 1.2rem;
+              font-weight: 600;
+              text-decoration: none;
+              transition: color 0.3s ease;
+
+              &:hover {
+                color: var.$palette-gray;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .menu-btn {
+      width: 36px;
+      height: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      z-index: 100;
+
+      .span-hamburger {
+        display: block;
+        height: 4px;
+        width: 100%;
+        background-color: black;
+        border-radius: 2px;
+        transition: 0.3s;
+        transform-origin: center;
+      }
+
+      .span-hamburger:nth-child(1) {
+        width: 70%;
+      }
+
+      .span-hamburger:nth-child(2) {
+        width: 100%;
+      }
+
+      .span-hamburger:nth-child(3) {
+        margin-left: auto;
+        width: 70%;
+      }
+
+      &.open {
+        .span-hamburger:nth-child(1) {
+          width: 100%;
+          transform: translateY(12px) rotate(45deg);
+        }
+
+        .span-hamburger:nth-child(2) {
+          opacity: 0;
+        }
+
+        .span-hamburger:nth-child(3) {
+          width: 100%;
+          transform: translateY(-8px) rotate(-45deg);
+          margin: 0;
+        }
+      }
+    }
+
+    .button-links {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+
+      .notification-wrapper {
+        position: relative;
+
+        .icon-btn {
+          position: relative;
+          cursor: pointer;
+
+          .badge {
+            position: absolute;
+            bottom: 4px;
+            right: 6px;
+            background-color: red;
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 600;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+        }
+
+        .notifications-dropdown {
+          position: absolute;
+          right: 0;
+          top: 120%;
+          background: white;
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+          border-radius: 10px;
+          width: 250px;
+          z-index: 100;
+          overflow: hidden;
+
+          ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+
+            li {
+              padding: 0.75rem 1rem;
+              border-bottom: 1px solid #eee;
+
+              &:last-child {
+                border-bottom: none;
+              }
+
+              p {
+                margin: 0;
+                font-size: 0.9rem;
+              }
+
+              .time {
+                display: block;
+                font-size: 0.75rem;
+                color: #888;
+              }
+            }
+          }
+        }
+      }
+
+      a {
+        height: 54px;
+
+        img {
+          height: 54px;
+        }
+      }
+
+      .icon-btn {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var.$palette-lightblu;
+        border: none;
+        border-radius: 50%;
+        padding: 1rem;
+        text-decoration: none;
+        color: inherit;
+        transition: background 0.2s;
+        .badge {
+          position: absolute;
+          bottom: 4px;
+          right: 6px;
+          background-color: red;
+          color: white;
+          font-size: 0.7rem;
+          font-weight: 600;
+          border-radius: 50%;
+          width: 16px;
+          height: 16px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+      }
+    }
+
+    @media (min-width: 1000px) {
+      .menu-btn {
+        display: none;
+      }
+    }
+
+    .menu-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-20px);
+      transition: all 0.4s ease;
+      z-index: 90;
+
+      ul {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+        list-style: none;
+        text-align: center;
+        padding: 2rem 0;
+
+        li {
+          a {
+            font-size: 1.5rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: color 0.3s ease;
+
+            &:hover {
+              color: #999;
+            }
+          }
+        }
+      }
+
+      &.active {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+    }
+
+    .btn-cta-navbar {
+      color: white;
+    }
+  }
+}

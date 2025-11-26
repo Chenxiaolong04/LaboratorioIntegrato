@@ -1,5 +1,0 @@
-# pack-refs with: peeled fully-peeled sorted 
-d858f6f51437024e07eaea6aaf91c5b94d956a9d refs/heads/backend
-75e536e8bdafd3fbccdab9a8d248aee6818746a1 refs/heads/feat/dashboard-admin
-c1f1e46227e00aeb37ce341c44933e5925cb75b2 refs/heads/frontend
-19b212ae88fbf1895629a1140e6393adbb150b91 refs/heads/main

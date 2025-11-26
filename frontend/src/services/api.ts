@@ -194,9 +194,6 @@ export async function registerUser(
   });
 }
 
-
-
-
 export type UpdateUserRequest = {
   nome?: string;
   cognome?: string;
@@ -217,9 +214,6 @@ export async function updateUser(
     body: updatedUser,
   });
 }
-
-
-
 
 export type ContrattoChiuso = {
   numeroContratto: string;
@@ -431,6 +425,75 @@ export async function deleteIncarichi(id: number) {
     `/admin/valutazioni/in-verifica/${id}`,
     {
       method: "DELETE",
+    }
+  );
+}
+
+export interface AddressSuggestion {
+  displayName: string;
+  via: string;
+  citta: string;
+  cap: string;
+  civico: string;
+  lat: number;
+  lon: number;
+}
+
+export interface AddressValidationResponse {
+  valid: boolean;
+  suggestions: AddressSuggestion[];
+}
+
+export async function validateAddress(
+  via: string,
+  citta: string
+): Promise<AddressValidationResponse> {
+  return apiFetch<AddressValidationResponse, { via: string; citta: string }>(
+    "/address/validate",
+    {
+      method: "POST",
+      body: { via, citta },
+    }
+  );
+}
+
+export interface SaveImmobileBody {
+  via: string;
+  citta: string;
+  cap: string;
+  tipologia: string;
+  metratura: number;
+  condizioni: string;
+  stanze: number;
+  bagni: number;
+  riscaldamento: string;
+  piano: number;
+  ascensore: boolean;
+  garage: boolean;
+  giardino: boolean;
+  balcone: boolean;
+  terrazzo: boolean;
+  cantina: boolean;
+  nomeProprietario: string;
+  cognomeProprietario: string;
+  emailProprietario: string;
+  telefonoProprietario: string;
+}
+
+export interface SaveImmobileResponse {
+  success: boolean;
+  id: string;
+  message: string;
+}
+
+export async function saveImmobile(
+  data: SaveImmobileBody
+): Promise<SaveImmobileResponse> {
+  return apiFetch<SaveImmobileResponse, SaveImmobileBody>(
+    "/immobili/save",
+    {
+      method: "POST",
+      body: data,
     }
   );
 }

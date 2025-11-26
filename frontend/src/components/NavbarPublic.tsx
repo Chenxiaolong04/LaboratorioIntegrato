@@ -43,7 +43,7 @@ export default function NavbarPublic() {
               </a>
             </li>
             <li>
-              <Link to={"/form"} className="btn btn-cta-navbar lightblu">
+              <Link to={"/form-check"} className="btn btn-cta-navbar lightblu">
                 Valuta la tua casa
               </Link>
             </li>
@@ -75,7 +75,7 @@ export default function NavbarPublic() {
               </a>
             </li>
             <li>
-              <Link to={"/form"}
+              <Link to={"/form-check"}
                 className="btn btn-cta-navbar lightblu"
                 onClick={handleLinkClick}
               >

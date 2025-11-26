@@ -27,9 +27,11 @@ public interface ContrattoJpaRepository extends JpaRepository<Contratto, Integer
      * Spring genera automaticamente: WHERE nome = ? AND dataInizio >= ?
      */
     Long countByStatoContrattoNomeAndDataInizioAfter(String nome, LocalDate data);
-
+    
     /**
-     * Restituisce la lista completa di contratti con lo stato specificato
+     * Trova tutti i contratti con uno specifico stato
      */
     List<Contratto> findByStatoContrattoNome(String nome);
+
+
 }
