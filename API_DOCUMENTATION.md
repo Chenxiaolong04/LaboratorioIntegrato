@@ -687,8 +687,9 @@ Valida un indirizzo usando l'API Geoapify
   "valid": true,
   "suggestions": [
     {
-      "displayName": "Via Ernesto Lancia, Torino, 10154",
+      "displayName": "Via Ernesto Lancia 5, Torino, 10154",
       "via": "Via Ernesto Lancia",
+      "civico": "5",
       "citta": "Torino",
       "cap": "10154",
       "lat": 45.0801,
