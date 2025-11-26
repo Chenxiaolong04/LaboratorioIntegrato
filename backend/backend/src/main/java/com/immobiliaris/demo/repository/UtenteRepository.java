@@ -1,6 +1,7 @@
 package com.immobiliaris.demo.repository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -19,7 +20,7 @@ public class UtenteRepository {
         String sql = "SELECT Id_utente FROM Utenti WHERE Email = ?";
         try {
             return jdbcTemplate.queryForObject(sql, Integer.class, email);
-        } catch (Exception e) {
+        } catch (EmptyResultDataAccessException e) {
             return null;
         }
     }

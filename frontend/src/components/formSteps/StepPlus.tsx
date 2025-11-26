@@ -12,6 +12,15 @@ export interface StepPlusRef {
   validate: () => boolean;
 }
 
+export const FEATURE_MAP: Record<string, keyof SaveImmobileBody> = {
+  Balcone: "balcone",
+  Terrazzo: "terrazzo",
+  "Giardino privato": "giardino",
+  "Box garage": "garage",
+  Ascensore: "ascensore",
+  Cantina: "cantina",
+};
+
 const FEATURES = [
   { text: "Balcone", img: BalconeImg },
   { text: "Terrazzo", img: TerrazzoImg },

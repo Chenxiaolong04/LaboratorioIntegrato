@@ -24,8 +24,8 @@ public interface ImmobileJpaRepository extends JpaRepository<Immobile, Integer> 
     List<Immobile> findTop10ByOrderByDataInserimentoDesc();
     
     /**
-     * Ottiene immobili con paginazione ordinati per data inserimento
+     * Ottiene immobili con paginazione ordinati per ID decrescente
      * Spring usa automaticamente il Pageable per paginazione e ordinamento
      */
-    Page<Immobile> findAllByOrderByDataInserimentoDesc(Pageable pageable);
+    Page<Immobile> findAllByOrderByIdDesc(Pageable pageable);
 }

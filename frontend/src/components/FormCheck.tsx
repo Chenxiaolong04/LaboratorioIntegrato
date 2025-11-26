@@ -4,8 +4,7 @@ export default function FormCheck() {
   const steps = [
     {
       number: "1",
-      title: "Indirizzo dell’immobile",
-      desc: "Inserisci la posizione dell’immobile per iniziare la valutazione.",
+      title: "Indirizzo immobile",
     },
     {
       number: "2",
@@ -15,22 +14,18 @@ export default function FormCheck() {
     {
       number: "3",
       title: "Stato dell’immobile",
-      desc: "Seleziona se è nuovo, in ottimo stato, buono o da ristrutturare.",
     },
     {
       number: "4",
       title: "Informazioni generali",
-      desc: "Superficie, piano, locali, bagni, tipo di riscaldamento.",
     },
     {
       number: "5",
       title: "Plus dell’immobile",
-      desc: "Garage, cantina, giardino, balconi e altri vantaggi.",
     },
     {
       number: "6",
       title: "Contatti",
-      desc: "Inserisci i tuoi dati così potremo inviarti la valutazione.",
     },
   ];
 
@@ -71,7 +66,6 @@ export default function FormCheck() {
             <div key={step.number} className="step-card">
               <div className="number">{step.number}</div>
               <h5>{step.title}</h5>
-              <p>{step.desc}</p>
             </div>
           ))}
         </div>
