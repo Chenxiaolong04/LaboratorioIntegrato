@@ -35,6 +35,7 @@ public class AddressValidationResponse {
         private String via;
         private String citta;
         private String cap;
+        private String civico;
         private Double lat;
         private Double lon;
         private String mapUrl;
@@ -73,6 +74,12 @@ public class AddressValidationResponse {
         }
         public void setCap(String cap) {
             this.cap = cap;
+        }
+        public String getCivico() {
+            return civico;
+        }
+        public void setCivico(String civico) {
+            this.civico = civico;
         }
         public Double getLat() {
             return lat;

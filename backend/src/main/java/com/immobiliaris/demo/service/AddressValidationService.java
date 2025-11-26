@@ -40,6 +40,9 @@ public class AddressValidationService {
         }
 
         String viaLower = request.getVia().trim().toLowerCase();
+        
+        // Estrai il civico inserito dall'utente (es: "Via Roma 10" -> "10")
+        String civicoInserito = extractCivico(request.getVia().trim());
 
         // Non accettare il nome della città nel campo via
         String[] cittaAccettate = {"torino", "cuneo", "alessandria", "asti"};
@@ -97,7 +100,7 @@ public class AddressValidationService {
             System.out.println("[DEBUG] Geoapify Response: " + response.getBody());
             JsonNode results = objectMapper.readTree(response.getBody());
 
-            List<AddressSuggestion> suggestions = parseSuggestions(results);
+            List<AddressSuggestion> suggestions = parseSuggestions(results, civicoInserito);
 
             // Filtra per città se specificata
             // Normalizza i nomi delle città perché Geoapify restituisce "Turin" invece di "Torino"
@@ -172,7 +175,7 @@ public class AddressValidationService {
     /**
      * Parse i risultati JSON di Geoapify in oggetti AddressSuggestion
      */
-    private List<AddressSuggestion> parseSuggestions(JsonNode results) {
+    private List<AddressSuggestion> parseSuggestions(JsonNode results, String civicoInserito) {
         List<AddressSuggestion> suggestions = new ArrayList<>();
 
         if (results == null || !results.has("features")) {
@@ -204,15 +207,24 @@ public class AddressValidationService {
                 String street = properties.path("street").asText(null);
                 String city = properties.path("city").asText(null);
                 String postcode = properties.path("postcode").asText(null);
-                System.out.println("[DEBUG] Address - street: " + street + ", city: " + city + ", postcode: " + postcode);
+                String housenumber = properties.path("housenumber").asText(null);
+                
+                // Se Geoapify non ha il civico, usa quello inserito dall'utente
+                if (housenumber == null && civicoInserito != null) {
+                    housenumber = civicoInserito;
+                }
+                
+                System.out.println("[DEBUG] Address - street: " + street + ", city: " + city + ", postcode: " + postcode + ", housenumber: " + housenumber);
 
                 suggestion.setVia(street);
                 suggestion.setCitta(city);
                 suggestion.setCap(postcode);
+                suggestion.setCivico(housenumber);
 
                 // Costruisci display name personalizzato
                 StringBuilder display = new StringBuilder();
                 if (street != null) display.append(street);
+                if (housenumber != null) display.append(" ").append(housenumber);
                 if (city != null) display.append(", ").append(city);
                 if (postcode != null) display.append(" ").append(postcode);
                 suggestion.setDisplayName(display.toString().trim());
@@ -232,5 +244,20 @@ public class AddressValidationService {
         }
 
         return suggestions;
+    }
+
+    /**
+     * Estrae il civico da una stringa di indirizzo (es: "Via Roma 10" -> "10")
+     */
+    private String extractCivico(String via) {
+        if (via == null || via.isEmpty()) return null;
+        String[] parts = via.trim().split(" ");
+        if (parts.length > 1) {
+            String lastPart = parts[parts.length - 1];
+            if (lastPart.matches("\\d+[a-zA-Z]?$")) {
+                return lastPart;
+            }
+        }
+        return null;
     }
 }
