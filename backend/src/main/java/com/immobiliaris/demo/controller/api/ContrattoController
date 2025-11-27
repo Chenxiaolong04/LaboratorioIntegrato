@@ -1,0 +1,61 @@
+package com.immobiliaris.demo.controller.api;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.web.bind.annotation.*;
+import com.immobiliaris.demo.model.Contratto;
+import com.immobiliaris.demo.service.ContrattoService;
+
+@RestController
+@RequestMapping("/api/contratti")
+public class ContrattoController {
+
+    @Autowired
+    private ContrattoService contrattoService;
+
+    @Secured({"ROLE_ADMIN", "ROLE_AGENT"})
+    @PostMapping("/{id}/genera-pdf-email")
+    public ResponseEntity<?> generaPDFEmail(@PathVariable Integer id) {
+        try {
+            Contratto contratto = contrattoService.getContrattoById(id);
+            String html = contrattoService.generaHTMLContratto(contratto);
+            byte[] pdf = contrattoService.generaPDF(html);
+            contrattoService.inviaPDFEmail(contratto, pdf);
+            
+            return ResponseEntity.ok(new ApiResponse("success", "PDF generato e inviato via email"));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(new ApiResponse("error", "Errore: " + e.getMessage()));
+        }
+    }
+
+    @Secured({"ROLE_ADMIN", "ROLE_AGENT"})
+    @GetMapping("/{id}/scarica-pdf")
+    public ResponseEntity<byte[]> scaricaPDF(@PathVariable Integer id) {
+        try {
+            Contratto contratto = contrattoService.getContrattoById(id);
+            String html = contrattoService.generaHTMLContratto(contratto);
+            byte[] pdf = contrattoService.generaPDF(html);
+            
+            return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=\"contratto_" + id + ".pdf\"")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(pdf);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
+        }
+    }
+
+    private static class ApiResponse {
+        public String status;
+        public String message;
+        
+        public ApiResponse(String status, String message) {
+            this.status = status;
+            this.message = message;
+        }
+    }
+}

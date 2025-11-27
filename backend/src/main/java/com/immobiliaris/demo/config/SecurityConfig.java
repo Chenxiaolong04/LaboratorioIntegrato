@@ -46,8 +46,9 @@ public class SecurityConfig {
 
         http
             .cors(cors -> cors.configurationSource(this.corsConfigurationSource))
-            .csrf(csrf -> csrf.disable())
+            .csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**"))
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/h2-console/**").permitAll()
                 .requestMatchers("/", "/api/auth/**", "/api/mail/**", "/api/address/**", "/api/map/**", "/api/immobili/save", "/login", "/error", "/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
                 .requestMatchers("/api/users/register").hasRole("ADMIN")
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
@@ -57,25 +58,24 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
-                .loginPage("/error")  // Reindirizza a /error invece di /login
+                .loginPage("/error")
                 .usernameParameter("email")
                 .passwordParameter("password")
                 .successHandler(successHandler)
                 .permitAll()
             )
             .logout(logout -> logout
-                .logoutSuccessUrl("/error")  // Dopo logout vai a /error
+                .logoutSuccessUrl("/error")
                 .permitAll()
             )
+            .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()))
             .exceptionHandling(ex -> ex
                 .accessDeniedPage("/error")
                 .authenticationEntryPoint((request, response, authException) -> {
-                    // Non reindirizzare le API REST, ritorna 401
                     String requestUri = request.getRequestURI();
                     if (requestUri.startsWith("/api/")) {
                         response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
                     } else {
-                        // Per le pagine HTML, vai a /error
                         response.sendRedirect("/error");
                     }
                 })
@@ -97,10 +97,6 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    /**
-     * AuthenticationManager per API REST login
-     * Necessario per permettere login tramite JSON
-     */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();

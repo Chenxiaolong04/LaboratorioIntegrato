@@ -16,12 +16,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 import com.immobiliaris.demo.entity.Contratto;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Service
 public class StatisticsService {
-    private static final Logger logger = LoggerFactory.getLogger(StatisticsService.class);
+    // logger rimosso, non necessario
 
     @Autowired
     private ContrattoJpaRepository contrattoRepository;
@@ -37,12 +35,6 @@ public class StatisticsService {
 
     @Autowired
     private UtenteRepository utenteRepository;
-
-    @Autowired
-    private ValutazioneJpaRepository valutazioneJpaRepository;
-
-    @Autowired
-    private ImmobileJpaRepository immobileJpaRepository;
 
     @Autowired
     private StatoValutazioneRepository statoValutazioneRepository;
@@ -205,7 +197,8 @@ public class StatisticsService {
                         
                         // Sostituisco instanceof con pattern matching
                         Integer agenteId;
-                        if (keyObj instanceof Long l) {
+                        if (keyObj instanceof Long) {
+                            Long l = (Long) keyObj;
                             agenteId = l.intValue();
                         } else if (keyObj instanceof Integer i) {
                             agenteId = i;
@@ -244,10 +237,10 @@ public class StatisticsService {
                         }
                     } catch (ClassCastException e) {
                         System.err.println("DEBUG: ClassCastException nel casting della key: " + e.getMessage());
-                        logger.error("DEBUG: ClassCastException nel casting della key: {}", e.getMessage(), e);
+                        // errore di casting, log rimosso
                     } catch (Exception e) {
                         System.err.println("DEBUG: Errore nel recupero agente: " + e.getMessage());
-                        logger.error("DEBUG: Errore nel recupero agente: {}", e.getMessage(), e);
+                        // errore nel recupero agente, log rimosso
                     }
                     return agente;
                 })
@@ -368,7 +361,7 @@ public class StatisticsService {
                 // immobileMap.put("dataInserimento", iObj.getDataInserimento());
 
                 // Recupera stato valutazione e agente dalla tabella Valutazioni usando JPA
-                List<Valutazione> valutazioni = valutazioneJpaRepository.findByImmobileIdOrderByDataValutazioneDesc(iObj.getId());
+                List<Valutazione> valutazioni = valutazioneRepository.findByImmobileIdOrderByDataValutazioneDesc(iObj.getId());
                 String statoValutazione = null;
                 String agenteNome = null;
                 
@@ -789,7 +782,7 @@ public class StatisticsService {
 
         // Salva le modifiche
         if (immobileModificato) {
-            immobileJpaRepository.save(immobile);
+            immobileRepository.save(immobile);
         }
         valutazioneRepository.save(valutazione);
     }
