@@ -183,59 +183,60 @@ CREATE TABLE Foto (
 CREATE TABLE zone (
     id_zona INT PRIMARY KEY AUTO_INCREMENT,     
     nome_quartiere VARCHAR(50) NOT NULL,        
-    cap VARCHAR(5) NOT NULL               
+    cap VARCHAR(5) NOT NULL,
+    prezzo_medio_mq INT NOT NULL              
 );
 
 
-INSERT INTO zone (nome_quartiere, cap) VALUES
-('Centro', '10121'),
-('Centro Storico/Quadrilatero Confine', '10122'),
-('Quadrilatero Romano', '10122'),
-('Centro Ovest/San Salvario Confine', '10123'),
-('Vanchiglia', '10124'),
-('Borgo Vanchiglia', '10124'),
-('San Salvario', '10125'),
-('Nizza Millefonti', '10126'),
-('Lingotto', '10126'),
-('Crocetta Est/Borgo Po Ovest', '10127'),
-('Crocetta', '10128'),
-('Centro Postale/Grandi Utenti', '10129'),
-('Collina Ovest', '10131'),
-('Sassi', '10132'),
-('Madonna del Pilone', '10133'),
-('Cavoretto', '10133'),
-('Borgo Po', '10133'),
-('Filadelfia', '10134'),
-('Mirafiori Nord', '10135'),
-('Mirafiori Sud', '10135'),
-('Santa Rita Sud Confine', '10136'),
-('Santa Rita', '10137'),
-('Cenisia', '10138'),
-('Cenisia/Borgo San Paolo Confine', '10139'),
-('Borgo San Paolo', '10141'),
-('Pozzo Strada', '10141'),
-('Pozzo Strada/Parella Confine', '10142'),
-('Cit Turin', '10143'),
-('San Donato', '10144'),
-('Campidoglio', '10144'),
-('Parella', '10145'),
-('Parella Nord/Lucento Sud', '10146'),
-('Borgo Vittoria', '10147'),
-('Lucento', '10148'),
-('Borgata Lesna', '10149'),
-('Madonna di Campagna', '10149'),
-('Caselle Postali/Servizi Centrali', '10150'),
-('Vallette', '10151'),
-('Aurora', '10152'),
-('Borgo Dora', '10152'),
-('Valdocco', '10152'),
-('Regio Parco', '10153'),
-('Barriera di Milano', '10154'),
-('Rebaudengo', '10155'),
-('Barca', '10156'),
-('Bertolla', '10156'),
-('Falchera', '10156'),
-('Villaretto', '10156');
+INSERT INTO zone (nome_quartiere, cap, prezzo_medio_mq) VALUES 
+('Centro', '10121', 4200),
+('Centro Storico/Quadrilatero Confine', '10122', 3400),
+('Quadrilatero Romano', '10122', 3600),
+('Centro Ovest/San Salvario Confine', '10123', 3100),
+('Vanchiglia', '10124', 2900),
+('Borgo Vanchiglia', '10124', 2800),
+('San Salvario', '10125', 2700),
+('Nizza Millefonti', '10126', 2100),
+('Lingotto', '10126', 2000),
+('Crocetta Est/Borgo Po Ovest', '10127', 3200),
+('Crocetta', '10128', 3700),
+('Centro Postale/Grandi Utenti', '10129', 3000),
+('Collina Ovest', '10131', 3900),
+('Sassi', '10132', 3100),
+('Madonna del Pilone', '10132', 3300),
+('Cavoretto', '10133', 3800),
+('Borgo Po', '10133', 4100),
+('Filadelfia', '10134', 2300),
+('Mirafiori Nord', '10135', 1800),
+('Mirafiori Sud', '10135', 1500),
+('Santa Rita Sud Confine', '10136', 1900),
+('Santa Rita', '10137', 2200),
+('Cenisia', '10138', 2500),
+('Cenisia/Borgo San Paolo Confine', '10139', 2400),
+('Borgo San Paolo', '10141', 2300),
+('Pozzo Strada', '10141', 2200),
+('Pozzo Strada/Parella Confine', '10142', 2150),
+('Cit Turin', '10143', 3400),
+('San Donato', '10144', 2600),
+('Campidoglio', '10144', 2500),
+('Parella', '10145', 2200),
+('Parella Nord/Lucento Sud', '10146', 1800),
+('Borgo Vittoria', '10147', 1600),
+('Lucento', '10148', 1500),
+('Borgata Lesna', '10149', 1700),
+('Madonna di Campagna', '10149', 1550),
+('Caselle Postali/Servizi Centrali', '10150', 2000),
+('Vallette', '10151', 1350),
+('Aurora', '10152', 1700),
+('Borgo Dora', '10152', 1800),
+('Valdocco', '10152', 2100),
+('Regio Parco', '10153', 2300),
+('Barriera di Milano', '10154', 1250),
+('Rebaudengo', '10155', 1300),
+('Barca', '10156', 1400),
+('Bertolla', '10156', 1600),
+('Falchera', '10156', 1200),
+('Villaretto', '10156', 1300);
 
 
 
@@ -331,38 +332,4 @@ VALUES
 ('2025-02-01', '2025-02-28', 4, 'C-2025-002', 3.00, 2, 6, NULL, 3, 2),
 ('2025-02-15', '2025-03-15', 4, 'C-2025-003', 3.00, 3, 7, NULL, 7, 3),
 ('2025-03-10', '2025-04-10', 4, 'C-2025-004', 3.50, 4, 7, NULL, 12, 3);
-
--- =========================================
--- 🔟 Tabella MacroareaUrbana
--- =========================================
-CREATE TABLE MacroareaUrbana (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nome_macroarea VARCHAR(100) NOT NULL UNIQUE,
-    NTN INT,
-    NTN_var DOUBLE,
-    IMI DOUBLE,
-    IMI_diff DOUBLE,
-    quota_NTN DOUBLE,
-    quotazione_media DOUBLE NOT NULL,
-    quotazione_var DOUBLE,
-    CAP_da CHAR(5),
-    CAP_a CHAR(5)
-);
-
--- =========================================
--- Inserimento Macroaree Torino con range CAP
--- =========================================
-INSERT INTO MacroareaUrbana (nome_macroarea, NTN, NTN_var, IMI, IMI_diff, quota_NTN, quotazione_media, quotazione_var, CAP_da, CAP_a) VALUES
-('Centro Torino', 150, 2.5, 180, 1.8, 60.0, 6500, 3.2, '10100', '10129'),
-('San Salvario', 120, 1.8, 140, 1.2, 50.0, 4800, 2.1, '10123', '10126'),
-('Aurora', 100, 1.2, 120, 0.9, 45.0, 3800, 1.5, '10152', '10156'),
-('Crocetta', 110, 1.5, 130, 1.1, 48.0, 4200, 1.8, '10127', '10129'),
-('Lingotto', 105, 1.3, 125, 1.0, 46.0, 4000, 1.6, '10126', '10126'),
-('Mirafiori', 90, 0.8, 110, 0.7, 40.0, 3200, 0.9, '10135', '10136'),
-('Barriera di Milano', 85, 0.5, 100, 0.4, 35.0, 2800, 0.3, '10154', '10156'),
-('Collina', 95, 0.9, 115, 0.8, 42.0, 3500, 1.1, '10131', '10133'),
-('Vanchiglia', 108, 1.4, 128, 1.05, 47.0, 4100, 1.7, '10124', '10125'),
-('Parella', 98, 1.0, 118, 0.85, 43.0, 3600, 1.2, '10145', '10149');
-
-
 
