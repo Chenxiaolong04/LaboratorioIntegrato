@@ -13,6 +13,13 @@ import java.util.List;
 
 @Service
 public class UserService {
+    // Elimina utente per ID (solo ADMIN)
+    public void deleteUserById(Long id) {
+        if (!userRepository.existsById(id)) {
+            throw new RuntimeException("Utente non trovato");
+        }
+        userRepository.deleteById(id);
+    }
 
     @Autowired
     private UserRepository userRepository;

@@ -597,6 +597,127 @@ Assegna un agente (già presente nel DB) a una valutazione con stato "solo_AI". 
 
 ---
 
+## 👤 CRUD Utenti
+
+Tutte le API richiedono il ruolo `ROLE_ADMIN`.
+
+### POST `/api/users/register`
+Crea un nuovo utente.
+
+**Request:**
+```json
+{
+  "nome": "Mario",
+  "cognome": "Rossi",
+  "email": "mario.rossi@email.com",
+  "password": "password123",
+  "telefono": "3201234567",
+  "via": "Via Roma 10",
+  "citta": "Torino",
+  "cap": "10100",
+  "tipoUtente": { "idTipo": 1 }
+}
+```
+**Response (200 OK):**
+Restituisce l'utente creato.
+
+---
+
+### GET `/api/users`
+Restituisce la lista di tutti gli utenti.
+
+**Response (200 OK):**
+```json
+[
+  {
+    "id": 1,
+    "nome": "Mario",
+    "cognome": "Rossi",
+    "email": "mario.rossi@email.com",
+    ...
+  },
+  ...
+]
+```
+
+---
+
+### GET `/api/users/{id}`
+Restituisce i dati di un utente specifico.
+
+**Response (200 OK):**
+```json
+{
+  "id": 1,
+  "nome": "Mario",
+  "cognome": "Rossi",
+  "email": "mario.rossi@email.com",
+  ...
+}
+```
+
+---
+
+### PUT `/api/users/{id}`
+Aggiorna i dati di un utente specifico.
+
+**Request:**
+```json
+{
+  "nome": "Mario",
+  "cognome": "Rossi",
+  "email": "nuova@email.com",
+  ...
+}
+```
+**Response (200 OK):**
+Restituisce l'utente aggiornato.
+
+---
+
+### DELETE `/api/users/{id}`
+Elimina l'utente con l'id specificato.
+
+**Response (200 OK):**
+Nessun contenuto (204 No Content).
+
+**Response (404):**
+Se l'utente non esiste.
+
+---
+
+### PUT `/api/users/profile`
+Aggiorna il profilo personale dell'utente autenticato.
+
+**Request:**
+```json
+{
+  "nome": "Mario",
+  "cognome": "Rossi",
+  ...
+}
+```
+**Response (200 OK):**
+Restituisce il profilo aggiornato.
+
+---
+
+### GET `/api/users/profile`
+Restituisce il profilo personale dell'utente autenticato.
+
+**Response (200 OK):**
+```json
+{
+  "id": 1,
+  "nome": "Mario",
+  "cognome": "Rossi",
+  "email": "mario.rossi@email.com",
+  ...
+}
+```
+
+---
+
 ## 🏠 Immobili
 
 ### POST `/api/immobili/save`
@@ -823,7 +944,7 @@ L'agente viene mostrato **solo** quando la valutazione richiede o ha ricevuto un
   - L'agente viene recuperato dal campo `Id_agente` nella tabella `Valutazioni`
   - Visualizza: Nome e cognome completo dell'agente
   
-- ❌ **NON mostra agente** se `statoValutazione` è `"solo_AI"`
+- ❌ **NON mostrare agente** se `statoValutazione` è `"solo_AI"`
   - Il campo `agenteAssegnato` sarà `null`
   - Questo garantisce che valutazioni automatiche non mostrino erroneamente un agente
 
@@ -851,7 +972,37 @@ if (immobile.statoValutazione === "solo_AI") {
 }
 ```
 
----
+
+## Tabella Riassuntiva delle API
+
+| Metodo | Rotta                  | Descrizione                        | Permessi richiesti |
+|--------|------------------------|------------------------------------|--------------------|
+| POST   | /api/auth/login        | Login utente                       | Nessuno            |
+| GET    | /api/users             | Elenco utenti                      | ADMIN              |
+| GET    | /api/users/{id}        | Dettaglio utente                   | ADMIN              |
+| POST   | /api/users             | Creazione nuovo utente             | ADMIN              |
+| PUT    | /api/users/{id}        | Modifica utente                    | ADMIN              |
+| DELETE | /api/users/{id}        | Eliminazione utente                | ADMIN              |
+| GET    | /api/statistics        | Statistiche immobiliari            | ADMIN, AGENT       |
+| POST   | /api/mail/send         | Invio email                        | ADMIN, AGENT       |
+| GET    | /api/immobili          | Elenco immobili                    | ADMIN, AGENT       |
+| GET    | /api/immobili/{id}     | Dettaglio immobile                 | ADMIN, AGENT       |
+| POST   | /api/immobili          | Creazione nuovo immobile           | ADMIN              |
+| PUT    | /api/immobili/{id}     | Modifica immobile                  | ADMIN              |
+| DELETE | /api/immobili/{id}     | Eliminazione immobile              | ADMIN              |
+| GET    | /api/contratti         | Elenco contratti                   | ADMIN, AGENT       |
+| GET    | /api/contratti/{id}    | Dettaglio contratto                | ADMIN, AGENT       |
+| POST   | /api/contratti         | Creazione nuovo contratto          | ADMIN              |
+| PUT    | /api/contratti/{id}    | Modifica contratto                 | ADMIN              |
+| DELETE | /api/contratti/{id}    | Eliminazione contratto             | ADMIN              |
+| GET    | /api/valutazioni       | Elenco valutazioni                 | ADMIN, AGENT       |
+| GET    | /api/valutazioni/{id}  | Dettaglio valutazione              | ADMIN, AGENT       |
+| POST   | /api/valutazioni       | Creazione nuova valutazione        | ADMIN, AGENT       |
+| PUT    | /api/valutazioni/{id}  | Modifica valutazione               | ADMIN, AGENT       |
+| DELETE | /api/valutazioni/{id}  | Eliminazione valutazione           | ADMIN              |
+| GET    | /api/home              | Pagina home                        | Nessuno            |
+| GET    | /api/welcome           | Pagina di benvenuto                | Nessuno            |
+| GET    | /api/error             | Gestione errori                    | Nessuno            |
 
 
 
