@@ -4,7 +4,7 @@ import com.immobiliaris.demo.entity.Contratto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -26,7 +26,7 @@ public interface ContrattoJpaRepository extends JpaRepository<Contratto, Integer
      * Conta i contratti conclusi nell'ultimo mese usando Data_inizio
      * Spring genera automaticamente: WHERE nome = ? AND dataInizio >= ?
      */
-    Long countByStatoContrattoNomeAndDataInizioAfter(String nome, LocalDate data);
+    Long countByStatoContrattoNomeAndDataInizioAfter(String nome, LocalDateTime data);
     
     /**
      * Trova tutti i contratti con uno specifico stato

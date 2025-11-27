@@ -28,7 +28,7 @@ CREATE TABLE Utenti (
     Via VARCHAR(100),
     Citta VARCHAR(100),
     CAP CHAR(5),
-    Data_registrazione DATE DEFAULT (CURRENT_DATE),
+    Data_registrazione DATETIME DEFAULT CURRENT_TIMESTAMP,
     Id_tipo INT,
     FOREIGN KEY (Id_tipo) REFERENCES Tipi_utente(Id_tipo)
         ON DELETE SET NULL ON UPDATE CASCADE
@@ -86,7 +86,7 @@ CREATE TABLE Immobili (
     Cantina BOOLEAN DEFAULT FALSE,
     Prezzo INT NULL,
     Descrizione TEXT,
-    Data_inserimento DATE DEFAULT (CURRENT_DATE),
+    Data_registrazione DATETIME DEFAULT CURRENT_TIMESTAMP,
     Id_utente INT,
     FOREIGN KEY (Id_stato_immobile) REFERENCES Stati_immobile(Id_stato_immobile)
         ON DELETE CASCADE ON UPDATE CASCADE,
@@ -101,7 +101,7 @@ CREATE TABLE Richieste (
     Id_richiesta INT AUTO_INCREMENT PRIMARY KEY,
     Id_stato_richiesta INT,
     Descrizione TEXT,
-    Data DATE DEFAULT (CURRENT_DATE),
+    Data_richiesta DATETIME DEFAULT CURRENT_TIMESTAMP,
     Id_utente INT,
     Id_immobile INT,
     Id_agente INT NULL,
@@ -122,7 +122,7 @@ CREATE TABLE Valutazioni (
     Id_valutazione INT AUTO_INCREMENT PRIMARY KEY,
     Prezzo_AI INT NULL,
     Prezzo_Umano INT NULL,
-    Data_valutazione DATE DEFAULT (CURRENT_DATE),
+    Data_valutazione DATETIME DEFAULT CURRENT_TIMESTAMP,
     Id_stato_valutazione INT,
     Descrizione TEXT,
     Id_agente INT,
@@ -140,10 +140,10 @@ CREATE TABLE Valutazioni (
 -- =========================================
 CREATE TABLE Contratti (
     Id_contratto INT AUTO_INCREMENT PRIMARY KEY,
-    Data_invio DATE,
-    Data_ricezione DATE,
-    Data_inizio DATE,
-    Data_fine DATE,
+    Data_invio DATETIME,
+    Data_ricezione DATETIME,
+    Data_inizio DATETIME,
+    Data_fine DATETIME,
     Id_stato_contratto INT,
     Numero_contratto VARCHAR(50) UNIQUE,
     Percentuale_commissione DECIMAL(5,2),
@@ -173,7 +173,7 @@ CREATE TABLE Foto (
     Id_foto INT AUTO_INCREMENT PRIMARY KEY,
     Nome VARCHAR(100),
     Percorso VARCHAR(255),
-    Data_caricamento DATE DEFAULT (CURRENT_DATE),
+    Data_caricamento DATETIME DEFAULT CURRENT_TIMESTAMP,
     Copertina BOOLEAN DEFAULT FALSE,
     Id_immobile INT,
     FOREIGN KEY (Id_immobile) REFERENCES Immobili(Id_immobile)

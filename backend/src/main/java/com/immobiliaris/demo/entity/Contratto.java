@@ -1,149 +1,119 @@
 package com.immobiliaris.demo.entity;
 
 import jakarta.persistence.*;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
-@Table(name = "Contratti")
 public class Contratto {
-    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "Id_contratto")
-    private Integer id;
-    
-    @Column(name = "Data_invio")
-    private LocalDate dataInvio;
-    
-        @ManyToOne
-        @JoinColumn(name = "Id_valutazione")
-        private Valutazione valutazione;
-    
+    private Long id;
+
+    @CreationTimestamp
+    private LocalDateTime dataRegistrazione;
+
+    private LocalDateTime dataInizio;
+    private LocalDateTime dataFine;
+
+    @ManyToOne
+    private User agente;
+
+    @ManyToOne
+    private User utente;
+
+    @ManyToOne
+    private Immobile immobile;
+
+    @ManyToOne
+    private StatoContratto statoContratto;
+
+    private String numeroContratto;
+    private Double percentualeCommissione;
+
+    private LocalDateTime dataInvio;
+    private LocalDateTime dataRicezione;
+
+    @ManyToOne
+    private Valutazione valutazione;
+
+    // Getter e Setter
+        public LocalDateTime getDataInvio() {
+            return dataInvio;
+        }
+        public void setDataInvio(LocalDateTime dataInvio) {
+            this.dataInvio = dataInvio;
+        }
+        public LocalDateTime getDataRicezione() {
+            return dataRicezione;
+        }
+        public void setDataRicezione(LocalDateTime dataRicezione) {
+            this.dataRicezione = dataRicezione;
+        }
         public Valutazione getValutazione() {
             return valutazione;
         }
-    
         public void setValutazione(Valutazione valutazione) {
             this.valutazione = valutazione;
         }
-    
-    @Column(name = "Data_ricezione")
-    private LocalDate dataRicezione;
-    
-    @Column(name = "Data_inizio")
-    private LocalDate dataInizio;
-    
-    @Column(name = "Data_fine")
-    private LocalDate dataFine;
-    
-    @ManyToOne
-    @JoinColumn(name = "Id_stato_contratto")
-    private StatoContratto statoContratto;
-    
-    @Column(name = "Numero_contratto")
-    private String numeroContratto;
-    
-    @Column(name = "Percentuale_commissione")
-    private Double percentualeCommissione;
-    
-    @ManyToOne
-    @JoinColumn(name = "Id_agente")
-    private User agente;
-    
-    @ManyToOne
-    @JoinColumn(name = "Id_utente")
-    private User utente;
-    
-    @ManyToOne
-    @JoinColumn(name = "Id_immobile")
-    private Immobile immobile;
-    
-    // Getters e Setters
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
-    
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
-    
-    public LocalDate getDataInvio() {
-        return dataInvio;
+    public LocalDateTime getDataRegistrazione() {
+        return dataRegistrazione;
     }
-    
-    public void setDataInvio(LocalDate dataInvio) {
-        this.dataInvio = dataInvio;
+    public void setDataRegistrazione(LocalDateTime dataRegistrazione) {
+        this.dataRegistrazione = dataRegistrazione;
     }
-    
-    public LocalDate getDataRicezione() {
-        return dataRicezione;
-    }
-    
-    public void setDataRicezione(LocalDate dataRicezione) {
-        this.dataRicezione = dataRicezione;
-    }
-    
-    public LocalDate getDataInizio() {
+    public LocalDateTime getDataInizio() {
         return dataInizio;
     }
-    
-    public void setDataInizio(LocalDate dataInizio) {
+    public void setDataInizio(LocalDateTime dataInizio) {
         this.dataInizio = dataInizio;
     }
-    
-    public LocalDate getDataFine() {
+    public LocalDateTime getDataFine() {
         return dataFine;
     }
-    
-    public void setDataFine(LocalDate dataFine) {
+    public void setDataFine(LocalDateTime dataFine) {
         this.dataFine = dataFine;
     }
-    
-    public StatoContratto getStatoContratto() {
-        return statoContratto;
-    }
-    
-    public void setStatoContratto(StatoContratto statoContratto) {
-        this.statoContratto = statoContratto;
-    }
-    
-    public String getNumeroContratto() {
-        return numeroContratto;
-    }
-    
-    public void setNumeroContratto(String numeroContratto) {
-        this.numeroContratto = numeroContratto;
-    }
-    
-    public Double getPercentualeCommissione() {
-        return percentualeCommissione;
-    }
-    
-    public void setPercentualeCommissione(Double percentualeCommissione) {
-        this.percentualeCommissione = percentualeCommissione;
-    }
-    
     public User getAgente() {
         return agente;
     }
-    
     public void setAgente(User agente) {
         this.agente = agente;
     }
-    
     public User getUtente() {
         return utente;
     }
-    
     public void setUtente(User utente) {
         this.utente = utente;
     }
-    
     public Immobile getImmobile() {
         return immobile;
     }
-    
     public void setImmobile(Immobile immobile) {
         this.immobile = immobile;
+    }
+    public StatoContratto getStatoContratto() {
+        return statoContratto;
+    }
+    public void setStatoContratto(StatoContratto statoContratto) {
+        this.statoContratto = statoContratto;
+    }
+    public String getNumeroContratto() {
+        return numeroContratto;
+    }
+    public void setNumeroContratto(String numeroContratto) {
+        this.numeroContratto = numeroContratto;
+    }
+    public Double getPercentualeCommissione() {
+        return percentualeCommissione;
+    }
+    public void setPercentualeCommissione(Double percentualeCommissione) {
+        this.percentualeCommissione = percentualeCommissione;
     }
 }
