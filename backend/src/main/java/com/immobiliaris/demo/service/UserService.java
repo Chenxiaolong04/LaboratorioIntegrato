@@ -33,7 +33,7 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         // Data registrazione
-        user.setDataRegistrazione(new java.sql.Date(System.currentTimeMillis()));
+        user.setDataRegistrazione(java.time.LocalDateTime.now());
 
         // Assegna tipoUtente
         TipoUtente tipo = tipoUtenteRepository.findById(tipoUtenteId)

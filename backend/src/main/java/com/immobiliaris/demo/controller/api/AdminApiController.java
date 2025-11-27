@@ -6,12 +6,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/admin")
 public class AdminApiController {
+    private static final Logger logger = LoggerFactory.getLogger(AdminApiController.class);
 
     @Autowired
     private StatisticsService statisticsService;
@@ -25,7 +29,11 @@ public class AdminApiController {
         try {
             // Ottieni statistiche complete dal Service
             Map<String, Object> dashboardData = statisticsService.getAdminDashboardData();
+
             response.put("statistics", dashboardData.get("statistics"));
+            response.put("contrattiPerMese", dashboardData.get("contrattiPerMese"));
+            response.put("top3Agenti", dashboardData.get("top3Agenti"));
+            response.put("immobiliPerTipo", dashboardData.get("immobiliPerTipo"));
 
             // Ottieni batch di immobili usando offset/limit (per comportamento "Carica altri")
             Map<String, Object> immobiliLoad = statisticsService.getImmobiliLoadMore(offset, limit);
@@ -37,7 +45,7 @@ public class AdminApiController {
         } catch (Exception e) {
             // Se c'è errore, ritorna almeno le info base
             System.err.println("Errore caricamento dashboard: " + e.getMessage());
-            e.printStackTrace();
+            logger.error("Errore caricamento dashboard: {}", e.getMessage(), e);
             response.put("error", e.getMessage());
         }
 
@@ -78,7 +86,7 @@ public class AdminApiController {
         try {
             return ResponseEntity.ok(statisticsService.getContrattiChiusiLoadMore(offset, limit));
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Errore recupero contratti: {}", e.getMessage(), e);
             return ResponseEntity.status(500).body("Errore recupero contratti");
         }
     }
@@ -95,7 +103,7 @@ public class AdminApiController {
         try {
             return ResponseEntity.ok(statisticsService.getValutazioniSoloAILoadMore(offset, limit));
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Errore recupero valutazioni: {}", e.getMessage(), e);
             return ResponseEntity.status(500).body("Errore recupero valutazioni");
         }
     }
@@ -112,7 +120,7 @@ public class AdminApiController {
         try {
             return ResponseEntity.ok(statisticsService.getValutazioniInVerficaLoadMore(offset, limit));
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Errore recupero valutazioni in verifica: {}", e.getMessage(), e);
             return ResponseEntity.status(500).body("Errore recupero valutazioni in verifica");
         }
     }
@@ -127,7 +135,7 @@ public class AdminApiController {
             statisticsService.deleteValutazione(id);
             return ResponseEntity.ok(Map.of("success", true, "message", "Valutazione AI eliminata con successo"));
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Errore eliminazione valutazione: {}", e.getMessage(), e);
             return ResponseEntity.status(500).body(Map.of("success", false, "message", "Errore eliminazione valutazione: " + e.getMessage()));
         }
     }
@@ -142,7 +150,7 @@ public class AdminApiController {
             statisticsService.deleteValutazione(id);
             return ResponseEntity.ok(Map.of("success", true, "message", "Valutazione in verifica eliminata con successo"));
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Errore eliminazione valutazione: {}", e.getMessage(), e);
             return ResponseEntity.status(500).body(Map.of("success", false, "message", "Errore eliminazione valutazione: " + e.getMessage()));
         }
     }
@@ -159,7 +167,7 @@ public class AdminApiController {
             statisticsService.updateValutazione(id, updates);
             return ResponseEntity.ok(Map.of("success", true, "message", "Valutazione aggiornata con successo"));
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Errore aggiornamento valutazione: {}", e.getMessage(), e);
             return ResponseEntity.status(500).body(Map.of("success", false, "message", "Errore aggiornamento valutazione: " + e.getMessage()));
         }
     }
@@ -179,7 +187,7 @@ public class AdminApiController {
             statisticsService.assegnaAgenteValutazioneAI(id, idAgente);
             return ResponseEntity.ok(Map.of("success", true, "message", "Agente assegnato con successo"));
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Errore assegnazione agente: {}", e.getMessage(), e);
             return ResponseEntity.status(500).body(Map.of("success", false, "message", "Errore assegnazione agente: " + e.getMessage()));
         }
     }

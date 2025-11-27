@@ -1,2 +1,6 @@
 /.metadata/
 /backend/src/main/resources/application.properties
+frontend/node_modules/
+frontend/.env
+frontend
+.vscode/

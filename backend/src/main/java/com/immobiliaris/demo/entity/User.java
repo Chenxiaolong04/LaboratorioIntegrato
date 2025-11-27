@@ -1,6 +1,8 @@
 package com.immobiliaris.demo.entity;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
+import org.hibernate.annotations.CreationTimestamp;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -44,8 +46,9 @@ public class User {
     @Column(name = "CAP", length = 5)
     private String cap;
 
-    @Column(name = "Data_registrazione")
-    private java.sql.Date dataRegistrazione;
+    @CreationTimestamp
+    @Column(name = "Data_registrazione", updatable = false)
+    private LocalDateTime dataRegistrazione;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "Id_tipo", referencedColumnName = "Id_tipo")

@@ -1,8 +1,6 @@
 package com.immobiliaris.demo.config;
 
 import com.immobiliaris.demo.service.CustomUserDetailsService;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,14 +8,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.web.cors.CorsConfigurationSource;
-
-import java.io.IOException;
 
 @Configuration
 public class SecurityConfig {
@@ -34,21 +29,18 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        AuthenticationSuccessHandler successHandler = new AuthenticationSuccessHandler() {
-            @Override
-            public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-                boolean isAdmin = authentication.getAuthorities().stream()
-                        .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-                boolean isAgent = authentication.getAuthorities().stream()
-                        .anyMatch(a -> a.getAuthority().equals("ROLE_AGENT"));
+        AuthenticationSuccessHandler successHandler = (request, response, authentication) -> {
+            boolean isAdmin = authentication.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+            boolean isAgent = authentication.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_AGENT"));
 
-                if (isAdmin) {
-                    response.sendRedirect("/admin");
-                } else if (isAgent) {
-                    response.sendRedirect("/agent");
-                } else {
-                    response.sendRedirect("/");
-                }
+            if (isAdmin) {
+                response.sendRedirect("/admin");
+            } else if (isAgent) {
+                response.sendRedirect("/agent");
+            } else {
+                response.sendRedirect("/");
             }
         };
 
@@ -56,7 +48,7 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(this.corsConfigurationSource))
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/api/auth/**", "/api/mail/**", "/login", "/error", "/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
+                .requestMatchers("/", "/api/auth/**", "/api/mail/**", "/api/address/**", "/api/map/**", "/api/immobili/save", "/login", "/error", "/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
                 .requestMatchers("/api/users/register").hasRole("ADMIN")
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/agent/**").hasRole("AGENT")
