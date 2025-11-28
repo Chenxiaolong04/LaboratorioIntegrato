@@ -48,7 +48,7 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(this.corsConfigurationSource))
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/api/auth/**", "/api/mail/**", "/api/address/**", "/api/map/**", "/api/immobili/save", "/login", "/error", "/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
+                .requestMatchers("/", "/api/auth/**", "/api/mail/**", "/api/address/**", "/api/map/**", "/api/immobili/save", "/api/valutazioni/**", "/login", "/error", "/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
                 .requestMatchers("/api/users/register").hasRole("ADMIN")
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/agent/**").hasRole("AGENT")
@@ -57,25 +57,23 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
-                .loginPage("/error")  // Reindirizza a /error invece di /login
+                .loginPage("/error")
                 .usernameParameter("email")
                 .passwordParameter("password")
                 .successHandler(successHandler)
                 .permitAll()
             )
             .logout(logout -> logout
-                .logoutSuccessUrl("/error")  // Dopo logout vai a /error
+                .logoutSuccessUrl("/error")
                 .permitAll()
             )
             .exceptionHandling(ex -> ex
                 .accessDeniedPage("/error")
                 .authenticationEntryPoint((request, response, authException) -> {
-                    // Non reindirizzare le API REST, ritorna 401
                     String requestUri = request.getRequestURI();
                     if (requestUri.startsWith("/api/")) {
                         response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
                     } else {
-                        // Per le pagine HTML, vai a /error
                         response.sendRedirect("/error");
                     }
                 })
