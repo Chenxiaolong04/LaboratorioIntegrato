@@ -46,7 +46,6 @@ public class MapController {
             return ResponseEntity.ok(Map.of("mapUrl", mapUrl));
         } catch (Exception e) {
             System.err.println("[ERROR] Map generation error: " + e.getMessage());
-            e.printStackTrace();
             return ResponseEntity.badRequest().body(Map.of("error", "Map generation failed"));
         }
     }
@@ -88,7 +87,6 @@ public class MapController {
             return ResponseEntity.ok(Map.of("mapUrl", mapUrl));
         } catch (Exception e) {
             System.err.println("[ERROR] Map with marker generation error: " + e.getMessage());
-            e.printStackTrace();
             return ResponseEntity.badRequest().body(Map.of("error", "Map generation failed"));
         }
     }

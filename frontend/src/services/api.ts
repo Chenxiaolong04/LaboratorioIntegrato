@@ -474,10 +474,10 @@ export interface SaveImmobileBody {
   balcone: boolean;
   terrazzo: boolean;
   cantina: boolean;
-  nomeProprietario: string;
-  cognomeProprietario: string;
-  emailProprietario: string;
-  telefonoProprietario: string;
+  nome: string;
+  cognome: string;
+  email: string;
+  telefono: string;
 }
 
 export interface SaveImmobileResponse {

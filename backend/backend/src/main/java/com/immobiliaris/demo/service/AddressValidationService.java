@@ -140,8 +140,8 @@ public class AddressValidationService {
 
             return new AddressValidationResponse(!suggestions.isEmpty(), suggestions);
         } catch (Exception e) {
+            // Cattura generica per API errors, network issues, JSON parsing
             System.err.println("[ERROR] Geoapify validation error: " + e.getMessage());
-            e.printStackTrace();
             return new AddressValidationResponse(false, new java.util.ArrayList<>());
         }
     }
@@ -157,19 +157,13 @@ public class AddressValidationService {
      */
     private String normalizeCityName(String city) {
         if (city == null) return "";
-        switch (city.toLowerCase()) {
-            case "turin":
-            case "torino":
-                return "torino";
-            case "cuneo":
-                return "cuneo";
-            case "alessandria":
-                return "alessandria";
-            case "asti":
-                return "asti";
-            default:
-                return city;
-        }
+        return switch (city.toLowerCase()) {
+            case "turin", "torino" -> "torino";
+            case "cuneo" -> "cuneo";
+            case "alessandria" -> "alessandria";
+            case "asti" -> "asti";
+            default -> city;
+        };
     }
 
     /**

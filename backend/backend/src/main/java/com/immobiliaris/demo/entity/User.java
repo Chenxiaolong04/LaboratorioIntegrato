@@ -6,6 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 @Table(name = "Utenti")
@@ -48,6 +49,7 @@ public class User {
 
     @CreationTimestamp
     @Column(name = "Data_registrazione", updatable = false)
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
     private LocalDateTime dataRegistrazione;
 
     @ManyToOne(fetch = FetchType.EAGER)

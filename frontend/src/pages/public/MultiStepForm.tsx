@@ -20,6 +20,7 @@ import StepPlus, {
 } from "../../components/formSteps/StepPlus";
 import StepProgress from "../../components/StepProgress";
 import { saveImmobile, type SaveImmobileBody } from "../../services/api";
+import Loader from "../../components/Loader";
 
 export default function MultiStepForm() {
   const [error, setError] = useState("");
@@ -27,6 +28,7 @@ export default function MultiStepForm() {
   const [errorStatus, setErrorStatus] = useState("");
   const [errorGeneral, setErrorGeneral] = useState("");
   const [step, setStep] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
 
   const { formData } = useFormContext();
 
@@ -38,30 +40,11 @@ export default function MultiStepForm() {
   const totalSteps = 7;
 
   const handleNext = () => {
-    if (step === 0) {
-      const valid = stepLocationRef.current?.validate();
-      if (!valid) return;
-    }
-
-    if (step === 1) {
-      const valid = stepTypeRef.current?.validate();
-      if (!valid) return;
-    }
-
-    if (step === 2) {
-      const valid = stepStatusRef.current?.validate();
-      if (!valid) return;
-    }
-
-    if (step === 3) {
-      const valid = stepGeneralRef.current?.validate();
-      if (!valid) return;
-    }
-
-    if (step === 4) {
-      const valid = stepPlusRef.current?.validate();
-      if (!valid) return;
-    }
+    if (step === 0 && !stepLocationRef.current?.validate()) return;
+    if (step === 1 && !stepTypeRef.current?.validate()) return;
+    if (step === 2 && !stepStatusRef.current?.validate()) return;
+    if (step === 3 && !stepGeneralRef.current?.validate()) return;
+    if (step === 4 && !stepPlusRef.current?.validate()) return;
 
     if (step < totalSteps - 1) setStep(step + 1);
   };
@@ -74,6 +57,8 @@ export default function MultiStepForm() {
 
   const handleFinalSubmit = async () => {
     try {
+      setIsLoading(true);
+
       const featuresBool = {
         ascensore: formData.features.includes("Ascensore"),
         garage: formData.features.includes("Box garage"),
@@ -94,13 +79,11 @@ export default function MultiStepForm() {
         bagni: Number(formData.bathrooms),
         riscaldamento: formData.heating,
         piano: Number(formData.floor),
-
         ...featuresBool,
-
-        nomeProprietario: formData.name,
-        cognomeProprietario: formData.surname,
-        emailProprietario: formData.email,
-        telefonoProprietario: formData.phone,
+        nome: formData.name,
+        cognome: formData.surname,
+        email: formData.email,
+        telefono: formData.phone,
       };
 
       await saveImmobile(body);
@@ -109,6 +92,8 @@ export default function MultiStepForm() {
     } catch (err: unknown) {
       console.error(err);
       alert("Errore durante il salvataggio dell'immobile");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -133,16 +118,15 @@ export default function MultiStepForm() {
           </div>
           {step < totalSteps - 1 && <StepProgress step={step + 1} />}
         </div>
+
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            if (step === totalSteps - 2) {
-              handleFinalSubmit();
-            } else {
-              handleNext();
-            }
+            if (step === totalSteps - 2) handleFinalSubmit();
+            else handleNext();
           }}
         >
+          {isLoading && <Loader />}
           {step === 0 && (
             <StepLocation
               ref={stepLocationRef}
@@ -174,7 +158,7 @@ export default function MultiStepForm() {
           {step === 4 && <StepPlus ref={stepPlusRef} />}
           {step === 5 && <StepContacts />}
           {step === 6 && <StepSuccess />}
-          {step < totalSteps - 1 && (
+          {step < totalSteps - 1 && !isLoading && (
             <div className="step-control">
               {step > 0 && (
                 <Button type="button" onClick={handlePrev}>

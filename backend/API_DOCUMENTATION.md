@@ -179,7 +179,7 @@ Endpoint alternativo per paginazione basata su **pagine** (non offset). Utile se
     {
       "tipo": "Appartamento",
       "nomeProprietario": "Mario Rossi",
-      "dataInserimento": "2025-11-10",
+      "dataRegistrazione": "2025-11-10",
       "statoValutazione": "in_verifica",
       "agenteAssegnato": "Luigi Verdi"
     }
@@ -721,30 +721,33 @@ Restituisce il profilo personale dell'utente autenticato.
 ## 🏠 Immobili
 
 ### POST `/api/immobili/save`
-Salva un nuovo immobile nel database.
+Endpoint completo per registrazione immobile: **salva immobile → valuta automaticamente → invia mail riepilogativa**.
 
 **Autenticazione:** ❌ No
 
 **Request:**
 ```json
 {
-  "via": "Via Roma 10",
+  "via": "Via Roma 123",
   "citta": "Torino",
-  "cap": "10154",           // (opzionale, fornito dal frontend se indirizzo valido)
+  "cap": "10100",
   "tipologia": "Appartamento",
-  "metratura": 85,
-  "condizioni": "Buone condizioni",
+  "metratura": 80,
   "stanze": 3,
   "bagni": 1,
+  "condizioni": "Buone condizioni",
   "riscaldamento": "Centralizzato",
-  "id_stato_immobile": 2,
   "piano": 3,
   "ascensore": true,
   "garage": true,
   "giardino": false,
   "balcone": true,
   "terrazzo": false,
-  "cantina": false
+  "cantina": false,
+  "nome": "Mario",
+  "cognome": "Rossi",
+  "email": "mario.rossi@email.com",
+  "telefono": "3331234567"
 }
 ```
 
@@ -790,7 +793,32 @@ Se l'email del proprietario non esiste nel sistema, viene creato automaticamente
 
 ---
 
-## 📍 Validazione Indirizzo
+## 📊 Valutazione Immobili
+La **valutazione immobiliare** consiste esclusivamente nel calcolo automatico del prezzo dell'immobile tramite algoritmo AI.
+
+### 💰 Logica di Calcolo
+
+Quando viene registrato un immobile, il sistema calcola il prezzo stimato (`prezzoAI`) in base ai seguenti parametri principali:
+
+- **Tipologia** (es. appartamento, villa, ufficio)
+- **Localizzazione** (città, zona, provincia)
+- **Metratura** (superficie in mq)
+- **Numero stanze**
+- **Numero bagni**
+- **Stato conservazione**
+- **Dotazioni** (ascensore, garage, giardino, balcone, terrazzo, cantina)
+
+L'algoritmo AI analizza questi dati e restituisce un valore numerico che rappresenta il prezzo stimato di mercato per quell'immobile.
+
+**Esempio di risposta:**
+```json
+{
+  "idImmobile": 123,
+  "prezzoAI": 220000
+}
+```
+
+> Non sono previsti altri stati, workflow, agenti o storici nella valutazione: il sistema si limita al calcolo automatico del prezzo.
 
 ### POST `/api/address/validate`
 Valida un indirizzo usando l'API Geoapify
