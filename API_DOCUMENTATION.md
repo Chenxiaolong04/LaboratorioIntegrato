@@ -790,7 +790,32 @@ Se l'email del proprietario non esiste nel sistema, viene creato automaticamente
 
 ---
 
-## 📍 Validazione Indirizzo
+## 📊 Valutazione Immobili
+La **valutazione immobiliare** consiste esclusivamente nel calcolo automatico del prezzo dell'immobile tramite algoritmo AI.
+
+### 💰 Logica di Calcolo
+
+Quando viene registrato un immobile, il sistema calcola il prezzo stimato (`prezzoAI`) in base ai seguenti parametri principali:
+
+- **Tipologia** (es. appartamento, villa, ufficio)
+- **Localizzazione** (città, zona, provincia)
+- **Metratura** (superficie in mq)
+- **Numero stanze**
+- **Numero bagni**
+- **Stato conservazione**
+- **Dotazioni** (ascensore, garage, giardino, balcone, terrazzo, cantina)
+
+L'algoritmo AI analizza questi dati e restituisce un valore numerico che rappresenta il prezzo stimato di mercato per quell'immobile.
+
+**Esempio di risposta:**
+```json
+{
+  "idImmobile": 123,
+  "prezzoAI": 220000
+}
+```
+
+> Non sono previsti altri stati, workflow, agenti o storici nella valutazione: il sistema si limita al calcolo automatico del prezzo.
 
 ### POST `/api/address/validate`
 Valida un indirizzo usando l'API Geoapify
