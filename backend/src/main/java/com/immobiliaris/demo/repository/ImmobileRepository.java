@@ -35,13 +35,13 @@ public class ImmobileRepository {
         String sql = "SELECT " +
                      "i.Tipologia as tipo, " +
                      "CONCAT(u.Nome, ' ', u.Cognome) as nomeProprietario, " +
-                     "i.Data_inserimento as dataInserimento, " +
+                     "i.Data_registrazione as dataRegistrazione, " +
                      "CONCAT(u_ag.Nome, ' ', u_ag.Cognome) as agenteAssegnato " +
                      "FROM Immobili i " +
                      "JOIN Utenti u ON i.Id_utente = u.Id_utente " +
                      "LEFT JOIN Valutazioni v ON i.Id_immobile = v.Id_immobile " +
                      "LEFT JOIN Utenti u_ag ON v.Id_agente = u_ag.Id_utente " +
-                     "ORDER BY i.Data_inserimento DESC " +
+                     "ORDER BY i.Data_registrazione DESC " +
                      "LIMIT 10";
         
         return jdbcTemplate.queryForList(sql);
@@ -60,13 +60,13 @@ public class ImmobileRepository {
         String sql = "SELECT " +
                      "i.Tipologia as tipo, " +
                      "CONCAT(u.Nome, ' ', u.Cognome) as nomeProprietario, " +
-                     "i.Data_inserimento as dataInserimento, " +
+                     "i.Data_registrazione as dataRegistrazione, " +
                      "CONCAT(u_ag.Nome, ' ', u_ag.Cognome) as agenteAssegnato " +
                      "FROM Immobili i " +
                      "JOIN Utenti u ON i.Id_utente = u.Id_utente " +
                      "LEFT JOIN Valutazioni v ON i.Id_immobile = v.Id_immobile " +
                      "LEFT JOIN Utenti u_ag ON v.Id_agente = u_ag.Id_utente " +
-                     "ORDER BY i.Data_inserimento DESC " +
+                     "ORDER BY i.Data_registrazione DESC " +
                      "LIMIT ? OFFSET ?";
         
         return jdbcTemplate.queryForList(sql, size, offset);

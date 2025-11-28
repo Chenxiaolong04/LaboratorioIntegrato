@@ -81,9 +81,7 @@ public class StatisticsService {
             Map<String, Object> immobileMap = new LinkedHashMap<>();
             immobileMap.put("tipo", i.getTipologia());
             immobileMap.put("nomeProprietario", i.getProprietario().getNome() + " " + i.getProprietario().getCognome());
-            // immobileMap.put("dataInserimento", i.getDataInserimento());
 
-            // Trova agente dalla valutazione
             String agenteNome = findAgenteForImmobile(i.getId());
             immobileMap.put("agenteAssegnato", agenteNome);
 
@@ -321,9 +319,7 @@ public class StatisticsService {
             Map<String, Object> immobileMap = new LinkedHashMap<>();
             immobileMap.put("tipo", i.getTipologia());
             immobileMap.put("nomeProprietario", i.getProprietario().getNome() + " " + i.getProprietario().getCognome());
-            // immobileMap.put("dataInserimento", i.getDataInserimento());
 
-            // Trova agente dalla valutazione
             String agenteNome = findAgenteForImmobile(i.getId());
             immobileMap.put("agenteAssegnato", agenteNome);
 
@@ -365,9 +361,7 @@ public class StatisticsService {
                 Map<String, Object> immobileMap = new LinkedHashMap<>();
                 immobileMap.put("tipo", iObj.getTipologia());
                 immobileMap.put("nomeProprietario", iObj.getProprietario() != null ? iObj.getProprietario().getNome() + " " + iObj.getProprietario().getCognome() : null);
-                // immobileMap.put("dataInserimento", iObj.getDataInserimento());
 
-                // Recupera stato valutazione e agente dalla tabella Valutazioni usando JPA
                 List<Valutazione> valutazioni = valutazioneJpaRepository.findByImmobileIdOrderByDataValutazioneDesc(iObj.getId());
                 String statoValutazione = null;
                 String agenteNome = null;
@@ -449,9 +443,7 @@ public class StatisticsService {
                 Immobile immobile = c.getImmobile();
                 m.put("tipo", immobile.getTipologia());
                 m.put("nomeProprietario", immobile.getProprietario().getNome() + " " + immobile.getProprietario().getCognome());
-                // m.put("dataInserimento", immobile.getDataInserimento());
 
-                // Agente direttamente dal Contratto (non dalla Valutazione)
                 String agenteNome = null;
                 if (c.getAgente() != null) {
                     agenteNome = c.getAgente().getNome() + " " + c.getAgente().getCognome();
@@ -460,7 +452,6 @@ public class StatisticsService {
             } else {
                 m.put("tipo", null);
                 m.put("nomeProprietario", null);
-                // m.put("dataInserimento", null);
                 m.put("agenteAssegnato", null);
             }
 
@@ -504,7 +495,6 @@ public class StatisticsService {
             m.put("dataValutazione", v.getDataValutazione());
             m.put("descrizione", v.getDescrizione());
 
-            // Dati immobile - COMPLETI
             if (v.getImmobile() != null) {
                 Immobile immobile = v.getImmobile();
                 m.put("tipo", immobile.getTipologia());
@@ -525,7 +515,6 @@ public class StatisticsService {
                 m.put("cantina", immobile.getCantina());
                 m.put("riscaldamento", immobile.getRiscaldamento());
 
-                // Proprietario e dati di contatto
                 if (immobile.getProprietario() != null) {
                     m.put("nomeProprietario", immobile.getProprietario().getNome() + " " + immobile.getProprietario().getCognome());
                     m.put("emailProprietario", immobile.getProprietario().getEmail());
@@ -537,7 +526,6 @@ public class StatisticsService {
                 }
 
                 m.put("descrizione", immobile.getDescrizione());
-                // m.put("dataInserimento", immobile.getDataInserimento());
             } else {
                 m.put("tipo", null);
                 m.put("via", null);
@@ -560,7 +548,6 @@ public class StatisticsService {
                 m.put("emailProprietario", null);
                 m.put("telefonoProprietario", null);
                 m.put("descrizione", null);
-                // m.put("dataInserimento", null);
             }
 
             return m;
@@ -632,7 +619,6 @@ public class StatisticsService {
                 m.put("cantina", immobile.getCantina());
                 m.put("riscaldamento", immobile.getRiscaldamento());
 
-                // Proprietario
                 if (immobile.getProprietario() != null) {
                     m.put("nomeProprietario", immobile.getProprietario().getNome() + " " + immobile.getProprietario().getCognome());
                     m.put("emailProprietario", immobile.getProprietario().getEmail());
@@ -644,7 +630,6 @@ public class StatisticsService {
                 }
 
                 m.put("descrizione", immobile.getDescrizione());
-                // m.put("dataInserimento", immobile.getDataInserimento());
             } else {
                 m.put("tipo", null);
                 m.put("via", null);
@@ -667,7 +652,6 @@ public class StatisticsService {
                 m.put("emailProprietario", null);
                 m.put("telefonoProprietario", null);
                 m.put("descrizione", null);
-                // m.put("dataInserimento", null);
             }
 
             return m;
