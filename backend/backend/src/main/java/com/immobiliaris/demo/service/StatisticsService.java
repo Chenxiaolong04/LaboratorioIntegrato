@@ -10,7 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -59,7 +59,7 @@ public class StatisticsService {
         Map<String, Long> stats = new LinkedHashMap<>();
 
         // Data limite per statistiche mensili (ultimi 30 giorni)
-        LocalDate dataLimite = LocalDate.now().minusMonths(1);
+        LocalDateTime dataLimite = LocalDateTime.now().minusMonths(1);
 
         // TOTALI
         stats.put("contrattiConclusi", contrattoRepository.countByStatoContrattoNome("chiuso"));
@@ -74,14 +74,14 @@ public class StatisticsService {
         data.put("statistics", stats);
 
         // Ultimi 10 immobili aggiunti (Spring trova automaticamente i primi 10)
-        List<Immobile> immobili = immobileRepository.findTop10ByOrderByDataInserimentoDesc();
+        List<Immobile> immobili = immobileRepository.findTop10ByOrderByDataRegistrazioneDesc();
 
         // Trasforma in Map per JSON
         List<Map<String, Object>> ultimi10Immobili = immobili.stream().map(i -> {
             Map<String, Object> immobileMap = new LinkedHashMap<>();
             immobileMap.put("tipo", i.getTipologia());
             immobileMap.put("nomeProprietario", i.getProprietario().getNome() + " " + i.getProprietario().getCognome());
-            immobileMap.put("dataInserimento", i.getDataInserimento());
+            // immobileMap.put("dataInserimento", i.getDataInserimento());
 
             // Trova agente dalla valutazione
             String agenteNome = findAgenteForImmobile(i.getId());
@@ -121,14 +121,14 @@ public class StatisticsService {
         List<Map<String, Object>> contrattiMensili = new java.util.ArrayList<>();
 
         for (int i = 5; i >= 0; i--) {
-            LocalDate inizio = LocalDate.now().minusMonths(i).withDayOfMonth(1);
-            LocalDate fine = inizio.plusMonths(1).minusDays(1);
+            LocalDateTime inizio = LocalDateTime.now().minusMonths(i).withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
+            LocalDateTime fine = inizio.plusMonths(1).minusDays(1).withHour(23).withMinute(59).withSecond(59).withNano(999999999);
 
-            List<Contratto> contrattiMese = contrattoRepository.findByStatoContrattoNome("chiuso")
+                List<Contratto> contrattiMese = contrattoRepository.findByStatoContrattoNome("chiuso")
                     .stream()
                     .filter(c -> c.getDataInizio() != null && 
-                            !c.getDataInizio().isBefore(inizio) && 
-                            !c.getDataInizio().isAfter(fine))
+                        !c.getDataInizio().isBefore(inizio) && 
+                        !c.getDataInizio().isAfter(fine))
                     .collect(Collectors.toList());
 
             // Sostituisco unboxing possibly null value
@@ -161,9 +161,9 @@ public class StatisticsService {
     public Map<String, Object> getTop3Agenti() {
         Map<String, Object> result = new LinkedHashMap<>();
 
-        LocalDate oggi = LocalDate.now();
-        LocalDate inizio = oggi.withDayOfMonth(1);
-        LocalDate fine = inizio.plusMonths(1).minusDays(1);
+        LocalDateTime oggi = LocalDateTime.now();
+        LocalDateTime inizio = oggi.withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
+        LocalDateTime fine = inizio.plusMonths(1).minusDays(1).withHour(23).withMinute(59).withSecond(59).withNano(999999999);
 
         System.out.println("DEBUG: Data inizio mese: " + inizio);
         System.out.println("DEBUG: Data fine mese: " + fine);
@@ -321,7 +321,7 @@ public class StatisticsService {
             Map<String, Object> immobileMap = new LinkedHashMap<>();
             immobileMap.put("tipo", i.getTipologia());
             immobileMap.put("nomeProprietario", i.getProprietario().getNome() + " " + i.getProprietario().getCognome());
-            immobileMap.put("dataInserimento", i.getDataInserimento());
+            // immobileMap.put("dataInserimento", i.getDataInserimento());
 
             // Trova agente dalla valutazione
             String agenteNome = findAgenteForImmobile(i.getId());
@@ -365,7 +365,7 @@ public class StatisticsService {
                 Map<String, Object> immobileMap = new LinkedHashMap<>();
                 immobileMap.put("tipo", iObj.getTipologia());
                 immobileMap.put("nomeProprietario", iObj.getProprietario() != null ? iObj.getProprietario().getNome() + " " + iObj.getProprietario().getCognome() : null);
-                immobileMap.put("dataInserimento", iObj.getDataInserimento());
+                // immobileMap.put("dataInserimento", iObj.getDataInserimento());
 
                 // Recupera stato valutazione e agente dalla tabella Valutazioni usando JPA
                 List<Valutazione> valutazioni = valutazioneJpaRepository.findByImmobileIdOrderByDataValutazioneDesc(iObj.getId());
@@ -449,7 +449,7 @@ public class StatisticsService {
                 Immobile immobile = c.getImmobile();
                 m.put("tipo", immobile.getTipologia());
                 m.put("nomeProprietario", immobile.getProprietario().getNome() + " " + immobile.getProprietario().getCognome());
-                m.put("dataInserimento", immobile.getDataInserimento());
+                // m.put("dataInserimento", immobile.getDataInserimento());
 
                 // Agente direttamente dal Contratto (non dalla Valutazione)
                 String agenteNome = null;
@@ -460,7 +460,7 @@ public class StatisticsService {
             } else {
                 m.put("tipo", null);
                 m.put("nomeProprietario", null);
-                m.put("dataInserimento", null);
+                // m.put("dataInserimento", null);
                 m.put("agenteAssegnato", null);
             }
 
@@ -537,7 +537,7 @@ public class StatisticsService {
                 }
 
                 m.put("descrizione", immobile.getDescrizione());
-                m.put("dataInserimento", immobile.getDataInserimento());
+                // m.put("dataInserimento", immobile.getDataInserimento());
             } else {
                 m.put("tipo", null);
                 m.put("via", null);
@@ -560,7 +560,7 @@ public class StatisticsService {
                 m.put("emailProprietario", null);
                 m.put("telefonoProprietario", null);
                 m.put("descrizione", null);
-                m.put("dataInserimento", null);
+                // m.put("dataInserimento", null);
             }
 
             return m;
@@ -644,7 +644,7 @@ public class StatisticsService {
                 }
 
                 m.put("descrizione", immobile.getDescrizione());
-                m.put("dataInserimento", immobile.getDataInserimento());
+                // m.put("dataInserimento", immobile.getDataInserimento());
             } else {
                 m.put("tipo", null);
                 m.put("via", null);
@@ -667,7 +667,7 @@ public class StatisticsService {
                 m.put("emailProprietario", null);
                 m.put("telefonoProprietario", null);
                 m.put("descrizione", null);
-                m.put("dataInserimento", null);
+                // m.put("dataInserimento", null);
             }
 
             return m;
@@ -707,7 +707,7 @@ public class StatisticsService {
         }
         if (updates.containsKey("dataValutazione")) {
             String dataStr = (String) updates.get("dataValutazione");
-            valutazione.setDataValutazione(LocalDate.parse(dataStr));
+            valutazione.setDataValutazione(LocalDateTime.parse(dataStr));
         }
         if (updates.containsKey("descrizione")) {
             valutazione.setDescrizione((String) updates.get("descrizione"));

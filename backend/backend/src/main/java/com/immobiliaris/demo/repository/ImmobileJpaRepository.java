@@ -21,7 +21,7 @@ public interface ImmobileJpaRepository extends JpaRepository<Immobile, Integer> 
      * Ottiene gli ultimi 10 immobili ordinati per data inserimento
      * Spring capisce automaticamente "OrderBy" e "Desc"
      */
-    List<Immobile> findTop10ByOrderByDataInserimentoDesc();
+    List<Immobile> findTop10ByOrderByDataRegistrazioneDesc();
     
     /**
      * Ottiene immobili con paginazione ordinati per ID decrescente

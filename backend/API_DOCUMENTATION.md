@@ -1,6 +1,12 @@
 # 📡 API REST - Documentazione Backend
 
+
 Base URL: `http://localhost:8080`
+
+**Aggiornamento importante:**
+- Tutte le API che restituiscono immobili, contratti o valutazioni NON includono più il campo `dataInserimento`/`data_inserimento` nel JSON di risposta.
+- Quando si salva un immobile, se l'email del proprietario non esiste, viene creato automaticamente un utente di tipo **cliente** (senza password) e associato all'immobile.
+- Se l'utente esiste già, viene associato come proprietario.
 
 ---
 
@@ -103,14 +109,14 @@ Ottieni informazioni utente loggato
     {
       "tipo": "Appartamento",
       "nomeProprietario": "Mario Rossi",
-      "dataInserimento": "2025-11-10",
+      // "dataRegistrazione": "2025-11-10", // campo non più restituito
       "statoValutazione": "in_verifica",
       "agenteAssegnato": "Luigi Verdi"
     },
     {
       "tipo": "Villa",
       "nomeProprietario": "Anna Bianchi",
-      "dataInserimento": "2025-11-09",
+      // "dataRegistrazione": "2025-11-09", // campo non più restituito
       "statoValutazione": "solo_AI",
       "agenteAssegnato": null
     }
@@ -141,7 +147,7 @@ Ottieni informazioni utente loggato
 **Campi di ogni immobile:**
 - `tipo`: Tipologia immobile (Appartamento, Villa, Ufficio, ecc.)
 - `nomeProprietario`: Nome completo proprietario
-- `dataInserimento`: Data inserimento immobile
+// `dataRegistrazione`: Data registrazione immobile (non restituito nel JSON)
 - `statoValutazione`: Stato della valutazione dell'immobile (recuperato dalla tabella Valutazioni)
   - `"solo_AI"`: Valutazione effettuata solo dall'intelligenza artificiale
   - `"in_verifica"`: Valutazione in corso di verifica da parte di un agente
@@ -222,7 +228,7 @@ Restituisce la lista di **contratti conclusi** (stato = "chiuso") con i dettagli
       "valutazioneUmana": 225000,
       "tipo": "Appartamento",
       "nomeProprietario": "Mario Rossi",
-      "dataInserimento": "2024-12-20",
+      // "dataRegistrazione": "2024-12-20", // campo non più restituito
       "agenteAssegnato": "Luigi Verdi"
     },
     {
@@ -234,7 +240,7 @@ Restituisce la lista di **contratti conclusi** (stato = "chiuso") con i dettagli
       "valutazioneUmana": null,
       "tipo": "Villa",
       "nomeProprietario": "Anna Bianchi",
-      "dataInserimento": "2024-12-15",
+      // "dataRegistrazione": "2024-12-15", // campo non più restituito
       "agenteAssegnato": null
     }
   ],
@@ -259,7 +265,7 @@ Restituisce la lista di **contratti conclusi** (stato = "chiuso") con i dettagli
 - `valutazioneUmana`: Prezzo stimato dall'agente (null se non disponibile)
 - `tipo`: Tipologia immobile (Appartamento, Villa, Ufficio, ecc.)
 - `nomeProprietario`: Nome completo proprietario immobile
-- `dataInserimento`: Data inserimento immobile nel sistema
+// `dataRegistrazione`: Data registrazione immobile (non restituito nel JSON)
 - `agenteAssegnato`: Nome agente che gestisce l'immobile (null se non assegnato)
 
 **Response (403):** Se non hai ROLE_ADMIN
@@ -308,7 +314,7 @@ Restituisce la lista di **valutazioni generate solo dall'AI** (stato = "solo_AI"
       "emailProprietario": "luca.bianchi@email.com",
       "telefonoProprietario": "3201234567",
       "descrizione": "Appartamento luminoso in centro.",
-      "dataInserimento": "2024-12-20"
+      // "dataRegistrazione": "2024-12-20" // campo non più restituito
     }
   ],
   "nextOffset": 10,
@@ -349,7 +355,7 @@ Restituisce la lista di **valutazioni generate solo dall'AI** (stato = "solo_AI"
 - `emailProprietario`: Email proprietario
 - `telefonoProprietario`: Telefono proprietario
 - `descrizione`: Descrizione immobile
-- `dataInserimento`: Data inserimento nel sistema
+// `dataRegistrazione`: Data registrazione immobile (non restituito nel JSON)
 
 **Response (403):** Se non hai ROLE_ADMIN
 
@@ -398,7 +404,7 @@ Restituisce la lista di **valutazioni in verifica** (stato = "in_verifica") con 
       "emailProprietario": "luca.bianchi@email.com",
       "telefonoProprietario": "3201234567",
       "descrizione": "Appartamento luminoso in centro.",
-      "dataInserimento": "2024-12-20"
+      // "dataRegistrazione": "2024-12-20" // campo non più restituito
     }
   ],
   "nextOffset": 10,
@@ -443,7 +449,7 @@ Restituisce la lista di **valutazioni in verifica** (stato = "in_verifica") con 
 - `emailProprietario`: Email proprietario
 - `telefonoProprietario`: Telefono proprietario
 - `descrizione`: Descrizione immobile
-- `dataInserimento`: Data inserimento nel sistema
+// `dataRegistrazione`: Data registrazione immobile (non restituito nel JSON)
 
 **Response (403):** Se non hai ROLE_ADMIN
 
@@ -591,6 +597,127 @@ Assegna un agente (già presente nel DB) a una valutazione con stato "solo_AI". 
 
 ---
 
+## 👤 CRUD Utenti
+
+Tutte le API richiedono il ruolo `ROLE_ADMIN`.
+
+### POST `/api/users/register`
+Crea un nuovo utente.
+
+**Request:**
+```json
+{
+  "nome": "Mario",
+  "cognome": "Rossi",
+  "email": "mario.rossi@email.com",
+  "password": "password123",
+  "telefono": "3201234567",
+  "via": "Via Roma 10",
+  "citta": "Torino",
+  "cap": "10100",
+  "tipoUtente": { "idTipo": 1 }
+}
+```
+**Response (200 OK):**
+Restituisce l'utente creato.
+
+---
+
+### GET `/api/users`
+Restituisce la lista di tutti gli utenti.
+
+**Response (200 OK):**
+```json
+[
+  {
+    "id": 1,
+    "nome": "Mario",
+    "cognome": "Rossi",
+    "email": "mario.rossi@email.com",
+    ...
+  },
+  ...
+]
+```
+
+---
+
+### GET `/api/users/{id}`
+Restituisce i dati di un utente specifico.
+
+**Response (200 OK):**
+```json
+{
+  "id": 1,
+  "nome": "Mario",
+  "cognome": "Rossi",
+  "email": "mario.rossi@email.com",
+  ...
+}
+```
+
+---
+
+### PUT `/api/users/{id}`
+Aggiorna i dati di un utente specifico.
+
+**Request:**
+```json
+{
+  "nome": "Mario",
+  "cognome": "Rossi",
+  "email": "nuova@email.com",
+  ...
+}
+```
+**Response (200 OK):**
+Restituisce l'utente aggiornato.
+
+---
+
+### DELETE `/api/users/{id}`
+Elimina l'utente con l'id specificato.
+
+**Response (200 OK):**
+Nessun contenuto (204 No Content).
+
+**Response (404):**
+Se l'utente non esiste.
+
+---
+
+### PUT `/api/users/profile`
+Aggiorna il profilo personale dell'utente autenticato.
+
+**Request:**
+```json
+{
+  "nome": "Mario",
+  "cognome": "Rossi",
+  ...
+}
+```
+**Response (200 OK):**
+Restituisce il profilo aggiornato.
+
+---
+
+### GET `/api/users/profile`
+Restituisce il profilo personale dell'utente autenticato.
+
+**Response (200 OK):**
+```json
+{
+  "id": 1,
+  "nome": "Mario",
+  "cognome": "Rossi",
+  "email": "mario.rossi@email.com",
+  ...
+}
+```
+
+---
+
 ## 🏠 Immobili
 
 ### POST `/api/immobili/save`
@@ -626,6 +753,9 @@ Salva un nuovo immobile nel database.
 - Il campo `provincia` viene aggiunto dal backend in automatico in base alla città (`Torino`→`TO`, `Cuneo`→`CN`, ecc.).  
 - L’utente non deve mai inserire manualmente la provincia.
 
+**Logica proprietario:**  
+Se l'email del proprietario non esiste nel sistema, viene creato automaticamente un utente di tipo **cliente** (senza password) e associato all'immobile. Se l'utente esiste già, viene semplicemente associato come proprietario. Questo processo è trasparente per il frontend: non è necessario gestire la registrazione manuale del proprietario.
+
 **Response (200 OK):**
 ```json
 {
@@ -650,7 +780,7 @@ Salva un nuovo immobile nel database.
   "cantina": false,
   "prezzo": null,
   "descrizione": null,
-  "data_inserimento": "2025-11-26"
+  // "dataRegistrazione": "2025-11-26" // campo non più restituito
 }
 ```
 
@@ -687,8 +817,9 @@ Valida un indirizzo usando l'API Geoapify
   "valid": true,
   "suggestions": [
     {
-      "displayName": "Via Ernesto Lancia, Torino, 10154",
+      "displayName": "Via Ernesto Lancia 5, Torino, 10154",
       "via": "Via Ernesto Lancia",
+      "civico": "5",
       "citta": "Torino",
       "cap": "10154",
       "lat": 45.0801,
@@ -813,7 +944,7 @@ L'agente viene mostrato **solo** quando la valutazione richiede o ha ricevuto un
   - L'agente viene recuperato dal campo `Id_agente` nella tabella `Valutazioni`
   - Visualizza: Nome e cognome completo dell'agente
   
-- ❌ **NON mostra agente** se `statoValutazione` è `"solo_AI"`
+- ❌ **NON mostrare agente** se `statoValutazione` è `"solo_AI"`
   - Il campo `agenteAssegnato` sarà `null`
   - Questo garantisce che valutazioni automatiche non mostrino erroneamente un agente
 
@@ -841,7 +972,37 @@ if (immobile.statoValutazione === "solo_AI") {
 }
 ```
 
----
+
+## Tabella Riassuntiva delle API
+
+| Metodo | Rotta                  | Descrizione                        | Permessi richiesti |
+|--------|------------------------|------------------------------------|--------------------|
+| POST   | /api/auth/login        | Login utente                       | Nessuno            |
+| GET    | /api/users             | Elenco utenti                      | ADMIN              |
+| GET    | /api/users/{id}        | Dettaglio utente                   | ADMIN              |
+| POST   | /api/users             | Creazione nuovo utente             | ADMIN              |
+| PUT    | /api/users/{id}        | Modifica utente                    | ADMIN              |
+| DELETE | /api/users/{id}        | Eliminazione utente                | ADMIN              |
+| GET    | /api/statistics        | Statistiche immobiliari            | ADMIN, AGENT       |
+| POST   | /api/mail/send         | Invio email                        | ADMIN, AGENT       |
+| GET    | /api/immobili          | Elenco immobili                    | ADMIN, AGENT       |
+| GET    | /api/immobili/{id}     | Dettaglio immobile                 | ADMIN, AGENT       |
+| POST   | /api/immobili          | Creazione nuovo immobile           | ADMIN              |
+| PUT    | /api/immobili/{id}     | Modifica immobile                  | ADMIN              |
+| DELETE | /api/immobili/{id}     | Eliminazione immobile              | ADMIN              |
+| GET    | /api/contratti         | Elenco contratti                   | ADMIN, AGENT       |
+| GET    | /api/contratti/{id}    | Dettaglio contratto                | ADMIN, AGENT       |
+| POST   | /api/contratti         | Creazione nuovo contratto          | ADMIN              |
+| PUT    | /api/contratti/{id}    | Modifica contratto                 | ADMIN              |
+| DELETE | /api/contratti/{id}    | Eliminazione contratto             | ADMIN              |
+| GET    | /api/valutazioni       | Elenco valutazioni                 | ADMIN, AGENT       |
+| GET    | /api/valutazioni/{id}  | Dettaglio valutazione              | ADMIN, AGENT       |
+| POST   | /api/valutazioni       | Creazione nuova valutazione        | ADMIN, AGENT       |
+| PUT    | /api/valutazioni/{id}  | Modifica valutazione               | ADMIN, AGENT       |
+| DELETE | /api/valutazioni/{id}  | Eliminazione valutazione           | ADMIN              |
+| GET    | /api/home              | Pagina home                        | Nessuno            |
+| GET    | /api/welcome           | Pagina di benvenuto                | Nessuno            |
+| GET    | /api/error             | Gestione errori                    | Nessuno            |
 
 
 

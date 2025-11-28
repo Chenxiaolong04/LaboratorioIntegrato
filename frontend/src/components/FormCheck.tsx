@@ -45,6 +45,10 @@ export default function FormCheck() {
           Avrai poi a disposizione un agente immobiliare per fare qualsiasi
           domanda e arrivare alla proposta di contratto con noi.
         </p>
+        <p className="violet">
+          *Servizio disponibile solo per immobili a Torino, Cuneo, Asti e
+          Alessandria.
+        </p>
       </div>
 
       <div className="action-btns">

@@ -27,6 +27,10 @@
     gap: 1rem;
     padding: 2rem 0;
     font-size: var.$fs-mb-section-subtitle;
+
+    .violet {
+      color: var.$palette-violet;
+    }
   }
 
   .steps-info {

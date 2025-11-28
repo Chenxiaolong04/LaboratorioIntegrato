@@ -73,7 +73,6 @@ export default function MultiStepForm() {
   };
 
   const handleFinalSubmit = async () => {
-    console.log("formData al submit:", formData);
     try {
       const featuresBool = {
         ascensore: formData.features.includes("Ascensore"),
@@ -104,8 +103,7 @@ export default function MultiStepForm() {
         telefonoProprietario: formData.phone,
       };
 
-      const res = await saveImmobile(body);
-      console.log("Immobile salvato:", res);
+      await saveImmobile(body);
 
       setStep(6);
     } catch (err: unknown) {
