@@ -25,25 +25,25 @@
     flex-direction: column;
     gap: 2rem;
 
-    /* CORREZIONE LAYOUT PRINCIPALE */
+    /* 4 card */
     .general-dashboard {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 1rem;
-      padding: 1rem 20rem;
-      
+      padding: 0.5rem 20rem 4rem 20rem;
+
 
       @media (min-width: 769px) and (max-width: 1200px) {
         padding: 0 1rem;
       }
-      
+
       .general-container {
         padding: 1rem;
         border-radius: 10px;
         color: white;
         display: flex;
         flex-direction: column;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); 
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
         .title-card h3 {
           font-size: var.$fs-mb-section-title;
@@ -83,22 +83,22 @@
     /* CONTAINER GRAFICO E CLASSIFICA */
     .performance-container {
       display: flex;
-      flex-direction: column; 
+      flex-direction: column;
       gap: 1.5rem;
-      max-width: 1200px; 
-      margin: 0 auto 2rem auto; 
+      max-width: 1200px;
+      margin: 0 auto 2rem auto;
       padding: 1.5rem;
       background-color: white;
       border-radius: 12px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 
       @media (min-width: 900px) {
-        flex-direction: row; 
+        flex-direction: row;
         gap: 2rem;
       }
-      
+
       .chart-section {
-        flex-grow: 1; 
+        flex-grow: 1;
 
         h2 {
           font-size: 1.5rem;
@@ -109,15 +109,17 @@
         .bar-chart-mock {
           display: flex;
           justify-content: space-around;
-          align-items: flex-end; /* CRUCIALE: Allinea le barre al fondo */
-          height: 250px; /* Altezza fissa per la scala in pixel */
+          align-items: flex-end;
+          /* CRUCIALE: Allinea le barre al fondo */
+          height: 250px;
+          /* Altezza fissa per la scala in pixel */
           padding-top: 1rem;
-          
+
           .bar-wrapper {
             display: flex;
             flex-direction: column;
             align-items: center;
-            width: 12%; 
+            width: 12%;
 
             .bar-value {
               font-weight: 600;
@@ -127,11 +129,11 @@
             }
 
             .bar {
-              background-color: rgb(0, 108, 124); 
+              background-color: rgb(0, 108, 124);
               width: 100%;
               border-radius: 4px 4px 0 0;
               /* L'altezza è definita inline in pixel, assicurati che la transizione sia qui */
-              transition: height 0.3s ease-in-out; 
+              transition: height 0.3s ease-in-out;
             }
 
             .bar-label {
@@ -145,10 +147,10 @@
       }
 
       .top-performers-section {
-        width: 300px; 
-        
+        width: 300px;
+
         @media (max-width: 899px) {
-          width: 100%; 
+          width: 100%;
         }
 
         h2 {
@@ -166,9 +168,9 @@
             display: flex;
             align-items: center;
             padding: 0.75rem 1rem;
-            background-color: rgb(244, 245, 252); 
+            background-color: rgb(244, 245, 252);
             border-radius: 8px;
-            
+
             .rank-badge {
               width: 30px;
               height: 30px;
@@ -181,17 +183,422 @@
               font-size: 1rem;
               margin-right: 1rem;
             }
-            
+
             .details {
               span {
                 display: block;
                 line-height: 1.2;
-                &:first-child { font-weight: 600; font-size: 1.1rem; }
-                &:last-child { font-size: 0.9rem; color: gray; }
+
+                &:first-child {
+                  font-weight: 600;
+                  font-size: 1.1rem;
+                }
+
+                &:last-child {
+                  font-size: 0.9rem;
+                  color: gray;
+                }
               }
             }
           }
         }
+      }
+    }
+
+    .agent-comparison-container {
+      /* Contenitore generale, ricalca lo stile dei container precedenti */
+      min-width: 950px;
+      /* Larghezza maggiore */
+      margin: 2rem auto;
+      /* Centrato */
+      padding: 1.5rem 1.5rem;
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+      .comparison-title {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: #333;
+        padding-bottom: 1rem;
+        margin-bottom: 1rem;
+        border-bottom: 1px solid #eee;
+      }
+
+      .agent-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+        /* Gli elementi non hanno spazio tra loro, ma un bordo */
+      }
+
+      .agent-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem 0;
+        border-bottom: 1px solid #eee;
+
+        &:last-child {
+          border-bottom: none;
+          /* Rimuovi il bordo dall'ultimo elemento */
+        }
+
+        /* --- Sezione Info Agente (Avatar + Dettagli) --- */
+        .agent-info {
+          display: flex;
+          align-items: center;
+          flex: 1 1 50%;
+          /* Occupa metà dello spazio disponibile */
+          min-width: 150px;
+
+          .agent-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            color: white;
+            font-weight: 600;
+            font-size: 1.2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 1rem;
+            flex-shrink: 0;
+            /* Impedisce che l'avatar si riduca */
+          }
+
+          .agent-details {
+            display: flex;
+            flex-direction: column;
+
+            .agent-name {
+              font-weight: 600;
+              font-size: 1.1rem;
+              color: #333;
+            }
+
+            .agent-role {
+              font-size: 0.9rem;
+              font-weight: 650;
+              color: #777;
+            }
+          }
+        }
+
+        /* --- Sezione Metriche --- */
+        .agent-metrics {
+          display: flex;
+          justify-content: flex-end;
+          /* Allinea a destra su desktop */
+          flex: 1 1 50%;
+          gap: 2rem;
+
+          .metric-item {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            /* Allinea i numeri a destra */
+            width: 80px;
+            /* Larghezza fissa per allineare le colonne */
+
+            .metric-value {
+              font-size: 1.2rem;
+              font-weight: 700;
+              color: #333;
+            }
+
+            .metric-label {
+              font-size: 0.85rem;
+              color: #777;
+              margin-top: 0.2rem;
+              font-weight: 650;
+            }
+          }
+        }
+      }
+    }
+
+    .operational-analysis-container {
+      /* Contenitore generale, mantiene il pattern del dashboard */
+      min-width: 950px;
+      margin: 2rem auto;
+      padding: 1.5rem 1.5rem;
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+      .analysis-title {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: #333;
+        padding-bottom: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .analysis-table {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .table-header,
+      .table-row {
+        display: grid;
+        /* Definisce 3 colonne: 
+           1. Fase (Maggiore spazio)
+           2. Tempo medio 
+           3. Performance */
+        grid-template-columns: 2fr 1fr 1fr;
+        align-items: center;
+        padding: 0.8rem 0;
+      }
+
+      /* --- Intestazione --- */
+      .table-header {
+        background-color: rgb(248, 248, 248);
+        /* Sfondo molto chiaro */
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: #777;
+        border-radius: 8px 8px 0 0;
+        padding-left: 0.5rem;
+        /* Piccola indentazione per la fase */
+      }
+
+      /* --- Corpo della tabella --- */
+      .table-body {
+        .table-row {
+          border-bottom: 1px solid #eee;
+          color: #333;
+          padding: 2rem;
+
+          &:last-child {
+            border-bottom: none;
+          }
+        }
+
+        .cell {
+          padding: 0 0.5rem;
+
+          &.phase {
+            font-weight: 500;
+          }
+
+          &.time {
+            font-weight: 700;
+          }
+
+          /* Allineamento delle colonne Performance e Tempo Medio a destra */
+          &.time,
+          &.performance {
+            text-align: left;
+            padding-right: 1.5rem;
+            /* Margine per staccare dal bordo */
+          }
+
+          &.phase {
+            padding-left: 0.5rem;
+          }
+        }
+      }
+
+      /* --- Stili per i livelli di Performance (Badge/Colori) --- */
+      .performance {
+        font-weight: 600;
+
+        // I colori sono presi dal mockup precedente, assumendo che i colori BLU siano usati
+        &.performance-ottimo {
+          color: rgb(0, 164, 186); // Blu Scuro/Ottimo
+        }
+
+        &.performance-eccellente {
+          color: rgb(43, 170, 183); // Blu Più Chiaro/Eccellente
+        }
+
+        &.performance-buono {
+          color: rgb(255, 152, 0); // Arancione/Buono
+        }
+
+        &.performance-standard {
+          color: #546E7A; // Grigio/Standard
+        }
+      }
+    }
+
+
+    /* RESPONSIVE */
+    @media (max-width: 600px) {
+      .operational-analysis-container {
+        padding: 1rem;
+        margin: 1rem;
+      }
+
+      .table-header,
+      .table-row {
+        /* Layout a colonna singola per schermi piccoli */
+        grid-template-columns: 1fr;
+        padding: 1rem;
+        gap: 0.5rem;
+        position: relative;
+      }
+
+      .table-header {
+        display: none;
+        /* Nascondi l'intestazione su mobile */
+      }
+
+      .table-body {
+        .table-row {
+          background-color: rgb(248, 248, 248);
+          border-radius: 8px;
+          margin-bottom: 10px;
+
+          .cell {
+            padding: 0;
+            text-align: left !important;
+            padding-right: 0 !important;
+          }
+
+          .cell.phase {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+          }
+
+          /* Formattazione per mobile: etichetta + valore */
+          .cell.time::before {
+            content: "Tempo medio: ";
+            font-weight: 400;
+            color: #777;
+          }
+
+          .cell.performance {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 0.95rem;
+            padding: 5px 10px;
+            border-radius: 5px;
+            background-color: rgba(0, 0, 0, 0.05);
+            /* Sfondo chiaro per il badge */
+          }
+        }
+      }
+    }
+
+
+    /* RESPONSIVE */
+    @media (max-width: 600px) {
+      .agent-comparison-container {
+        margin: 1rem;
+        padding: 1rem;
+      }
+
+      .agent-item {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 1rem 0;
+        gap: 1rem;
+
+        .agent-info {
+          flex: none;
+          width: 100%;
+        }
+
+        .agent-metrics {
+          flex: none;
+          width: 100%;
+          justify-content: space-between;
+          /* Distribuisci le metriche su mobile */
+          gap: 1rem;
+
+          .metric-item {
+            align-items: flex-start;
+            /* Allinea a sinistra su mobile */
+            width: auto;
+
+            .metric-label {
+              display: block;
+              /* Mostra l'etichetta Fatturato su mobile */
+            }
+          }
+        }
+      }
+    }
+
+
+    .portfolio-distribution-container {
+      min-width: 950px;
+      margin: 2rem auto;
+      padding: 1.5rem 1.5rem;
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+      .distribution-title {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: #333;
+        padding-bottom: 1rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .distribution-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+        text-align: center;
+        padding: 0 1rem;
+      }
+
+      .distribution-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        .item-icon {
+          /* L'icona è scalata via React, manteniamo un'altezza fissa per il contenitore */
+          height: 50px;
+          display: flex;
+          /* Centra l'icona */
+          justify-content: center;
+          align-items: center;
+          margin-bottom: 0.5rem;
+        }
+
+        .item-count {
+          font-size: 2.5rem;
+          font-weight: 700;
+          color: #333;
+          margin-bottom: 0.5rem;
+          line-height: 1.1;
+        }
+
+        .item-label {
+          font-size: 1rem;
+          font-weight: 500;
+          color: #777;
+        }
+      }
+    }
+
+
+    /* RESPONSIVE */
+    @media (max-width: 600px) {
+      .portfolio-distribution-container {
+        padding: 1rem;
+        margin: 1rem;
+      }
+
+      .distribution-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        padding: 0;
+      }
+
+      .distribution-item {
+        background-color: #f8f8f8;
+        padding: 1rem 0.5rem;
+        border-radius: 8px;
       }
     }
 
@@ -238,7 +645,7 @@
             background-color: var.$palette-gray;
             padding: 1rem;
             border-radius: 10px;
-            z-index: 10; 
+            z-index: 10;
 
             li {
               padding: 1rem;
@@ -259,7 +666,7 @@
           }
 
           .remove-filter {
-            background-color: rgb(200,0,0);
+            background-color: rgb(200, 0, 0);
             color: white;
           }
         }
@@ -267,11 +674,11 @@
         .table-wrapper {
           overflow-x: auto;
           -ms-overflow-style: none;
-          scrollbar-width: none; 
+          scrollbar-width: none;
           border-radius: 10px;
 
           &::-webkit-scrollbar {
-            display: none; 
+            display: none;
           }
 
           table {
@@ -283,104 +690,105 @@
             thead {
               background-color: var.$palette-blu;
               color: white;
-              min-width: 1400px}
-
-              th {
-                padding: 1rem;
-                font-weight: 600;
-                font-size: var.$fs-mb-section-subtitle;
-                white-space: nowrap;
-                text-align: left;
-              }
+              min-width: 1400px
             }
 
-            tbody {
-              background-color: white;
-              color: black;
-
-              td {
-                padding: 1rem;
-                vertical-align: middle;
-
-                .cell-content {
-                  display: flex;
-                  align-items: center;
-                  gap: 0.5rem;
-                }
-
-                h3 {
-                  font-size: 1rem;
-                  font-weight: 500;
-                  margin: 0;
-                }
-              }
+            th {
+              padding: 1rem;
+              font-weight: 600;
+              font-size: var.$fs-mb-section-subtitle;
+              white-space: nowrap;
+              text-align: left;
             }
           }
-        }
 
-        .alerts-cards {
-          display: none;
-        }
-        
-        /* Stile per le card mobile */
-        .alert-card {
+          tbody {
             background-color: white;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+            color: black;
 
-            .card-row {
-                padding: 0.3rem 0;
-                font-size: 0.95rem;
-            }
+            td {
+              padding: 1rem;
+              vertical-align: middle;
 
-            .card-actions {
-                margin-top: 1rem;
+              .cell-content {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+              }
+
+              h3 {
+                font-size: 1rem;
+                font-weight: 500;
+                margin: 0;
+              }
             }
+          }
+        }
+      }
+
+      .alerts-cards {
+        display: none;
+      }
+
+      /* Stile per le card mobile */
+      .alert-card {
+        background-color: white;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+
+        .card-row {
+          padding: 0.3rem 0;
+          font-size: 0.95rem;
         }
 
-        .btn-table {
-          display: flex;
-          justify-content: center;
+        .card-actions {
           margin-top: 1rem;
+        }
+      }
 
-          .btn {
-            color: white;
-            background-color: var.$palette-blu;
-          }
+      .btn-table {
+        display: flex;
+        justify-content: center;
+        margin-top: 1rem;
+
+        .btn {
+          color: white;
+          background-color: var.$palette-blu;
         }
       }
     }
   }
+}
 
 
 /* RESPONSIVE */
 @media (max-width: 1024px) {
   .dashboard-container {
-    padding: 1rem; 
-    
+    padding: 1rem;
+
     .general-dashboard {
       grid-template-columns: 1fr;
-      max-width: 100%; 
+      max-width: 100%;
       padding: 0 1rem;
     }
 
     .performance-container {
-      margin: 0 1rem 2rem 1rem; 
+      margin: 0 1rem 2rem 1rem;
     }
 
     .table-wrapper-container {
       max-width: 100%;
       margin: 0 1rem;
-      
+
       .table-container {
         .alerts-cards {
-          display: block; 
+          display: block;
         }
 
         .table-wrapper {
-          display: none; 
+          display: none;
         }
       }
     }
@@ -390,6 +798,6 @@
 /* Stili per schermi molto grandi (mantengo solo la struttura per eventuali futuri sviluppi) */
 @media (min-width: 1400px) {
   .dashboard-container {
-    padding: 0 4rem; 
+    padding: 0 4rem;
   }
 }
