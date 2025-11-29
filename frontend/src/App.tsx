@@ -5,6 +5,7 @@ import Home from "./pages/public/Home";
 import MultiStepForm from "./pages/public/MultiStepForm";
 import Login from "./pages/private/Login";
 import DashboardAdmin from "./pages/private/adminPages/DashboardAdmin";
+import PropertiesAdmin from "./pages/private/adminPages/PropertiesAdmin"
 import AdminHome from "./pages/private/adminPages/AdminHome";
 import Users from "./pages/private/adminPages/Users";
 import CreateUser from "./pages/private/adminPages/CreateUser";
@@ -43,6 +44,7 @@ function App() {
           }
         >
           <Route index element={<AdminHome />} />
+          <Route path="properties" element={<PropertiesAdmin />} />
           <Route path="users" element={<Users />} />
           <Route path="create-user" element={<CreateUser />} />
           <Route path="contracts" element={<ContractsAdmin />} />
@@ -51,7 +53,7 @@ function App() {
         </Route>
 
         <Route
-          path="/agente"
+          path="/agent"
           element={
             <ProtectedRoute role="agente">
               <DashboardAgent />

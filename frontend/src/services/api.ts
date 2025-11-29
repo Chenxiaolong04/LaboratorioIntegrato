@@ -1,6 +1,4 @@
-
 const BASE_URL = "http://localhost:8080/api";
-
 
 interface RequestOptions<TBody = unknown> {
   method?: string;
@@ -8,7 +6,6 @@ interface RequestOptions<TBody = unknown> {
   body?: TBody;
   token?: string;
 }
-
 
 /**
  * Funzione generica per effettuare richieste API.
@@ -22,7 +19,6 @@ export async function apiFetch<TResponse, TBody = unknown>(
 ): Promise<TResponse> {
   const { method = "GET", body, token } = options;
 
-
   const res = await fetch(`${BASE_URL}${endpoint}`, {
     method,
     headers: {
@@ -33,16 +29,13 @@ export async function apiFetch<TResponse, TBody = unknown>(
     credentials: "include",
   });
 
-
   if (!res.ok) {
     const errorText = await res.text();
     throw new Error(errorText || `Errore ${res.status}`);
   }
 
-
   return res.json() as Promise<TResponse>;
 }
-
 
 export type LoginResponse = {
   username: string;
@@ -50,7 +43,6 @@ export type LoginResponse = {
   success: boolean;
   message: string;
 };
-
 
 export async function loginUser(
   email: string,
@@ -65,7 +57,6 @@ export async function loginUser(
   );
 }
 
-
 export type Immobile = {
   tipo: string;
   nomeProprietario: string;
@@ -75,7 +66,6 @@ export type Immobile = {
   via: string;
   citta: string;
 };
-
 
 export type AdminDashboardData = {
   statistics: {
@@ -92,7 +82,6 @@ export type AdminDashboardData = {
   pageSize: number;
 };
 
-
 export async function getAdminDashboard(
   offset = 0,
   limit = 10
@@ -104,7 +93,6 @@ export async function getAdminDashboard(
     }
   );
 }
-
 
 export type AgenteDashboardData = {
   statistics: {
@@ -121,7 +109,6 @@ export type AgenteDashboardData = {
   pageSize: number;
 };
 
-
 export async function getAgenteDashboard(
   offset: number = 0,
   limit: number = 10
@@ -134,15 +121,11 @@ export async function getAgenteDashboard(
   );
 }
 
-
-
-
 export type TipoUtente = {
   idTipo: number;
   nome: string;
   role: string;
 };
-
 
 export type Users = {
   idUtente: number;
@@ -157,11 +140,9 @@ export type Users = {
   tipoUtente: TipoUtente;
 };
 
-
 export async function getUsers(): Promise<Users[]> {
   return apiFetch<Users[]>(`/users`, { method: "GET" });
 }
-
 
 export type RegisterUserRequest = {
   nome: string;
@@ -171,7 +152,6 @@ export type RegisterUserRequest = {
   telefono: string;
   tipoUtente: TipoUtente;
 };
-
 
 export async function registerUser(
   nome: string,
@@ -204,7 +184,6 @@ export type UpdateUserRequest = {
   tipoUtente?: { idTipo?: number; nome?: string; role?: string };
 };
 
-
 export async function updateUser(
   id: number,
   updatedUser: UpdateUserRequest
@@ -227,14 +206,12 @@ export type ContrattoChiuso = {
   citta: string | null;
 };
 
-
 export type ContrattiResponse = {
   contratti: ContrattoChiuso[];
   nextOffset: number;
   hasMore: boolean;
   pageSize: number;
 };
-
 
 export async function getContrattiChiusi(
   offset = 0,
@@ -245,7 +222,6 @@ export async function getContrattiChiusi(
     { method: "GET" }
   );
 }
-
 
 export async function getContrattiChiusiByAgente(
   offset: number = 0,
@@ -258,13 +234,11 @@ export async function getContrattiChiusiByAgente(
   );
 }
 
-
 export interface ValutazioneAI {
   id: number;
   prezzoAI: number | null;
   dataValutazione: string;
   descrizione: string | null;
-
 
   tipo: string | null;
   via: string | null;
@@ -284,15 +258,12 @@ export interface ValutazioneAI {
   cantina: boolean | null;
   riscaldamento: string | null;
 
-
   nomeProprietario: string | null;
   emailProprietario: string | null;
   telefonoProprietario: string | null;
 
-
   dataInserimento: string | null;
 }
-
 
 export interface ValutazioniAIResponse {
   valutazioni: ValutazioneAI[];
@@ -300,7 +271,6 @@ export interface ValutazioniAIResponse {
   hasMore: boolean;
   pageSize: number;
 }
-
 
 export async function getValutazioniSoloAI(
   offset = 0,
@@ -312,19 +282,16 @@ export async function getValutazioniSoloAI(
   );
 }
 
-
 export async function deleteValutazioneAI(id: number) {
   return apiFetch(`/admin/valutazioni/solo-ai/${id}`, {
     method: "DELETE",
   });
 }
 
-
 export interface AssignIncaricoRequest {
   agenteId: string;
   agenteNome: string;
 }
-
 
 export async function assignIncaricoToMe(
   valutazioneId: number,
@@ -343,7 +310,6 @@ export async function assignIncaricoToMe(
   );
 }
 
-
 export interface Incarichi {
   id: number;
   prezzoAI: number | null;
@@ -352,10 +318,8 @@ export interface Incarichi {
   statoValutazione: string | null;
   descrizione: string | null;
 
-
   nomeAgente: string | null;
   emailAgente: string | null;
-
 
   tipo: string | null;
   via: string | null;
@@ -375,15 +339,12 @@ export interface Incarichi {
   cantina: boolean | null;
   riscaldamento: string | null;
 
-
   nomeProprietario: string | null;
   emailProprietario: string | null;
   telefonoProprietario: string | null;
 
-
   dataInserimento: string | null;
 }
-
 
 export interface incarichiResponse {
   valutazioni: Incarichi[];
@@ -391,7 +352,6 @@ export interface incarichiResponse {
   hasMore: boolean;
   pageSize: number;
 }
-
 
 export async function getIncarichi(
   offset = 0,
@@ -405,7 +365,6 @@ export async function getIncarichi(
   );
 }
 
-
 export async function getIncarichiByAgente(
   offset: number = 0,
   limit: number = 10,
@@ -418,7 +377,6 @@ export async function getIncarichiByAgente(
     }
   );
 }
-
 
 export async function deleteIncarichi(id: number) {
   return apiFetch<{ success: boolean; message: string }>(
@@ -489,11 +447,8 @@ export interface SaveImmobileResponse {
 export async function saveImmobile(
   data: SaveImmobileBody
 ): Promise<SaveImmobileResponse> {
-  return apiFetch<SaveImmobileResponse, SaveImmobileBody>(
-    "/immobili/save",
-    {
-      method: "POST",
-      body: data,
-    }
-  );
+  return apiFetch<SaveImmobileResponse, SaveImmobileBody>("/immobili/save", {
+    method: "POST",
+    body: data,
+  });
 }

@@ -32,6 +32,8 @@
 
 // dashboard Admin
 @use "./adminHome";
+@use "./propertiesAdmin";
+@use "./propertyModal";
 @use "./tablesDashboard";
 @use "./createUser";
 
@@ -57,7 +59,7 @@ body {
 }
 
 main {
-  padding-top: 77px;
+  padding-top: 86px;
 }
 
 .container {
