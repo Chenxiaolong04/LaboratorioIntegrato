@@ -59,11 +59,12 @@ export default function NavbarPrivate() {
             {isAdmin && (
               <>
                 <li><Link to={"/admin"}>Dashboard</Link></li>
-                <li><Link to={"/admin/users"}>Gestione Utenti</Link></li>
-                <li><Link to={"/admin/create-user"}>Crea utente</Link></li>
                 <li><Link to={"/admin/evaluationsAI"}>Valutazioni AI</Link></li>
                 <li><Link to={"/admin/assignments"}>Incarichi</Link></li>
-                <li><Link to={"/admin/contracts"}>Contratti</Link></li>
+                <li><Link to={"/"}>Immobili</Link></li>
+                <li><Link to={"/admin/contracts"}>Vendite</Link></li>
+                <li><Link to={"/admin/users"}>Gestione Utenti</Link></li>
+                <li><Link to={"/admin/create-user"}>Registra Utenti</Link></li>
               </>
             )}
             {isAgente && (
@@ -90,11 +91,12 @@ export default function NavbarPrivate() {
             {isAdmin && (
               <>
                 <li><Link to={"/admin"} onClick={handleLinkClick}>Dashboard</Link></li>
-                <li><Link to={"/admin/users"} onClick={handleLinkClick}>Gestione Utenti</Link></li>
-                <li><Link to={"/admin/create-user"} onClick={handleLinkClick}>Crea profilo</Link></li>
                 <li><Link to={"/admin/evaluationsAI"} onClick={handleLinkClick}>Valutazioni AI</Link></li>
                 <li><Link to={"/admin/assignments"} onClick={handleLinkClick}>Incarichi</Link></li>
-                <li><Link to={"/admin/contracts"} onClick={handleLinkClick}>Contratti</Link></li>
+                <li><Link to={"*"} onClick={handleLinkClick} >Immobili</Link></li>
+                <li><Link to={"/admin/contracts"} onClick={handleLinkClick}>Vendite</Link></li>
+                <li><Link to={"/admin/users"} onClick={handleLinkClick}>Gestione Utenti</Link></li>
+                <li><Link to={"/admin/create-user"} onClick={handleLinkClick}>Registra Utenti</Link></li>
               </>
             )}
             {isAgente && (
