@@ -1,4 +1,5 @@
 import NavbarPrivate from "../components/NavbarPrivate";
+import FooterPrivate from "../components/FooterPrivate";
 
 export default function PrivateLayout({
   children,
@@ -9,6 +10,7 @@ export default function PrivateLayout({
     <>
       <NavbarPrivate />
       <main>{children}</main>
+      <FooterPrivate/>
     </>
   );
 }
