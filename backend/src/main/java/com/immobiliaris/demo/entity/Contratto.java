@@ -2,30 +2,35 @@ package com.immobiliaris.demo.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
-import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
+@Table(name = "Contratti")
 public class Contratto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "Id_contratto")
     private Long id;
 
-    @CreationTimestamp
+    @Column(name = "Data_registrazione")
     private LocalDateTime dataRegistrazione;
 
     private LocalDateTime dataInizio;
     private LocalDateTime dataFine;
 
     @ManyToOne
+    @JoinColumn(name = "Id_agente")
     private User agente;
 
     @ManyToOne
+    @JoinColumn(name = "Id_utente")
     private User utente;
 
     @ManyToOne
+    @JoinColumn(name = "Id_immobile")
     private Immobile immobile;
 
     @ManyToOne
+    @JoinColumn(name = "Id_stato_contratto")
     private StatoContratto statoContratto;
 
     private String numeroContratto;
@@ -35,6 +40,7 @@ public class Contratto {
     private LocalDateTime dataRicezione;
 
     @ManyToOne
+    @JoinColumn(name = "Id_valutazione")
     private Valutazione valutazione;
 
     // Getter e Setter

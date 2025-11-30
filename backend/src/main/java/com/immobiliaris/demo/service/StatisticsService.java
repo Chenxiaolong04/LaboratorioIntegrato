@@ -55,21 +55,52 @@ public class StatisticsService {
     public Map<String, Object> getAdminDashboardData() {
         Map<String, Object> data = new LinkedHashMap<>();
 
+
+
         // Statistiche totali e mensili
         Map<String, Long> stats = new LinkedHashMap<>();
 
         // Data limite per statistiche mensili (ultimi 30 giorni)
         LocalDateTime dataLimite = LocalDateTime.now().minusMonths(1);
 
-        // TOTALI
-        stats.put("contrattiConclusi", contrattoRepository.countByStatoContrattoNome("chiuso"));
-        stats.put("valutazioniInCorso", valutazioneRepository.countByStatoValutazioneNome("in_verifica"));
-        stats.put("valutazioniConAI", valutazioneRepository.countByStatoValutazioneNome("solo_AI"));
+        // Debug logging per la query dei contratti conclusi
+        logger.info("DEBUG: Chiamo countByStatoContrattoNome('chiuso')");
+        Long contrattiConclusi = contrattoRepository.countByStatoContrattoNome("chiuso");
+        logger.info("DEBUG: Risultato countByStatoContrattoNome('chiuso'): {}", contrattiConclusi);
+        stats.put("contrattiConclusi", contrattiConclusi);
+
+        // Conteggio totale contratti (debug)
+        Long totaleContratti = contrattoRepository.count();
+        logger.info("DEBUG: Risultato count() totale contratti: {}", totaleContratti);
+        stats.put("totaleContratti", totaleContratti);
+
+        Long valutazioniInCorso = valutazioneRepository.countByStatoValutazioneNome("in_verifica");
+        logger.info("DEBUG: Risultato countByStatoValutazioneNome('in_verifica'): {}", valutazioniInCorso);
+        stats.put("valutazioniInCorso", valutazioniInCorso);
+
+        Long valutazioniConAI = valutazioneRepository.countByStatoValutazioneNome("solo_AI");
+        logger.info("DEBUG: Risultato countByStatoValutazioneNome('solo_AI'): {}", valutazioniConAI);
+        stats.put("valutazioniConAI", valutazioniConAI);
+
+        // Calcolo valore totale immobili con contratti chiusi
+        List<Contratto> contrattiChiusi = contrattoRepository.findByStatoContrattoNome("chiuso");
+        Integer valoreTotaleImmobili = contrattiChiusi.stream()
+            .map(c -> c.getImmobile() != null && c.getImmobile().getPrezzo() != null ? c.getImmobile().getPrezzo() : 0)
+            .reduce(0, Integer::sum);
+        stats.put("valoreTotaleImmobili", valoreTotaleImmobili.longValue());
 
         // MENSILI (ultimi 30 giorni)
-        stats.put("contrattiConclusiMensili", contrattoRepository.countByStatoContrattoNomeAndDataInizioAfter("chiuso", dataLimite));
-        stats.put("valutazioniInCorsoMensili", valutazioneRepository.countByStatoValutazioneNomeAndDataValutazioneAfter("in_verifica", dataLimite));
-        stats.put("valutazioniConAIMensili", valutazioneRepository.countByStatoValutazioneNomeAndDataValutazioneAfter("solo_AI", dataLimite));
+        Long contrattiConclusiMensili = contrattoRepository.countByStatoContrattoNomeAndDataInizioAfter("chiuso", dataLimite);
+        logger.info("DEBUG: Risultato countByStatoContrattoNomeAndDataInizioAfter('chiuso', {}): {}", dataLimite, contrattiConclusiMensili);
+        stats.put("contrattiConclusiMensili", contrattiConclusiMensili);
+
+        Long valutazioniInCorsoMensili = valutazioneRepository.countByStatoValutazioneNomeAndDataValutazioneAfter("in_verifica", dataLimite);
+        logger.info("DEBUG: Risultato countByStatoValutazioneNomeAndDataValutazioneAfter('in_verifica', {}): {}", dataLimite, valutazioniInCorsoMensili);
+        stats.put("valutazioniInCorsoMensili", valutazioniInCorsoMensili);
+
+        Long valutazioniConAIMensili = valutazioneRepository.countByStatoValutazioneNomeAndDataValutazioneAfter("solo_AI", dataLimite);
+        logger.info("DEBUG: Risultato countByStatoValutazioneNomeAndDataValutazioneAfter('solo_AI', {}): {}", dataLimite, valutazioniConAIMensili);
+        stats.put("valutazioniConAIMensili", valutazioniConAIMensili);
 
         data.put("statistics", stats);
 
@@ -166,12 +197,12 @@ public class StatisticsService {
         System.out.println("DEBUG: Data inizio mese: " + inizio);
         System.out.println("DEBUG: Data fine mese: " + fine);
 
+
         List<Contratto> tuttiContratti = contrattoRepository.findByStatoContrattoNome("chiuso");
-        System.out.println("DEBUG: Contratti conclusi TOTALI trovati: " + tuttiContratti.size());
-        tuttiContratti.forEach(c -> System.out.println("  - Contratto ID: " + c.getId() + 
-                ", data_inizio: " + c.getDataInizio() + 
-                ", stato: " + (c.getStatoContratto() != null ? c.getStatoContratto().getNome() : "NULL") +
-                ", agente ID: " + (c.getAgente() != null ? c.getAgente().getIdUtente() : "NULL")));
+        logger.info("DEBUG: Contratti chiusi trovati: {}", tuttiContratti.size());
+        for (Contratto c : tuttiContratti) {
+            logger.info("DEBUG: Contratto ID: {}, data_inizio: {}, stato: {}, agente: {}", c.getId(), c.getDataInizio(), (c.getStatoContratto() != null ? c.getStatoContratto().getNome() : "NULL"), (c.getAgente() != null ? c.getAgente().getIdUtente() : "NULL"));
+        }
 
         List<Contratto> contrattiConclusiMese = tuttiContratti.stream()
                 .filter(c -> {

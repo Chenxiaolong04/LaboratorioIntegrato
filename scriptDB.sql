@@ -30,6 +30,7 @@ CREATE TABLE Utenti (
     CAP CHAR(5),
     Data_registrazione DATETIME DEFAULT CURRENT_TIMESTAMP,
     Id_tipo INT,
+    Contratto VARCHAR(100),
     FOREIGN KEY (Id_tipo) REFERENCES Tipi_utente(Id_tipo)
         ON DELETE SET NULL ON UPDATE CASCADE
 );
@@ -144,6 +145,7 @@ CREATE TABLE Contratti (
     Data_ricezione DATETIME,
     Data_inizio DATETIME,
     Data_fine DATETIME,
+    Data_registrazione DATETIME DEFAULT CURRENT_TIMESTAMP,
     Id_stato_contratto INT,
     Numero_contratto VARCHAR(50) UNIQUE,
     Percentuale_commissione DECIMAL(5,2),
