@@ -122,10 +122,13 @@
   .properties {
     width: 100%;
     margin-left: 70px;
-    margin-right: 450px;
     padding: 1rem;
     display: flex;
     justify-content: center;
+
+    @media (min-width: 768px) {
+      margin-right: 450px;
+    }
 
     .properties-container {
       display: grid;

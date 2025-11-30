@@ -272,9 +272,7 @@ export default function PropertiesAdmin() {
     plus: "",
   });
 
-  const [selectedProperty, setSelectedProperty] = useState<
-    (typeof fakeProperties)[0] | null
-  >(fakeProperties[0]);
+  const [selectedProperty, setSelectedProperty] = useState<(typeof fakeProperties)[0] | null>(null);
 
   const resetFilters = () =>
     setFilters({
