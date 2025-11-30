@@ -1,0 +1,176 @@
+/* _agentHome.scss */
+
+// Variabili (da usare per coerenza)
+$top-bar-text: #333; // Nero o grigio scuro per i link superiori
+$middle-header-bg: #3e8894; // Blu-verde scuro della fascia centrale
+$title-color: #3e8894; // Colore del titolo (sembra essere il colore del Middle Header)
+$background-light: #f9fafb; 
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif; // Assicuriamoci che il font sia leggibile
+}
+
+.agent-home {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: $background-light; 
+}
+
+// ----------------------------------------------------
+// --- 1. TOP BAR (Bianca) ---
+// ----------------------------------------------------
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 40px;
+    background-color: white; // Sfondo bianco
+    border-bottom: 1px solid #e5e7eb; // Separatore sottile
+}
+
+.top-bar__nav {
+    flex-grow: 1;
+}
+
+.top-bar__links {
+    list-style: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+    gap: 20px;
+}
+
+.top-bar__link {
+    text-decoration: none;
+    color: $top-bar-text;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.top-bar__icons {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.top-bar-icon {
+    font-size: 18px;
+    color: $top-bar-text;
+    position: relative;
+    cursor: pointer;
+
+    .badge {
+        position: absolute;
+        top: -5px;
+        right: -8px;
+        background-color: red;
+        color: white;
+        border-radius: 50%;
+        padding: 2px 5px;
+        font-size: 10px;
+        line-height: 1;
+    }
+}
+
+// ----------------------------------------------------
+// --- 2. MIDDLE HEADER (Blu-Verde Solido) ---
+// ----------------------------------------------------
+.middle-header {
+    position: relative;
+    background-color: $middle-header-bg; // Colore solido
+    padding: 10px 0 0 0; // Padding solo laterale e superiore minimo per contenere gli elementi della nav
+}
+
+.middle-header__content {
+    // Contenitore per allineare gli elementi interni alla fascia blu-verde
+    position: relative;
+    padding: 0 40px;
+}
+
+.middle-header__top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+}
+
+.menu-button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 30px;
+    cursor: pointer;
+    padding: 0;
+}
+
+.main-navbar {
+    flex-grow: 1; 
+    display: flex;
+    justify-content: center;
+}
+
+.main-navbar__links {
+    list-style: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+    gap: 30px;
+}
+
+.main-navbar__link {
+    text-decoration: none;
+    color: white; // Link bianchi
+    font-weight: 600;
+    padding: 5px 0;
+    font-size: 16px;
+}
+
+.middle-header__right-icons {
+    display: flex;
+    gap: 15px;
+}
+
+.middle-header-icon {
+    @extend .top-bar-icon;
+    color: white;
+}
+
+// ----------------------------------------------------
+// --- 2b. SEZIONE TITOLO E RICERCA (Sfondo Bianco) ---
+// Questa sezione si trova logicamente dopo l'header nel TSX
+// ----------------------------------------------------
+.middle-header__bottom-wrapper {
+    background-color: white; // Fondo bianco
+    padding: 20px 40px; // Padding per staccare dal bordo
+    border-bottom: 1px solid #e5e7eb; // Linea di separazione
+    // Potrebbe servire un margine in alto se la nav blu è troppo attaccata
+}
+
+.middle-header__bottom-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.middle-header__title {
+    color: $title-color; 
+    font-size: 30px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.middle-header__search-container {
+    width: 300px; // Larghezza fissa per la SearchBar
+}
+
+
+// ----------------------------------------------------
+// --- 3. Contenuto Principale ---
+// ----------------------------------------------------
+.agent-main-content {
+  padding: 20px 40px;
+  flex-grow: 1; 
+}

@@ -1,273 +1,106 @@
-import { useEffect, useState } from "react";
-import { FaCheckCircle, FaFilter } from "react-icons/fa";
-import { FaSquareArrowUpRight } from "react-icons/fa6";
-import { TbProgressCheck } from "react-icons/tb";
-import { PiWarningCircleBold } from "react-icons/pi";
-import Button from "../../../components/Button";
-import { Link } from "react-router-dom";
-import SearchBar from "../../../components/SearchBar";
-import { useAuth } from "../../../context/AuthContext";
-import {
-  getAgenteDashboard,
-  type AgenteDashboardData,
-  type Immobile,
-} from "../../../services/api";
-import Loader from "../../../components/Loader";
+// AgentHome.tsx
+import React from "react";
+// Assicurati che il percorso sia corretto:
+import "../../../assets/styles/_agentHome.scss";
 
+import SearchBar from "../../../components/SearchBar"; 
 
-const filterOptions = [
-  { label: "Miei Contratti", value: "contratti" },
-  { label: "Miei Incarichi", value: "incarichi" },
-  { label: "Valutazioni AI (Generali)", value: "valutazioni" },
+// 1. Link della Navigazione SUPERIORE
+const topNavLinks = [
+  { name: 'Dashboard', href: '/agent/dashboard' },
+  { name: 'I miei contratti', href: '/agent/contracts' },
+  { name: 'I miei incarichi', href: '/agent/my-assignments' },
+  { name: 'Le mie valutazioni AI', href: '/agent/my-evaluations' },
 ];
 
+// 2. Link della Navigazione SECONDARIA (Blu-Verde)
+const mainNavLinks = [
+    { name: 'Dashboard', href: '/agent/dashboard' },
+    { name: 'Valutazioni AI', href: '/agent/evaluations' },
+    { name: 'Incarichi', href: '/agent/assignments' },
+    { name: 'Vendite', href: '/agent/sales' },
+    { name: 'Immobili', href: '/agent/properties' },
+];
 
-export default function AgentHome() {
-  const { user } = useAuth();
-  const [filter, setFilter] = useState<string | null>(null);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [statistics, setStatistics] = useState<AgenteDashboardData["statistics"] | null>(null);
-  const [selected, setSelected] = useState<Immobile | null>(null);
-  const [immobili, setImmobili] = useState<Immobile[]>([]);
-  const [nextOffset, setNextOffset] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
-  const [loading, setLoading] = useState(false);
+const AgentHome: React.FC = () => {
+    const handleSearch = (query: string) => {
+        console.log("Ricerca avviata con query:", query);
+    };
 
-
-  useEffect(() => {
-    if (!user) return;
-
-
-    async function fetchInitialData() {
-      setLoading(true);
-      try {
-        const data = await getAgenteDashboard(0, 10);
-        setStatistics(data.statistics);
-        setImmobili(data.immobili || []);
-        setNextOffset(data.nextOffset ?? 0);
-        setHasMore(data.hasMore ?? false);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-
-    fetchInitialData();
-  }, [user]);
-
-
-  const handleLoadMore = async () => {
-    if (!hasMore) return;
-    setLoading(true);
-    try {
-      const data = await getAgenteDashboard(nextOffset, 10);
-      setImmobili((prev) => [...prev, ...(data.immobili || [])]);
-      setNextOffset(data.nextOffset ?? 0);
-      setHasMore(data.hasMore ?? false);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-
-  if (!statistics) return <Loader />;
-
-
-  const mappedData = (immobili || []).map((i) => ({
-    tipo:
-      i.tipo?.toLowerCase() === "appartamento"
-        ? "contratti"
-        : i.tipo?.toLowerCase() === "villa"
-        ? "incarichi"
-        : "valutazioni",
-    proprietario: i.nomeProprietario || "-",
-    data: i.dataInserimento || "-",
-    agente: i.agenteAssegnato || "-",
-  }));
-
-
-  const filteredData = mappedData
-    .filter((d) => (filter ? d.tipo === filter : true))
-    .filter((d) => {
-      const query = searchQuery.toLowerCase();
-      return (
-        d.tipo.toLowerCase().includes(query) ||
-        d.proprietario.toLowerCase().includes(query) ||
-        d.agente.toLowerCase().includes(query) ||
-        d.data.toLowerCase().includes(query)
-      );
-    });
-
-
-  return (
-    <div className="dashboard-container">
-      <div className="general-latest-container">
-        {/* Dashboard cards */}
-        <div className="general-dashboard">
-          {[
-            {
-              icon: <FaCheckCircle size={36} color="green" />,
-              title: "Contratti conclusi",
-              value: statistics.mieiContrattiConclusi,
-              link: "/agente/contratti",
-            },
-            {
-              icon: <TbProgressCheck size={36} color="orange" />,
-              title: "Incarichi in corso",
-              value: statistics.mieiIncarichiInCorso,
-              link: "/agente/incarichi",
-            },
-            {
-              icon: <PiWarningCircleBold size={36} color="gray" />,
-              title: "Valutazioni AI",
-              value: statistics.valutazioniConAI,
-              link: "/agente/valutazioniAI",
-            },
-          ].map((card, idx) => (
-            <div className="general-container" key={idx}>
-              <div className="title-card">{card.icon}<h3>{card.title}</h3></div>
-              <div className="data-card">
-                <h3>{card.value}</h3>
-                <Link to={card.link}>
-                  <FaSquareArrowUpRight size={50} color="white" />
-                </Link>
-              </div>
-            </div>
-          ))}
-        </div>
-
-
-        {/* Table */}
-        <div className="table-container">
-          <h2>Ultimi avvisi</h2>
-          <div className="filter-buttons">
-            <SearchBar placeholder="Cerca un proprietario" onSearch={setSearchQuery} />
-            <div className="dropdown">
-              <Button onClick={() => setDropdownOpen(!dropdownOpen)} className="blu">
-                <FaFilter color="white" />
-              </Button>
-              {dropdownOpen && (
-                <ul className="dropdown-menu">
-                  {filterOptions.map((opt) => (
-                    <li
-                      key={opt.value}
-                      className={filter === opt.value ? "active" : ""}
-                      onClick={() => {
-                        setFilter(opt.value);
-                        setDropdownOpen(false);
-                      }}
-                    >
-                      {opt.label}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-            {filter && <Button className="remove-filter" onClick={() => setFilter(null)}>Rimuovi filtro</Button>}
-          </div>
-
-
-          <div className="table-wrapper">
-            <table className="alerts-table">
-              <thead>
-                <tr>
-                  <th>Tipo</th>
-                  <th>Nome proprietario</th>
-                  <th>Data</th>
-                  <th>Agente assegnato</th>
-                  <th>Azioni</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredData.map((row, i) => (
-                  <tr key={i}>
-                    <td>
-                      {row.tipo === "contratti" && <FaCheckCircle size={32} color="green" />}
-                      {row.tipo === "incarichi" && <TbProgressCheck size={32} color="orange" />}
-                      {row.tipo === "valutazioni" && <PiWarningCircleBold size={32} color="gray" />}
-                      <h3>{filterOptions.find((f) => f.value === row.tipo)?.label || row.tipo}</h3>
-                    </td>
-                    <td>{row.proprietario}</td>
-                    <td>{row.data}</td>
-                    <td>{row.agente}</td>
-                    <td>
-                      <Button className="blu" onClick={() => setSelected(immobili[i] || null)}>
-                        Dettagli
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-
-          <div className="alerts-cards">
-            {filteredData.map((row, i) => (
-              <div className="alert-card" key={i}>
-                <div className="card-row"><b>Tipo:</b> {filterOptions.find((f) => f.value === row.tipo)?.label || row.tipo}</div>
-                <div className="card-row"><b>Nome proprietario:</b> {row.proprietario || "—"}</div>
-                <div className="card-row"><b>Data:</b> {row.data || "—"}</div>
-                <div className="card-row"><b>Agente assegnato:</b> {row.agente || "—"}</div>
-                <div className="card-actions">
-                  <Button className="blu" onClick={() => setSelected(immobili[i] || null)}>
-                    Dettagli
-                  </Button>
+    return (
+        <div className="agent-home">
+            
+            {/* 1. TOP BAR (Bianca/Trasparente) */}
+            <div className="top-bar">
+                <nav className="top-bar__nav">
+                    <ul className="top-bar__links">
+                        {topNavLinks.map((link) => (
+                            <li key={link.name} className="top-bar__item">
+                                <a href={link.href} className="top-bar__link">
+                                    {link.name}
+                                </a>
+                            </li>
+                        ))}
+                    </ul>
+                </nav>
+                
+                <div className="top-bar__icons">
+                    {/* Icone delle Notifiche e Utente/Logo */}
+                    <div className="icon-notification top-bar-icon">🔔<span className="badge">3</span></div>
+                    <div className="icon-user-logo top-bar-icon">[Logo Utente]</div>
                 </div>
-              </div>
-            ))}
-          </div>
-
-
-          {hasMore && (
-            <div className="btn-table">
-              <Button onClick={handleLoadMore} disabled={loading} className="blu">
-                {loading ? "Caricamento..." : "Mostra altri avvisi"}
-              </Button>
             </div>
-          )}
+
+            {/* 2. MIDDLE HEADER (Fascia Blu-Verde e Sfondo Casa) */}
+            <header className="middle-header">
+                <div className="middle-header__content">
+                    
+                    <div className="middle-header__top-row">
+                        {/* Menu Hamburger */}
+                        <button className="menu-button">
+                            <span className="icon-hamburger">&#9776;</span>
+                        </button>
+
+                        {/* Link Secondari (Dashboard, Valutazioni AI, ecc.) */}
+                        <nav className="main-navbar">
+                            <ul className="main-navbar__links">
+                                {mainNavLinks.map((link) => (
+                                    <li key={link.name} className="main-navbar__item">
+                                        <a href={link.href} className="main-navbar__link">
+                                            {link.name}
+                                        </a>
+                                    </li>
+                                ))}
+                            </ul>
+                        </nav>
+                        
+                        {/* Area Notifiche/Profilo a Destra */}
+                        <div className="middle-header__right-icons">
+                             {/* Nota: l'immagine ha anche qui un'icona di notifica, ma con stile diverso */}
+                            <div className="icon-notification middle-header-icon">🔔<span className="badge">3</span></div>
+                            <div className="icon-user-logo middle-header-icon">[Profilo]</div>
+                        </div>
+                    </div>
+
+                    {/* Titolo e SearchBar (nella parte bassa del Middle Header) */}
+                    <div className="middle-header__bottom-row">
+                        <h1 className="middle-header__title">Dashboard Immobiliaris - Agente</h1>
+                        
+                        <div className="middle-header__search-container">
+                            <SearchBar onSearch={handleSearch} /> 
+                        </div>
+                    </div>
+                </div>
+                
+                {/* L'immagine di sfondo va in CSS per l'elemento .middle-header */}
+            </header>
+
+            {/* 3. Contenuto Principale */}
+            <main className="agent-main-content">
+                {/* Qui andranno le tue card */}
+            </main>
         </div>
+    );
+};
 
-
-        {selected && (
-          <div className="modal-overlay" onClick={() => setSelected(null)}>
-            <div className="modal" onClick={(e) => e.stopPropagation()}>
-              <h3>Dettagli Avviso</h3>
-              <div className="card-row"><b>Tipo:</b> {filterOptions.find((f) => f.value === selected.tipo)?.label || selected.tipo}</div>
-              <div className="card-row"><b>Nome proprietario:</b> {selected.nomeProprietario || "—"}</div>
-              <div className="card-row"><b>Data:</b> {selected.dataInserimento || "—"}</div>
-              <div className="card-row"><b>Agente assegnato:</b> {selected.agenteAssegnato || "—"}</div>
-              <div className="card-actions">
-                <Button className="red" onClick={() => setSelected(null)}>Chiudi</Button>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-
-
-      <div className="stats-today">
-        <h2>Statistiche mensili</h2>
-        <div className="card">
-          <h3>Contratti conclusi</h3>
-          <p>+ {statistics.mieiContrattiConclusiMensili}</p>
-        </div>
-        <div className="card">
-          <h3>Incarichi nuovi</h3>
-          <p>+ {statistics.mieiIncarichiNuoviMensili}</p>
-        </div>
-        <div className="card">
-          <h3>Valutazioni AI</h3>
-          <p>+ {statistics.valutazioniConAIMensili}</p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-
+export default AgentHome;
