@@ -138,6 +138,9 @@ public class StatisticsService {
         // Aggiungi top 3 agenti
         data.putAll(getTop3Agenti());
 
+        // Aggiungi tutti gli agenti con statistiche
+        data.putAll(getTuttiAgentiConStatistiche());
+
         return data;
     }
 
@@ -843,4 +846,57 @@ public class StatisticsService {
                 })
                 .collect(Collectors.toList());
     }
+
+    /**
+     * Ottiene la lista di tutti gli agenti con le loro statistiche
+     * Ordinati in modo decrescente per numero di contratti conclusi
+     * @return Map con lista agenti e totale
+     */
+    public Map<String, Object> getTuttiAgentiConStatistiche() {
+        Map<String, Object> result = new LinkedHashMap<>();
+
+        // Ottieni tutti gli agenti (idTipo = 2)
+        List<com.immobiliaris.demo.entity.User> tuttiAgenti = userRepository.findAll().stream()
+            .filter(u -> u.getTipoUtente() != null && u.getTipoUtente().getIdTipo() == 2)
+            .collect(Collectors.toList());
+
+        // Per ogni agente, calcola le statistiche richieste
+        List<Map<String, Object>> agentiDati = tuttiAgenti.stream()
+            .map(agente -> {
+                Map<String, Object> agentMap = new LinkedHashMap<>();
+                
+                // Nome e Cognome
+                agentMap.put("nome", agente.getNome());
+                agentMap.put("cognome", agente.getCognome());
+                
+                // Contratti conclusi dell'agente (stato "chiuso")
+                List<Contratto> contrattiConclusi = contrattoRepository.findByStatoContrattoNome("chiuso")
+                    .stream()
+                    .filter(c -> c.getAgente() != null && c.getAgente().getIdUtente().equals(agente.getIdUtente()))
+                    .collect(Collectors.toList());
+                
+                agentMap.put("contrattiConclusi", (long) contrattiConclusi.size());
+                
+                // Immobili in gestione = valutazioni con stato "in_verifica" dell'agente
+                long immobiliInGestione = valutazioneRepository.countByStatoValutazioneNomeAndAgenteIdUtente("in_verifica", agente.getIdUtente().intValue());
+                agentMap.put("immobiliInGestione", immobiliInGestione);
+                
+                // Fatturato = somma dei prezzoUmano delle valutazioni dell'agente con stato concluso (id = 3)
+                List<Valutazione> valutazioniConcluse = valutazioneRepository.findByAgenteIdUtenteAndStatoValutazioneId(agente.getIdUtente(), 3);
+                long fatturato = valutazioniConcluse.stream()
+                    .map(v -> v.getPrezzoUmano() != null ? (long) v.getPrezzoUmano() : 0L)
+                    .reduce(0L, Long::sum);
+                agentMap.put("fatturato", fatturato);
+                
+                return agentMap;
+            })
+            // Ordina per numero di contratti conclusi in modo decrescente
+            .sorted((a, b) -> Long.compare((Long) b.get("contrattiConclusi"), (Long) a.get("contrattiConclusi")))
+            .collect(Collectors.toList());
+
+        result.put("agenti", agentiDati);
+        result.put("totaleAgenti", (long) agentiDati.size());
+        return result;
+    }
 }
+
