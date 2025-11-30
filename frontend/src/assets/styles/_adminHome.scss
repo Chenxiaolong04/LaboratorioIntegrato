@@ -391,17 +391,17 @@
       .table-header {
         display: flex;
         justify-content: space-between;
-        background-color: rgb(248, 248, 248);
-        font-weight: 600;
-        font-size: 0.95rem;
-        color: #777;
+        font-weight: bold;
+        font-size: 1.2rem;
         border-radius: 8px 8px 0 0;
+        padding: 1rem 0;
       }
 
       .table-body {
         .table-row {
           border-bottom: 1px solid #eee;
           color: #333;
+          padding: 1rem 0;
 
           &:last-child {
             border-bottom: none;
@@ -423,11 +423,11 @@
             font-weight: 600;
 
             @media (min-width: 768px) {
-              width: 98%;
+              width: 100%;
             }
 
             &.performance-ottimo {
-              color: rgb(0, 164, 186);
+              color: orange;
             }
 
             &.performance-eccellente {
@@ -435,7 +435,7 @@
             }
 
             &.performance-buono {
-              color: rgb(255, 152, 0);
+              color: green;
             }
 
             &.performance-standard {

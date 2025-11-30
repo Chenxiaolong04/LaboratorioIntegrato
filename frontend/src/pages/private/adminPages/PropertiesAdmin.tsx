@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   FaChevronRight,
   FaChevronLeft,
@@ -309,6 +309,14 @@ export default function PropertiesAdmin() {
 
     return true;
   });
+
+  useEffect(() => {
+    if (selectedProperty) {
+      document.body.classList.add("no-scroll");
+    } else {
+      document.body.classList.remove("no-scroll");
+    }
+  }, [selectedProperty]);
 
   return (
     <section className="properties-admin">
