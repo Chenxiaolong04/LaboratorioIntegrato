@@ -55,17 +55,17 @@ public class AdminApiController {
     }
 
     /**
-     * API per ottenere immobili con paginazione
-     * GET /api/admin/immobili?page=0&size=10
-     * @param page Numero pagina (0 = prima pagina)
-     * @param size Numero elementi per pagina (default 10)
+     * API per ottenere immobili con tutti i dettagli inclusi prezzoAI e prezzoUmano
+     * GET /api/admin/immobili?offset=0&limit=12
+     * @param offset Offset per la paginazione
+     * @param limit Numero elementi da restituire (default 12)
      */
     @GetMapping("/immobili")
-    public ResponseEntity<Map<String, Object>> getImmobiliPaginated(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+    public ResponseEntity<Map<String, Object>> getImmobiliCompleti(
+            @RequestParam(defaultValue = "0") int offset,
+            @RequestParam(defaultValue = "12") int limit) {
         
-        Map<String, Object> result = statisticsService.getImmobiliPaginated(page, size);
+        Map<String, Object> result = statisticsService.getTuttiImmobiliConDettagli(offset, limit);
         return ResponseEntity.ok(result);
     }
 

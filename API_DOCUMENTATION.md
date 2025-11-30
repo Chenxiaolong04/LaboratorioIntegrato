@@ -129,6 +129,8 @@ Ottieni informazioni utente loggato
 
 **Campi risposta:**
 - `statistics` (object): Statistiche admin
+- `agenti` (array): Lista di tutti gli agenti con statistiche complete
+- `totaleAgenti` (number): Numero totale di agenti nel sistema
 - `immobili` (array): Array di immobili per questa richiesta
 - `nextOffset` (number): Offset da usare per la prossima richiesta ("Carica altri")
 - `hasMore` (boolean): `true` se ci sono altri immobili, `false` se sei alla fine
@@ -143,6 +145,16 @@ Ottieni informazioni utente loggato
 - `contrattiConclusiMensili`: Contratti conclusi (basato su `Data_inizio`)
 - `valutazioniInCorsoMensili`: Valutazioni in corso (basato su `Data_valutazione`)
 - `valutazioniConAIMensili`: Valutazioni con AI (basato su `Data_valutazione`)
+
+**Campi di ogni agente:**
+- `nome`: Nome dell'agente
+- `cognome`: Cognome dell'agente
+- `contrattiConclusi`: Numero di contratti con stato "chiuso" gestiti dall'agente
+- `immobiliInGestione`: Numero di valutazioni con stato "in_verifica" assegnate all'agente
+- `fatturato`: Somma dei `Prezzo_Umano` delle valutazioni collegate ai contratti chiusi dell'agente
+
+**Nota sugli agenti:**
+Gli agenti sono ordinati in modo decrescente per numero di contratti conclusi. Il fatturato viene calcolato sommando il campo `Prezzo_Umano` dalla tabella Valutazioni per tutti i contratti chiusi dell'agente.
 
 **Campi di ogni immobile:**
 - `tipo`: Tipologia immobile (Appartamento, Villa, Ufficio, ecc.)
@@ -163,7 +175,112 @@ Il sistema recupera lo stato della valutazione dalla tabella `Valutazioni` (non 
 
 ---
 
-### GET `/api/admin/immobili?page=0&size=10`
+### GET `/api/admin/immobili?offset=0&limit=12`
+**Richiede:** `ROLE_ADMIN`
+
+Restituisce tutti gli immobili con dettagli completi inclusi **prezzoAI** e **prezzoUmano** dalla valutazione più recente. Supporta caricamento progressivo con offset/limit.
+
+**Query Parameters:**
+- `offset` (opzionale, default: 0): quanti immobili sono già stati caricati
+- `limit` (opzionale, default: 12): quanti immobili caricare
+
+**Response (200 OK):**
+```json
+{
+  "immobili": [
+    {
+      "id": 123,
+      "via": "Via Roma 12",
+      "citta": "Torino",
+      "cap": "10100",
+      "provincia": "TO",
+      "tipologia": "Appartamento",
+      "metratura": 85,
+      "condizioni": "Buone condizioni",
+      "stanze": 3,
+      "bagni": 1,
+      "riscaldamento": "Centralizzato",
+      "piano": 3,
+      "ascensore": true,
+      "garage": true,
+      "giardino": false,
+      "balcone": true,
+      "terrazzo": false,
+      "cantina": false,
+      "prezzo": null,
+      "descrizione": "Appartamento luminoso in centro",
+      "dataRegistrazione": "2025-11-10T14:30:00",
+      "statoImmobile": "disponibile",
+      "nomeProprietario": "Luca Bianchi",
+      "emailProprietario": "luca.bianchi@email.com",
+      "telefonoProprietario": "3201234567",
+      "prezzoAI": 215000,
+      "prezzoUmano": 220000,
+      "dataValutazione": "2025-11-12T10:15:00",
+      "descrizioneValutazione": "Valutazione completata",
+      "statoValutazione": "approvata",
+      "agenteAssegnato": "Mattia Rossi"
+    }
+  ],
+  "nextOffset": 10,
+  "hasMore": true,
+  "pageSize": 10,
+  "total": 45
+}
+```
+
+**Campi risposta:**
+- `immobili` (array): Array di immobili con dettagli completi
+- `nextOffset` (number): Offset da usare per la prossima richiesta
+- `hasMore` (boolean): `true` se ci sono altri immobili, `false` se sei alla fine
+- `pageSize` (number): Numero di immobili ritornati in questa richiesta
+- `total` (number): Numero totale di immobili nel sistema
+
+**Campi di ogni immobile (dalla tabella Immobili):**
+- `id`: ID immobile
+- `via`: Indirizzo
+- `citta`: Città
+- `cap`: CAP
+- `provincia`: Provincia (sigla)
+- `tipologia`: Tipo immobile (Appartamento, Villa, ecc.)
+- `metratura`: Superficie in mq
+- `condizioni`: Stato di conservazione
+- `stanze`: Numero stanze
+- `bagni`: Numero bagni
+- `riscaldamento`: Tipo di riscaldamento
+- `piano`: Piano
+- `ascensore`: Presenza ascensore (boolean)
+- `garage`: Presenza garage (boolean)
+- `giardino`: Presenza giardino (boolean)
+- `balcone`: Presenza balcone (boolean)
+- `terrazzo`: Presenza terrazzo (boolean)
+- `cantina`: Presenza cantina (boolean)
+- `prezzo`: Prezzo immobile (può essere null)
+- `descrizione`: Descrizione immobile
+- `dataRegistrazione`: Data registrazione immobile
+- `statoImmobile`: Stato dell'immobile (es: disponibile, venduto, ecc.)
+
+**Campi proprietario:**
+- `nomeProprietario`: Nome completo proprietario
+- `emailProprietario`: Email proprietario
+- `telefonoProprietario`: Telefono proprietario
+
+**Campi valutazione (dalla valutazione più recente):**
+- `prezzoAI`: Prezzo stimato dall'AI (null se nessuna valutazione)
+- `prezzoUmano`: Prezzo stimato dall'agente (null se non completato)
+- `dataValutazione`: Data della valutazione (null se nessuna valutazione)
+- `descrizioneValutazione`: Descrizione della valutazione (null se nessuna valutazione)
+- `statoValutazione`: Stato della valutazione (solo_AI, in_verifica, approvata) (null se nessuna valutazione)
+- `agenteAssegnato`: Nome completo agente che gestisce la valutazione (null se non assegnato o stato solo_AI)
+
+**Nota importante:**
+Questa API restituisce **tutti i dati** disponibili per ogni immobile, inclusi i prezzi AI e umani dalla tabella Valutazioni. Gli immobili sono ordinati per data registrazione discendente (più recenti prima).
+
+**Response (403):** Se non hai ROLE_ADMIN
+
+---
+
+### GET `/api/admin/immobili (vecchia versione)?page=0&size=10`
 **Richiede:** `ROLE_ADMIN`
 
 Endpoint alternativo per paginazione basata su **pagine** (non offset). Utile se preferisci navigare per numero di pagina anziché offset.
