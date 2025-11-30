@@ -1,11 +1,11 @@
-@use "./variables" as var;
+@use "../variables" as var;
 
 .cta-section {
   background-color: var.$palette-blu;
   .container {
     min-height: 400px;
     background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-      url("../../assets/img/cta-homepage.webp");
+      url("../../../assets/img/cta-homepage.webp");
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;

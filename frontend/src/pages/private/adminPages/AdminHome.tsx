@@ -1,4 +1,5 @@
 import { FaBuilding, FaHome, FaTree, FaWarehouse } from "react-icons/fa";
+import { useAuth } from "../../../context/AuthContext";
 
 // Dati statici per il grafico (Performance Mensile)
 const monthlyPerformanceData = [
@@ -154,10 +155,11 @@ const portfolioDistribution = [
 ];
 
 export default function AdminHome() {
+  const { user } = useAuth();
   return (
     <div className="dashboard-container">
       <div className="header-dashboard">
-        <h1>Bentornato Dragos</h1>
+        <h1>Ciao {user?.name}</h1>
         <h3>Dashboard ADMIN</h3>
       </div>
       <div className="general-dashboard">

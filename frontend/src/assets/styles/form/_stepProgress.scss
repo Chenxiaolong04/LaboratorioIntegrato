@@ -4,19 +4,19 @@
 
   .steps-container {
     display: flex;
-    justify-content: flex-start; // allineamento a sinistra
+    justify-content: flex-start;
     gap: 16px;
-    padding: 0 10px; // un po' di margine interno
+    padding: 0 10px;
     position: relative;
   }
 
   .step-card {
-    flex: 0 0 calc(33.333% - 10px); // 3 step visibili sul mobile
+    flex: 0 0 calc(33.333% - 10px);
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 8px;
-    min-width: 0; // evita overflow
+    min-width: 0;
     box-sizing: border-box;
     position: relative;
 
@@ -56,11 +56,10 @@
       }
     }
 
-    // LINEA TRA I CERCHI
     &:not(:last-child)::after {
       content: "";
       position: absolute;
-      top: 16px; /* centro verticale del cerchio */
+      top: 16px;
       left: 50%;
       right: -50%;
       height: 2px;

@@ -4,7 +4,7 @@ import PrivateLayout from "../../../layouts/PrivateLayout";
 export default function DashboardAdmin() {
   return (
     <PrivateLayout>
-      <div className="dashboard">
+      <div className="dashboard-admin">
         <Outlet />
       </div>
     </PrivateLayout>

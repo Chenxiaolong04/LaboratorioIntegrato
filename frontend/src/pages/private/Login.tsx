@@ -47,7 +47,7 @@ export default function Login() {
         role: userData.roles.includes("ROLE_ADMIN") ? "admin" : "agente",
       });
 
-      navigate(userData.roles.includes("ROLE_ADMIN") ? "/admin" : "/agente");
+      navigate(userData.roles.includes("ROLE_ADMIN") ? "/admin" : "/agent");
     } finally {
       setLoading(false);
     }

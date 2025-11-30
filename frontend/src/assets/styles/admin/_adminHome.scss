@@ -1,6 +1,6 @@
-@use "./variables" as var;
+@use "../variables" as var;
 
-.dashboard {
+.dashboard-admin {
   background-color: rgb(244, 245, 252);
   min-height: 100vh;
 
@@ -19,12 +19,12 @@
 
     .header-dashboard {
       background-color: rgb(244, 245, 252);
-      color: var.$palette-lightblu;
       text-align: center;
 
       h1 {
         font-size: var.$fs-mb-title;
         margin: 0;
+        color: var.$palette-lightblu;
       }
 
       h3 {

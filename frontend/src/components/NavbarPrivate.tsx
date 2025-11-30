@@ -70,9 +70,9 @@ export default function NavbarPrivate() {
             {isAgente && (
               <>
                 <li><Link to={"/agent"}>Dashboard</Link></li>
-                <li><Link to={"/agent/contracts"}>I miei contratti</Link></li>
-                <li><Link to={"/agent/assignments"}>I miei incarichi</Link></li>
-                <li><Link to={"/agent/evaluationsAI"}>Le mie valutazioni AI</Link></li>
+                <li><Link to={"/agent/contracts"}>Contratti</Link></li>
+                <li><Link to={"/agent/assignments"}>Incarichi</Link></li>
+                <li><Link to={"/agent/evaluationsAI"}>Valutazioni AI</Link></li>
               </>
             )}
           </ul>
