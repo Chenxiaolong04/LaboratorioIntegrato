@@ -39,8 +39,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 1rem 0.5rem;
-      gap: 2rem;
+      padding: .5rem;
 
       h3 {
         font-size: 1.4rem;
@@ -50,12 +49,13 @@
     }
 
     .sidebar-filters {
+      max-width: 300px;
       transition: opacity 0.3s ease;
       height: 100%;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 1rem;
+      gap: .5rem;
       padding: 0 1rem;
 
       .filter-container {
@@ -75,10 +75,62 @@
             select,
             input {
               margin-top: 0.3rem;
-              padding: 0.5rem;
-              border-radius: 6px;
-              border: 1px solid black;
+              padding: 0.55rem 0.85rem;
+              border-radius: 10px;
+              border: 1px solid #d5d5d5;
+              background-color: #ffffff;
+              font-size: 0.95rem;
+              transition: all 0.25s ease;
               outline: none;
+              color: #2b2b2b;
+              cursor: pointer;
+            }
+
+            /* Hover */
+            select:hover,
+            input:hover {
+              border-color: #9ebadf;
+            }
+
+            /* Focus */
+            select:focus,
+            input:focus {
+              border-color: #3576e8;
+              box-shadow: 0 0 0 3px rgba(53, 118, 232, 0.15);
+            }
+
+            /* Placeholder */
+            input::placeholder {
+              color: #a7a7a7;
+            }
+          }
+        }
+
+        .checkbox-group {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 1rem;
+          padding-top: .5rem;
+
+          .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            cursor: pointer;
+            user-select: none;
+
+            input[type="checkbox"] {
+              width: 18px;
+              height: 18px;
+              border: 2px solid #348aa7;
+              border-radius: 4px;
+              cursor: pointer;
+              accent-color: #348aa7;
+            }
+
+            span {
+              color: #333;
             }
           }
         }

@@ -269,10 +269,12 @@ export default function PropertiesAdmin() {
     state: "",
     price: "",
     surface: "",
-    plus: "",
+    plus: [] as string[],
   });
 
-  const [selectedProperty, setSelectedProperty] = useState<(typeof fakeProperties)[0] | null>(null);
+  const [selectedProperty, setSelectedProperty] = useState<
+    (typeof fakeProperties)[0] | null
+  >(null);
 
   const resetFilters = () =>
     setFilters({
@@ -281,10 +283,17 @@ export default function PropertiesAdmin() {
       state: "",
       price: "",
       surface: "",
-      plus: "",
+      plus: [],
     });
 
-  const getIconColor = (value: string) => (value ? "#348AA7" : "black");
+  const getIconColor = (value: string | string[]) =>
+    Array.isArray(value)
+      ? value.length > 0
+        ? "#348AA7"
+        : "#333"
+      : value
+      ? "#348AA7"
+      : "#333";
 
   const filteredProperties = fakeProperties.filter((p) => {
     if (filters.city && !p.address.includes(filters.city)) return false;
@@ -292,7 +301,12 @@ export default function PropertiesAdmin() {
     if (filters.state && p.state !== filters.state) return false;
     if (filters.price && p.price > Number(filters.price)) return false;
     if (filters.surface && p.surface < Number(filters.surface)) return false;
-    if (filters.plus && !p.plus.includes(filters.plus)) return false;
+    if (
+      filters.plus.length > 0 &&
+      !filters.plus.every((pl) => p.plus.includes(pl))
+    )
+      return false;
+
     return true;
   });
 
@@ -422,19 +436,31 @@ export default function PropertiesAdmin() {
             <div className="filter-info">
               <label>
                 <h3>Plus</h3>
-                <select
-                  value={filters.plus}
-                  onChange={(e) =>
-                    setFilters({ ...filters, plus: e.target.value })
-                  }
-                >
-                  <option value="">Tutti</option>
-                  <option>Box auto</option>
-                  <option>Giardino</option>
-                  <option>Balcone</option>
-                  <option>Terrazzo</option>
-                  <option>Ascensore</option>
-                </select>
+
+                <div className="checkbox-group">
+                  {[
+                    "Box auto",
+                    "Giardino",
+                    "Balcone",
+                    "Terrazzo",
+                    "Ascensore",
+                  ].map((plusItem) => (
+                    <label key={plusItem} className="checkbox-item">
+                      <input
+                        type="checkbox"
+                        checked={filters.plus.includes(plusItem)}
+                        onChange={(e) => {
+                          const updated = e.target.checked
+                            ? [...filters.plus, plusItem]
+                            : filters.plus.filter((p) => p !== plusItem);
+
+                          setFilters({ ...filters, plus: updated });
+                        }}
+                      />
+                      <span>{plusItem}</span>
+                    </label>
+                  ))}
+                </div>
               </label>
             </div>
           </div>
