@@ -1,9 +1,20 @@
 import React from "react";
 
-// Dati statici per coerenza
+/**
+ * Static data for the footer.
+ */
 const CURRENT_YEAR = new Date().getFullYear();
 const BRAND_NAME = "Immobiliaris";
 
+/**
+ * FooterPrivate component.
+ *
+ * Renders a simple private footer with a logo and brand name.
+ * Styled using inline CSS for layout and responsiveness.
+ *
+ * @function FooterPrivate
+ * @returns {React.JSX.Element} The footer element for authenticated/private pages.
+ */
 export default function FooterPrivate(): React.JSX.Element {
 
   const footerStyle: React.CSSProperties = {

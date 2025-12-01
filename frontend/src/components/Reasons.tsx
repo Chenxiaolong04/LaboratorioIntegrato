@@ -5,6 +5,15 @@ import { FaBrain } from "react-icons/fa";
 import { FaLongArrowAltRight } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
+/**
+ * Reasons section component.
+ *
+ * Displays key reasons to choose the agency, including icons, descriptive
+ * text, and a call-to-action button linking to the evaluation form.
+ *
+ * @function Reasons
+ * @returns {JSX.Element} A section highlighting reasons to choose the agency.
+ */
 export default function Reasons() {
   return (
     <section className="reasons" id="chi-siamo">

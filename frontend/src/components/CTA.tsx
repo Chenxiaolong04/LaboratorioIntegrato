@@ -1,5 +1,14 @@
 import { Link } from "react-router-dom";
 
+/**
+ * CTA (Call To Action) component.
+ *
+ * Renders a section prompting the user to start the free evaluation,
+ * including a heading and a navigation button.
+ *
+ * @function CTA
+ * @returns {JSX.Element} A section containing a title and a link styled as a button.
+ */
 export default function CTA() {
     return (
         <section className="cta-section">

@@ -1,3 +1,12 @@
+/**
+ * Stats component.
+ *
+ * Displays a section with key company statistics, including total investments,
+ * properties managed, satisfied customers, and investment success rate.
+ *
+ * @function Stats
+ * @returns {JSX.Element} A section containing four statistic cards.
+ */
 export default function Stats() {
   return (
     <section className="stats">

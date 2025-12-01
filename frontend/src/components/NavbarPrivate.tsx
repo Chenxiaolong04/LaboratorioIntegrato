@@ -3,20 +3,34 @@ import { FaBell } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
-
+/**
+ * Notification object interface.
+ *
+ * @interface Notification
+ * @property {number} id - Unique identifier for the notification.
+ * @property {string} message - Notification message text.
+ * @property {string} time - Time string describing when the notification occurred.
+ */
 interface Notification {
   id: number;
   message: string;
   time: string;
 }
 
-
+/**
+ * Navbar component for authenticated users.
+ *
+ * Displays role-based navigation links (Admin or Agent),
+ * a responsive menu for mobile, and a notifications dropdown.
+ *
+ * @function NavbarPrivate
+ * @returns {JSX.Element} A navigation bar tailored to the logged-in user's role with notifications.
+ */
 export default function NavbarPrivate() {
   const { user } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const notificationsRef = useRef<HTMLDivElement>(null);
-
 
   const notifications: Notification[] = [
     { id: 1, message: "Nuova vendita completata", time: "1h fa" },
@@ -24,16 +38,15 @@ export default function NavbarPrivate() {
     { id: 3, message: "Valutazione AI completata", time: "5h fa" },
   ];
 
-
+  // Toggle body scroll when menu is open
   useEffect(() => {
     document.body.classList.toggle("no-scroll", menuOpen);
     return () => document.body.classList.remove("no-scroll");
   }, [menuOpen]);
 
-
   const handleLinkClick = () => setMenuOpen(false);
 
-
+  // Close notifications dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (notificationsRef.current && !notificationsRef.current.contains(event.target as Node)) {
@@ -44,12 +57,10 @@ export default function NavbarPrivate() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-
-  // Definiamo quali link mostrare in base al ruolo
+  // Determine role-based links
   const role = user?.role?.toLowerCase();
   const isAdmin = role === "admin";
   const isAgente = role === "agente";
-
 
   return (
     <nav className="navbar">
@@ -78,13 +89,11 @@ export default function NavbarPrivate() {
           </ul>
         </div>
 
-
         <button className={`menu-btn ${menuOpen ? "open" : ""}`} onClick={() => setMenuOpen(!menuOpen)}>
           <span className="span-hamburger"></span>
           <span className="span-hamburger"></span>
           <span className="span-hamburger"></span>
         </button>
-
 
         <div className={`menu-overlay ${menuOpen ? "active" : ""}`}>
           <ul>
@@ -109,7 +118,6 @@ export default function NavbarPrivate() {
             )}
           </ul>
         </div>
-
 
         <div className="button-links">
           <div ref={notificationsRef} className="notification-wrapper">

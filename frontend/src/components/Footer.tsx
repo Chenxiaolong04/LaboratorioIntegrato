@@ -8,6 +8,16 @@ import {
   FaMapLocationDot,
 } from "react-icons/fa6";
 
+/**
+ * Footer component containing brand information, social media links,
+ * quick navigation links, legal resources, and company contact details.
+ *
+ * This component serves as the main footer section of the website and
+ * includes accessible navigation and external links.
+ *
+ * @function Footer
+ * @returns {JSX.Element} The footer section with branding, links, and contacts.
+ */
 export default function Footer() {
   return (
     <footer className="footer" role="contentinfo" id="contatti">
@@ -66,6 +76,7 @@ export default function Footer() {
             </ul>
           </div>
         </div>
+
         <nav className="resources" aria-label="Link rapidi">
           <h3>Risorse</h3>
           <ul>
@@ -80,6 +91,7 @@ export default function Footer() {
             </li>
           </ul>
         </nav>
+
         <nav className="legal" aria-label="Documenti legali">
           <h3>Legal</h3>
           <ul>
@@ -91,6 +103,7 @@ export default function Footer() {
             </li>
           </ul>
         </nav>
+
         <div className="contacts" aria-label="Contatti aziendali">
           <h3>Contatti</h3>
           <ul>

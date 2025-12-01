@@ -1,9 +1,19 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
+/**
+ * Navbar component for public users (non-authenticated).
+ *
+ * Displays the brand logo, navigation links, a CTA button, and a responsive
+ * mobile menu. Toggles body scroll when the mobile menu is open.
+ *
+ * @function NavbarPublic
+ * @returns {JSX.Element} A responsive navigation bar for public pages.
+ */
 export default function NavbarPublic() {
   const [menuOpen, setMenuOpen] = useState(false);
 
+  // Toggle body scroll when the mobile menu is open
   useEffect(() => {
     document.body.classList.toggle("no-scroll", menuOpen);
 
@@ -28,17 +38,17 @@ export default function NavbarPublic() {
         <div className="links-desktop-navbar">
           <ul>
             <li>
-              <a href="/" title="Vai alla homepage">
+              <a href="/" title="Go to homepage">
                 Home
               </a>
             </li>
             <li>
-              <a href="#chi-siamo" title="Scopri chi siamo">
+              <a href="#chi-siamo" title="Learn about us">
                 Chi siamo
               </a>
             </li>
             <li>
-              <a href="#contatti" title="Contattaci">
+              <a href="#contatti" title="Contact us">
                 Contatti
               </a>
             </li>
@@ -60,17 +70,17 @@ export default function NavbarPublic() {
         <div className={`menu-overlay ${menuOpen ? "active" : ""}`}>
           <ul>
             <li>
-              <a href="/" title="Vai alla homepage" onClick={handleLinkClick}>
+              <a href="/" title="Go to homepage" onClick={handleLinkClick}>
                 Home
               </a>
             </li>
             <li>
-              <a href="#chi-siamo" title="Scopri chi siamo" onClick={handleLinkClick}>
+              <a href="#chi-siamo" title="Learn about us" onClick={handleLinkClick}>
                 Chi siamo
               </a>
             </li>
             <li>
-              <a href="#contatti" title="Contattaci" onClick={handleLinkClick}>
+              <a href="#contatti" title="Contact us" onClick={handleLinkClick}>
                 Contatti
               </a>
             </li>

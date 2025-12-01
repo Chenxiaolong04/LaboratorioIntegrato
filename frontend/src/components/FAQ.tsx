@@ -1,11 +1,24 @@
 import { useState } from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 
+/**
+ * Represents a single FAQ item.
+ *
+ * @interface FAQ
+ * @property {string} question - The question displayed in the FAQ.
+ * @property {string} answer - The detailed answer shown when the FAQ is expanded.
+ */
 interface FAQ {
   question: string;
   answer: string;
 }
 
+/**
+ * List of FAQ items displayed in the component.
+ *
+ * @constant
+ * @type {FAQ[]}
+ */
 const faqs: FAQ[] = [
   {
     question: "Qual è la procedura per acquistare un immobile?",
@@ -29,9 +42,28 @@ const faqs: FAQ[] = [
   },
 ];
 
+/**
+ * FAQ component that displays a list of frequently asked questions.
+ *
+ * Includes collapsible items where each question can be expanded
+ * to reveal its answer.
+ *
+ * @function FAQ
+ * @returns {JSX.Element} A section containing the FAQ list with expandable items.
+ */
 export default function FAQ() {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
+  /**
+   * Toggles the active FAQ item.
+   *
+   * If the clicked FAQ is already active, it closes it; otherwise,
+   * it opens the newly selected FAQ.
+   *
+   * @function toggleFAQ
+   * @param {number} index - Index of the FAQ item to toggle.
+   * @returns {void}
+   */
   const toggleFAQ = (index: number) => {
     setActiveIndex(activeIndex === index ? null : index);
   };

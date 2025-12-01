@@ -1,7 +1,12 @@
-import CompilaFormImg from "../assets/img/compila-form.webp";
-import ValutazioneRapidaImg from "../assets/img/valutazione-rapida.webp";
-import VenditaSicuraImg from "../assets/img/vendita-sicura.webp";
-
+/**
+ * Steps component.
+ *
+ * Displays a three-step process showing how users can get a full evaluation of their property.
+ * Each step includes a number, title, description, and an illustrative image.
+ *
+ * @function Steps
+ * @returns {JSX.Element} A section outlining the three-step property evaluation process.
+ */
 export default function Steps() {
   return (
     <section className="steps">
