@@ -934,31 +934,88 @@ Se l'email del proprietario non esiste nel sistema, viene creato automaticamente
 ---
 
 ## 📊 Valutazione Immobili
-La **valutazione immobiliare** consiste esclusivamente nel calcolo automatico del prezzo dell'immobile tramite algoritmo AI.
+La **valutazione immobiliare** consiste nel calcolo automatico del prezzo dell'immobile tramite algoritmo AI avanzato.
 
-### 💰 Logica di Calcolo
+### 💰 Logica di Calcolo Algoritmo AI
 
-Quando viene registrato un immobile, il sistema calcola il prezzo stimato (`prezzoAI`) in base ai seguenti parametri principali:
+Quando viene registrato un immobile, il sistema calcola il prezzo stimato (`prezzoAI`) utilizzando un **algoritmo multi-fattoriale** che considera:
 
-- **Tipologia** (es. appartamento, villa, ufficio)
-- **Localizzazione** (città, zona, provincia)
-- **Metratura** (superficie in mq)
-- **Numero stanze**
-- **Numero bagni**
-- **Stato conservazione**
-- **Dotazioni** (ascensore, garage, giardino, balcone, terrazzo, cantina)
+#### 1. **Quotazione Base (da CAP)**
+Il sistema recupera il prezzo medio al mq dalla tabella `zone` in base al CAP dell'immobile:
+- Centro Torino (10121): 4.200 €/mq
+- Crocetta (10128): 3.700 €/mq
+- Mirafiori Sud (10135): 1.500 €/mq
+- E oltre 30 zone mappate...
 
-L'algoritmo AI analizza questi dati e restituisce un valore numerico che rappresenta il prezzo stimato di mercato per quell'immobile.
+**Se il CAP non è mappato, la valutazione restituisce 0.**
+
+#### 2. **Coefficiente di Efficienza Funzionale (C_Funzionale)**
+Verifica l'adeguatezza di bagni e stanze rispetto alla metratura:
+- **Bagni**: Penalità -5% se bagni < (metratura / 70)
+- **Stanze**: Penalità -3% se stanze > (metratura / 20)
+
+#### 3. **Coefficiente Qualitativo (C_Qualitativo)**
+Combina condizioni e tipologia:
+
+**Condizioni:**
+- Nuovo: +15%
+- Ottimo: +10%
+- Buono: 0% (neutro)
+- Da ristrutturare: -25%
+
+**Tipologia:**
+- Villa: +30%
+- Attico/Loft: +12%
+- Appartamento: 0% (neutro)
+
+#### 4. **Moltiplicatore Accessori e Caratteristiche (M_Finale)**
+Somma percentuali per ogni dotazione presente:
+- **Garage**: +25% (bonus maggiorato)
+- **Terrazzo**: +12%
+- **Giardino**: +10%
+- **Ascensore**: +8%
+- **Balcone**: +5%
+- **Cantina**: +3%
+
+**Riscaldamento:**
+- Teleriscaldamento: +8%
+- Autonomo: +5%
+- Centralizzato (obsoleto): -3%
+
+**Piano/Altezza:**
+- **Villa multi-livello** (piano > 1): +10% fisso
+- **Appartamento/Loft/Attico**: +2% per ogni piano
+
+#### 5. **Formula Finale**
+```
+Prezzo_AI = (metratura × quotazione_CAP) 
+            × C_Funzionale 
+            × C_Qualitativo 
+            × M_Finale
+```
+
+**Esempio di calcolo:**
+```
+Immobile: Appartamento 85 mq, CAP 10128 (Crocetta), Piano 3
+Condizioni: Buone, Con: Ascensore + Balcone + Garage
+Bagni: 2, Stanze: 3, Riscaldamento: Autonomo
+
+1. Base: 85 × 3.700 = 314.500 €
+2. C_Funzionale: 1.00 (bagni OK) × 1.00 (stanze OK) = 1.00
+3. C_Qualitativo: 1.00 (buono) × 1.00 (appartamento) = 1.00
+4. M_Finale: 1 + 0.08 (ascensore) + 0.05 (balcone) + 0.25 (garage) + 0.05 (autonomo) + 0.06 (3 piani) = 1.49
+5. Prezzo_AI = 314.500 × 1.00 × 1.00 × 1.49 = 468.605 €
+```
 
 **Esempio di risposta:**
 ```json
 {
   "idImmobile": 123,
-  "prezzoAI": 220000
+  "prezzoAI": 468605
 }
 ```
 
-> Non sono previsti altri stati, workflow, agenti o storici nella valutazione: il sistema si limita al calcolo automatico del prezzo.
+> **Nota**: L'algoritmo restituisce sempre un valore intero. Se metratura ≤ 0 o CAP non mappato, restituisce 0.
 
 ### POST `/api/address/validate`
 Valida un indirizzo usando l'API Geoapify

@@ -134,7 +134,7 @@ public class EmailService {
                 + "<div class='field'><span class='field-label'>Cantina:</span><span class='field-value'>" + (immobile.getCantina() != null && immobile.getCantina() ? "Sì" : "No") + "</span></div>"
                 + "<hr />"
                 + "<h3 class='section-title'>Altri dettagli</h3>"
-                + "<div class='field'><span class='field-label'>Prezzo:</span><span class='field-value'>" + (immobile.getPrezzo() != null ? immobile.getPrezzo() : "N/A") + "€</span></div>"
+                + "<div class='field'><span class='field-label'>Descrizione:</span><span class='field-value'>" + (immobile.getDescrizione() != null ? immobile.getDescrizione() : "N/A") + "</span></div>"
                 + "<div class='field'><span class='field-label'>Data inserimento:</span><span class='field-value'>" + (immobile.getDataRegistrazione() != null ? immobile.getDataRegistrazione() : "N/A") + "</span></div>"
                 + "<div style='display:block; margin:15px auto; padding:12px 20px; background:#1e3a56; color:#fff; text-align:center; border-radius:10px; font-weight:bold; font-size:18px;'>"
                 + "Valutazione stimata: " + (valutazione.getPrezzoAI() != null ? valutazione.getPrezzoAI() : "N/A") + "€"
