@@ -67,6 +67,21 @@ public class DashboardDTO {
         }
     }
     
+    // Immobili per stato
+    public static class ImmobiliPerStato {
+        public Integer inVendita;
+        public Integer inValutazione;
+        public Integer inTrattativa;
+        public Integer venduti;
+        
+        public ImmobiliPerStato(Integer inVendita, Integer inValutazione, Integer inTrattativa, Integer venduti) {
+            this.inVendita = inVendita;
+            this.inValutazione = inValutazione;
+            this.inTrattativa = inTrattativa;
+            this.venduti = venduti;
+        }
+    }
+    
     // Risposta dashboard completa
     public static class DashboardResponse {
         public StatisticheCard valutazioniRichieste;
@@ -76,5 +91,6 @@ public class DashboardDTO {
         public List<PerformanceData> performance;
         public List<ImmobileItem> prossimiAttivita;
         public PipelineData pipeline;
+        public ImmobiliPerStato immobiliPerStato;
     }
 }

@@ -59,6 +59,7 @@ public class DashboardApiController {
             
             // 4. Pipeline
             dashboard.pipeline = getPipeline(agenteId);
+            dashboard.immobiliPerStato = getImmobiliPerStato(agenteId); // ← AGGIUNGI
             
             return ResponseEntity.ok(new Response("success", "Dashboard caricata", dashboard));
         } catch (Exception e) {
@@ -248,6 +249,33 @@ public class DashboardApiController {
             .count();
         
         return new DashboardDTO.PipelineData((int)richieste, (int)trattative, (int)vendite);
+    }
+    
+    private DashboardDTO.ImmobiliPerStato getImmobiliPerStato(Long agenteId) {
+        List<Immobile> immobili = immobileRepository.findAll().stream()
+            .filter(i -> i.getProprietario() != null && i.getProprietario().getIdUtente().equals(agenteId))
+            .toList();
+        
+        long inVendita = immobili.stream()
+            .filter(i -> i.getStatoImmobile() != null && "attivo".equalsIgnoreCase(i.getStatoImmobile().getNome()))
+            .count();
+        
+        long inValutazione = immobili.stream()
+            .filter(i -> i.getStatoImmobile() != null && "in valutazione".equalsIgnoreCase(i.getStatoImmobile().getNome()))
+            .count();
+        
+        long inTrattativa = contrattoRepository.findAll().stream()
+            .filter(c -> c.getAgente() != null && c.getAgente().getIdUtente().equals(agenteId) &&
+                    c.getStatoContratto() != null && "attivo".equalsIgnoreCase(c.getStatoContratto().getNome()))
+            .map(c -> c.getImmobile().getId())
+            .distinct()
+            .count();
+        
+        long venduti = immobili.stream()
+            .filter(i -> i.getStatoImmobile() != null && "venduto".equalsIgnoreCase(i.getStatoImmobile().getNome()))
+            .count();
+        
+        return new DashboardDTO.ImmobiliPerStato((int)inVendita, (int)inValutazione, (int)inTrattativa, (int)venduti);
     }
     
     static class Response {
