@@ -4,12 +4,29 @@ import Button from "../../../components/Button";
 import { registerUser } from "../../../services/api";
 import { FaCheckCircle } from "react-icons/fa";
 
+/**
+ * Interface representing the structure of a user role.
+ * @interface UserRole
+ * @property {number} idTipo - The numeric ID of the user type/role.
+ * @property {string} nome - The descriptive name of the role (e.g., "Admin").
+ * @property {string} role - The standardized role identifier (e.g., "ADMIN").
+ */
 interface UserRole {
   idTipo: number;
   nome: string;
   role: string;
 }
 
+/**
+ * Interface representing the structure of the data collected from the create user form.
+ * @interface CreateUserFormData
+ * @property {string} name - The user's first name.
+ * @property {string} surname - The user's last name.
+ * @property {string} email - The user's email address.
+ * @property {string} password - The user's password.
+ * @property {string} telefono - The user's phone number.
+ * @property {UserRole} tipoUtente - The selected user role object.
+ */
 interface CreateUserFormData {
   name: string;
   surname: string;
@@ -19,10 +36,28 @@ interface CreateUserFormData {
   tipoUtente: UserRole;
 }
 
+/**
+ * CreateUser component.
+ * Allows administrators to create new user profiles by registering them via an API call.
+ * @returns {JSX.Element} The Create User form section, including a success/error modal.
+ */
 export default function CreateUser() {
+  /**
+   * State to control the visibility of the success/error modal.
+   * @type {[boolean, function(boolean): void]}
+   */
   const [showModal, setShowModal] = useState(false);
+
+  /**
+   * State to hold the message displayed inside the modal (success or error).
+   * @type {[string, function(string): void]}
+   */
   const [modalMessage, setModalMessage] = useState("");
 
+  /**
+   * State to manage the form data for the new user, initialized with default 'Admin' role.
+   * @type {[CreateUserFormData, function(CreateUserFormData): void]}
+   */
   const [formData, setFormData] = useState<CreateUserFormData>({
     name: "",
     surname: "",
@@ -36,6 +71,12 @@ export default function CreateUser() {
     },
   });
 
+  /**
+   * Generic handler for input changes (text fields and select).
+   * Updates the corresponding field in the formData state.
+   * Note: The 'tipoUtente' field is handled separately in the select's onChange.
+   * @param {ChangeEvent<HTMLInputElement | HTMLSelectElement>} e - The change event object.
+   */
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -43,6 +84,13 @@ export default function CreateUser() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  /**
+   * Handles the form submission: registers the user via the API, shows a success/error modal,
+   * and resets the form data on success.
+   * @async
+   * @param {FormEvent<HTMLFormElement>} e - The form submission event.
+   * @returns {Promise<void>}
+   */
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -143,7 +191,7 @@ export default function CreateUser() {
             value={formData.tipoUtente.role}
             onChange={(e) => {
               const value = e.target.value;
-
+              /** Logic to update the entire 'tipoUtente' object based on the selected 'role' value. */
               setFormData((prev) => ({
                 ...prev,
                 tipoUtente:
@@ -166,7 +214,9 @@ export default function CreateUser() {
       </form>
 
       {showModal && (
+        /** Modal overlay for showing registration success or failure. */
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
+          {/** Modal content, prevents closing when clicking inside. */}
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <FaCheckCircle size={150} color="#348AA7" />
             <p>{modalMessage}</p>

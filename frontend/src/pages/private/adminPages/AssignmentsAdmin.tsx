@@ -9,16 +9,74 @@ import {
 } from "../../../services/api";
 import Loader from "../../../components/Loader";
 
+/**
+ * @typedef {object} Incarichi - Represents an assignment object fetched from the API.
+ * @property {number} id - The unique identifier of the assignment.
+ * @property {string} nomeProprietario - The name of the property owner.
+ * @property {number} prezzoAI - The AI-estimated price.
+ * @property {string} dataInserimento - The date the assignment was created.
+ * @property {string} nomeAgente - The name of the assigned agent.
+ * @property {string} descrizione - The description of the assignment.
+ * @property {string} tipo - The type of property.
+ * @property {string} via - The street address of the property.
+ * @property {string} citta - The city of the property.
+ * @property {string} provincia - The province of the property.
+ * @property {number} metratura - The property size in square meters.
+ * @property {string} condizioni - The condition of the property.
+ * @property {number} stanze - The number of rooms.
+ * @property {number} bagni - The number of bathrooms.
+ * @property {string} piano - The floor of the property.
+ * @property {string} emailProprietario - The owner's email address.
+ * @property {string} telefonoProprietario - The owner's phone number.
+ */
+
+/**
+ * AssignmentsAdmin component.
+ * Manages the view for displaying, filtering, loading more, and deleting assignments (incarichi).
+ * @returns {JSX.Element} The AssignmentsAdmin dashboard component.
+ */
 export default function AssignmentsAdmin() {
+  /**
+   * State for storing the current search query for filtering assignments.
+   * @type {[string, function(string): void]}
+   */
   const [searchQuery, setSearchQuery] = useState("");
+
+  /**
+   * State for storing the list of fetched assignments.
+   * @type {[Incarichi[], function(Incarichi[]): void]}
+   */
   const [incarichi, setIncarichi] = useState<Incarichi[]>([]);
+
+  /**
+   * State for storing the currently selected assignment for modal display.
+   * @type {[Incarichi | null, function(Incarichi | null): void]}
+   */
   const [selectedIncarico, setSelectedIncarico] = useState<Incarichi | null>(
     null
   );
+
+  /**
+   * State for the offset used in pagination for the next batch of assignments.
+   * @type {[number, function(number): void]}
+   */
   const [nextOffset, setNextOffset] = useState(0);
+
+  /**
+   * State indicating if there are more assignments to load.
+   * @type {[boolean, function(boolean): void]}
+   */
   const [hasMore, setHasMore] = useState(true);
+
+  /**
+   * State indicating if data is currently being loaded.
+   * @type {[boolean, function(boolean): void]}
+   */
   const [loading, setLoading] = useState(false);
 
+  /**
+   * useEffect hook to fetch the initial set of assignments when the component mounts.
+   */
   useEffect(() => {
     (async () => {
       setLoading(true);
@@ -35,6 +93,12 @@ export default function AssignmentsAdmin() {
     })();
   }, []);
 
+  /**
+   * Handles loading the next batch of assignments (pagination).
+   * Appends the new assignments to the existing list.
+   * @async
+   * @returns {Promise<void>}
+   */
   async function handleLoadMore() {
     const res = await getIncarichi(nextOffset, 10);
     setIncarichi((prev) => [...prev, ...res.valutazioni]);
@@ -42,6 +106,14 @@ export default function AssignmentsAdmin() {
     setHasMore(res.hasMore);
   }
 
+  /**
+   * Handles the deletion of a specific assignment by ID.
+   * Prompts the user for confirmation before deletion.
+   * Updates the state to remove the deleted assignment from the list.
+   * @async
+   * @param {number} id - The ID of the assignment to delete.
+   * @returns {Promise<void>}
+   */
   async function handleDelete(id: number) {
     if (!confirm("Vuoi davvero eliminare questo incarico?")) return;
 
@@ -50,6 +122,11 @@ export default function AssignmentsAdmin() {
     setIncarichi((prev) => prev.filter((v) => v.id !== id));
   }
 
+  /**
+   * Filters the list of assignments based on the current search query
+   * (matching against the owner's name).
+   * @type {Incarichi[]}
+   */
   const filteredIncarichi = incarichi.filter((c) =>
     (c.nomeProprietario || "").toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -164,10 +241,15 @@ export default function AssignmentsAdmin() {
         </div>
       )}
       {selectedIncarico && (
+        /**
+         * Modal overlay for displaying assignment details.
+         * Closes when clicking the overlay.
+         */
         <div
           className="modal-overlay"
           onClick={() => setSelectedIncarico(null)}
         >
+          {/** Modal content, prevents closing when clicking inside. */}
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <h3>Dettagli Incarico</h3>
 

@@ -10,15 +10,48 @@ import Button from "../../../components/Button";
 import { FaX } from "react-icons/fa6";
 import InputGroup from "../../../components/InputGroup";
 
+/**
+ * Users component.
+ * Manages the display, searching, viewing, and editing of user data for administrative purposes.
+ * It fetches the list of users and handles update operations through modals.
+ * @returns {JSX.Element} The Users management component.
+ */
 export default function Users() {
+  /**
+   * State for storing the current search query used to filter users by name/surname.
+   * @type {[string, function(string): void]}
+   */
   const [searchQuery, setSearchQuery] = useState("");
+
+  /**
+   * State storing the user object currently being edited in the modal. Null if no user is being edited.
+   * @type {[Users | null, function(Users | null): void]}
+   */
   const [editingUser, setEditingUser] = useState<Users | null>(null);
+
+  /**
+   * State storing the form data for the user update request, used in the edit modal.
+   * @type {[UpdateUserRequest | null, function(UpdateUserRequest | null): void]}
+   */
   const [editFormData, setEditFormData] = useState<UpdateUserRequest | null>(
     null
   );
+
+  /**
+   * State storing the list of all fetched user objects.
+   * @type {[Users[], function(Users[]): void]}
+   */
   const [users, setUsers] = useState<Users[]>([]);
+
+  /**
+   * State storing the user object whose details are currently displayed in the view modal.
+   * @type {[Users | null, function(Users | null): void]}
+   */
   const [selectedUser, setSelectedUser] = useState<Users | null>(null);
 
+  /**
+   * useEffect hook to fetch the initial list of users when the component mounts.
+   */
   useEffect(() => {
     (async () => {
       try {
@@ -30,6 +63,11 @@ export default function Users() {
     })();
   }, []);
 
+  /**
+   * Filters the list of users based on the current search query.
+   * The search is performed against the concatenated full name (name + surname).
+   * @type {Users[]}
+   */
   const filteredUsers = users.filter((u) =>
     (u.nome + " " + u.cognome).toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -160,6 +198,10 @@ export default function Users() {
         </div>
       </div>
       {selectedUser && (
+        /**
+         * Modal overlay for displaying detailed information about a selected user.
+         * Closes when clicking the overlay.
+         */
         <div className="modal-overlay" onClick={() => setSelectedUser(null)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <h3>Dettagli Utente</h3>
@@ -207,6 +249,10 @@ export default function Users() {
       )}
 
       {editingUser && editFormData && (
+        /**
+         * Modal overlay for editing the data of a selected user.
+         * Closes when clicking the overlay outside the form.
+         */
         <div className="modal-overlay" onClick={() => setEditingUser(null)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <h3>Modifica Utente</h3>
@@ -217,7 +263,7 @@ export default function Users() {
 
                 if (!editingUser || !editFormData) return;
 
-                // controlla se c'è almeno un campo modificato
+                // Check if at least one field has been modified
                 const hasChanges =
                   editFormData.nome !== editingUser.nome ||
                   editFormData.cognome !== editingUser.cognome ||
@@ -237,12 +283,13 @@ export default function Users() {
                     editingUser.idUtente,
                     editFormData
                   );
+                  // Update the local state with the modified user data
                   setUsers((prev) =>
                     prev.map((u) =>
                       u.idUtente === updated.idUtente ? updated : u
                     )
                   );
-                  setEditingUser(null);
+                  setEditingUser(null); // Close the modal on success
                 } catch (err) {
                   console.error("Errore aggiornamento:", err);
                   alert("Errore durante la modifica dell'utente.");

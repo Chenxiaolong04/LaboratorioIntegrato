@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-// --- IMPORTS NON UTILIZZATI NELLA PARTE VISIBILE (Tabella/Filtri) ---
+// --- UNUSED IMPORTS IN THE VISIBLE PART (Table/Filters) ---
 /* import { FaCheckCircle, FaFilter } from "react-icons/fa";
 import { PiWarningCircleBold } from "react-icons/pi";
-import { TbProgressCheck } from "react-icons/tb"; // Non importato, ma sarebbe servito */
+import { TbProgressCheck } from "react-icons/tb"; // Not imported, but would have been used */
 import { FaCheckCircle } from "react-icons/fa";
 import { PiWarningCircleBold } from "react-icons/pi";
 // --------------------------------------------------------------------
@@ -10,7 +10,7 @@ import Button from "../../../components/Button";
 import { FaBuilding, FaHome, FaTree, FaWarehouse } from 'react-icons/fa';
 
 
-// --- DEFINIZIONI PER L'API MOCK/TABELLA NON UTILIZZATE NELLA VISUALIZZAZIONE CORRENTE ---
+// --- DEFINITIONS FOR MOCK API/TABLE NOT USED IN THE CURRENT VIEW ---
 /*
 type Immobile = {
   tipo: string;
@@ -26,9 +26,9 @@ type AdminDashboardData = {
   hasMore: boolean;
 };
 
-// Funzioni mock per i servizi (API SIMULATA)
+// Mock functions for services (SIMULATED API)
 async function getAdminDashboard(offset: number, limit: number): Promise<AdminDashboardData> {
-    await new Promise(resolve => setTimeout(resolve, 500)); // Simulazione di ritardo
+    await new Promise(resolve => setTimeout(resolve, 500)); // Simulation of delay
     const mockImmobili: Immobile[] = [
         { tipo: "Appartamento", nomeProprietario: "Rossi Mario", dataInserimento: "2024-10-20", agenteAssegnato: "Marco Bellini" },
         { tipo: "Villa", nomeProprietario: "Bianchi Anna", dataInserimento: "2024-10-18", agenteAssegnato: "Giulia Ferri" },
@@ -53,7 +53,10 @@ const filterOptions = [
 // ----------------------------------------------------------------------------------------
 
 
-// Dati statici per il grafico (Performance Mensile)
+/**
+ * Static data for the Monthly Performance chart.
+ * @type {{month: string, sales: number}[]}
+ */
 const monthlyPerformanceData = [
   { month: "Giu", sales: 48 },
   { month: "Lug", sales: 61 },
@@ -63,14 +66,21 @@ const monthlyPerformanceData = [
   { month: "Nov", sales: 72 },
 ];
 
-// Dati statici per la classifica (Top Performers)
+/**
+ * Static data for the Top Performers ranking.
+ * @type {{rank: number, name: string, sales: number, value: string}[]}
+ */
 const topPerformers = [
   { rank: 1, name: "Marco Bellini", sales: 15, value: "4.2M" },
   { rank: 2, name: "Giulia Ferri", sales: 12, value: "3.5M" },
   { rank: 3, name: "Alice Bianchi", sales: 11, value: "2.9M" },
 ];
 
-// Funzione helper per ottenere il colore del badge (per il rank)
+/**
+ * Helper function to get the badge color based on the rank.
+ * @param {number} rank - The performer's rank (1, 2, 3, etc.).
+ * @returns {string} The CSS color code for the badge.
+ */
 const getRankColor = (rank: number): string => {
   switch (rank) {
     case 1:
@@ -84,17 +94,28 @@ const getRankColor = (rank: number): string => {
   }
 };
 
-// ** LOGICA CRUCIALE PER L'ALTEZZA DELLE BARRE (in pixel) **
+// ** CRUCIAL LOGIC FOR BAR HEIGHT (in pixels) **
+/** Maximum sales value for scaling the bar chart. */
 const MAX_SALES_SCALE = 75;
+/** Maximum height of the bar in pixels. */
 const MAX_BAR_HEIGHT_PX = 200;
 
+/**
+ * Calculates the bar height in pixels based on current sales value.
+ * Uses a fixed maximum scale for normalization.
+ * @param {number} sales - The number of sales for the current month.
+ * @returns {string} The calculated height string with 'px' suffix (e.g., "150px").
+ */
 const getBarHeight = (sales: number): string => {
-  // Calcola l'altezza: (vendite attuali / massimo fisso) * altezza massima in pixel
+  // Calculate height: (current sales / fixed maximum) * maximum height in pixels
   const heightInPx = (sales / MAX_SALES_SCALE) * MAX_BAR_HEIGHT_PX;
   return `${heightInPx}px`;
 };
 
-// Dati statici per la comparativa agenti
+/**
+ * Static data for agent performance comparison.
+ * @type {{initials: string, name: string, role: string, color: string, immobili: number, vendite: number, fatturato: string}[]}
+ */
 const agentData = [
   {
     initials: 'MB',
@@ -144,10 +165,16 @@ const agentData = [
 ]
 
 
-// Tipi di performance e colori associati (da usare in linea o come classe CSS)
+/**
+ * Type definition for performance levels.
+ * @typedef {'Ottimo' | 'Eccellente' | 'Buono' | 'Standard'} PerformanceLevel
+ */
 type PerformanceLevel = 'Ottimo' | 'Eccellente' | 'Buono' | 'Standard';
 
-// Dati statici per la tabella dei tempi medi
+/**
+ * Static data for the average operational time table.
+ * @type {{fase: string, tempoMedio: string, performance: PerformanceLevel}[]}
+ */
 const operationalData = [
   {
     fase: 'Valutazione AI - Valutazione agente',
@@ -181,12 +208,19 @@ const operationalData = [
   },
 ];
 
-// Funzione per ottenere la classe CSS basata sul livello di performance
+/**
+ * Function to get the CSS class name based on the performance level.
+ * @param {PerformanceLevel} level - The performance level string.
+ * @returns {string} The corresponding CSS class string.
+ */
 const getPerformanceClass = (level: PerformanceLevel): string => {
   return `performance-${level.toLowerCase()}`;
 };
 
-// Dati statici per la distribuzione del portfolio
+/**
+ * Static data for the property portfolio distribution.
+ * @type {{IconComponent: React.ElementType, count: number, label: string}[]}
+ */
 const portfolioDistribution = [
   {
     IconComponent: FaBuilding, 
@@ -210,10 +244,16 @@ const portfolioDistribution = [
   },
 ];
 
+/**
+ * AdminHome component.
+ * Displays the main administrative dashboard with various statistics, charts, and tables.
+ * Note: Much of the initial data fetching logic is commented out as the component uses static data.
+ * @returns {JSX.Element} The Admin Home Dashboard.
+ */
 export default function AdminHome() {
 
-  // --- STATI DI CONTROLLO E DATI DINAMICI NON UTILIZZATI CON I DATI STATICI ---
-  /*   const [filter, setFilter] = useState<string | null>(null);
+  // --- CONTROL STATES AND DYNAMIC DATA NOT USED WITH STATIC DATA ---
+  /* const [filter, setFilter] = useState<string | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [statistics, setStatistics] = useState<AdminDashboardData["statistics"] | null>(null);
@@ -223,9 +263,9 @@ export default function AdminHome() {
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
   
-  const [selected, setSelected] = useState(false); // Mantengo solo selected per la modal (anche se non usata)
+  const [selected, setSelected] = useState(false); // Keeping only selected for the modal (even if unused)
 
-  // --- EFFETTI E FUNZIONI DI CARICAMENTO DATI NON UTILIZZATE CON I DATI STATICI ---
+  // --- DATA LOADING EFFECTS AND FUNCTIONS NOT USED WITH STATIC DATA ---
   /*
   useEffect(() => {
     async function fetchInitialData() {
@@ -313,16 +353,16 @@ export default function AdminHome() {
           </div>
         </div>
 
-        {/* CONTAINER GRAFICO E CLASSIFICA */}
+        {/* CHART AND RANKING CONTAINER */}
         <div className="performance-container">
-          {/* Grafico Performance Mensile */}
+          {/* Monthly Performance Chart */}
           <div className="chart-section">
             <h2>Performance mensile team - vendite concluse</h2>
             <div className="bar-chart-mock">
               {monthlyPerformanceData.map((data) => (
                 <div key={data.month} className="bar-wrapper">
                   <div className="bar-value">{data.sales}</div>
-                  {/* APPLICAZIONE DELL'ALTEZZA IN PIXEL */}
+                  {/* APPLICATION OF HEIGHT IN PIXELS */}
                   <div className="bar" style={{ height: getBarHeight(data.sales) }}></div>
                   <div className="bar-label">{data.month}</div>
                 </div>
@@ -330,7 +370,7 @@ export default function AdminHome() {
             </div>
           </div>
 
-          {/* Classifica Top Performers */}
+          {/* Top Performers Ranking */}
           <div className="top-performers-section">
             <h2>Top performers del mese</h2>
             <div className="performer-list">
@@ -352,14 +392,14 @@ export default function AdminHome() {
           </div>
         </div>
 
-        {/* tabella 2: Comparativa Performance Agenti */}
+        {/* table 2: Agent Performance Comparison */}
         <div className="agent-comparison-container">
           <h2 className="comparison-title">Comparativa Performance Agenti</h2>
           <div className="agent-list">
             {agentData.map((agent, index) => (
               <div key={index} className="agent-item">
 
-                {/* Sezione Avatar e Dettagli Agente */}
+                {/* Avatar and Agent Details Section */}
                 <div className="agent-info">
                   <div className="agent-avatar" style={{ backgroundColor: agent.color }}>
                     {agent.initials}
@@ -370,7 +410,7 @@ export default function AdminHome() {
                   </div>
                 </div>
 
-                {/* Sezione Metriche */}
+                {/* Metrics Section */}
                 <div className="agent-metrics">
                   <div className="metric-item">
                     <span className="metric-value">{agent.immobili}</span>
@@ -391,19 +431,19 @@ export default function AdminHome() {
         </div>
 
 
-        {/* tabella 3: Analisi operativa - Tempi medi */}
+        {/* table 3: Operational Analysis - Average Times */}
         <div className="operational-analysis-container">
           <h2 className="analysis-title">Analisi operativa - Tempi medi</h2>
 
           <div className="analysis-table">
-            {/* Intestazione della tabella */}
+            {/* Table Header */}
             <div className="table-header">
               <div className="header-cell phase">Fase</div>
               <div className="header-cell time">Tempo medio</div>
               <div className="header-cell performance">Performance</div>
             </div>
 
-            {/* Righe dei dati */}
+            {/* Data Rows */}
             <div className="table-body">
               {operationalData.map((item, index) => (
                 <div key={index} className="table-row">
@@ -420,14 +460,14 @@ export default function AdminHome() {
         </div>
 
 
-        {/* tabella 4: Distribuzione portfolio */}
+        {/* table 4: Portfolio Distribution */}
         <div className="portfolio-distribution-container">
           <h2 className="distribution-title">Distribuzione portfolio per tipologia immobile</h2>
 
           <div className="distribution-grid">
             {portfolioDistribution.map((item, index) => (
               <div key={index} className="distribution-item">
-                {/* Utilizzo del componente IconComponent */}
+                {/* Use of IconComponent */}
                 <div className="item-icon">
                   <item.IconComponent size={40} color="#546E7A" />
                 </div>
@@ -439,107 +479,107 @@ export default function AdminHome() {
         </div>
 
 
-        {/* CONTAINER TABELLA AVVISI (COMMENTATO) */}
+        {/* ALERT TABLE CONTAINER (COMMENTED OUT) */}
         {/* <div className="table-wrapper-container">
-    <div className="table-container">
-    <h2>Ultimi avvisi</h2>
+          <div className="table-container">
+          <h2>Ultimi avvisi</h2>
 
-    // FILTRI
-    <div className="filter-buttons">
-      <SearchBar placeholder="Cerca un proprietario" onSearch={setSearchQuery} />
-      <div className="dropdown">
-        <Button onClick={() => setDropdownOpen(!dropdownOpen)} className="blu">
-          <FaFilter color="white" />
-        </Button>
-        {dropdownOpen && (
-          <ul className="dropdown-menu">
-            {filterOptions.map(opt => (
-              <li
-                key={opt.value}
-                className={filter === opt.value ? "active" : ""}
-                onClick={() => { setFilter(opt.value); setDropdownOpen(false); }}
-              >
-                {opt.label}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-      {filter && <Button className="remove-filter" onClick={() => setFilter(null)}>Rimuovi filtro</Button>}
-    </div>
+          // FILTERS
+          <div className="filter-buttons">
+            <SearchBar placeholder="Cerca un proprietario" onSearch={setSearchQuery} />
+            <div className="dropdown">
+              <Button onClick={() => setDropdownOpen(!dropdownOpen)} className="blu">
+                <FaFilter color="white" />
+              </Button>
+              {dropdownOpen && (
+                <ul className="dropdown-menu">
+                  {filterOptions.map(opt => (
+                    <li
+                      key={opt.value}
+                      className={filter === opt.value ? "active" : ""}
+                      onClick={() => { setFilter(opt.value); setDropdownOpen(false); }}
+                    >
+                      {opt.label}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+            {filter && <Button className="remove-filter" onClick={() => setFilter(null)}>Rimuovi filtro</Button>}
+          </div>
 
-    // TABELLA
-    <div className="table-wrapper">
-      <table className="alerts-table">
-        <thead>
-          <tr>
-            <th>Tipo</th>
-            <th>Nome proprietario</th>
-            <th>Data</th>
-            <th>Agente assegnato</th>
-            <th>Azioni</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredData.map((row, i) => (
-            <tr key={i}>
-              <td>
-                <div className="cell-content">
-                  {row.tipo === "contratti" && <FaCheckCircle size={32} color="#2ECC71" />}
-                  {row.tipo === "incarichi" && <TbProgressCheck size={32} color="#FFA726" />}
-                  {row.tipo === "valutazioni" && <PiWarningCircleBold size={32} color="#546E7A" />}
-                  <h3>{filterOptions.find(f => f.value === row.tipo)?.label || row.tipo}</h3>
-                </div>
-              </td>
-              <td>{row.proprietario}</td>
-              <td>{row.data}</td>
-              <td>{row.agente}</td>
-              <td>
-                <Button className="lightblu" onClick={() => setSelected(immobili[i])}>Dettagli</Button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          // TABLE
+          <div className="table-wrapper">
+            <table className="alerts-table">
+              <thead>
+                <tr>
+                  <th>Tipo</th>
+                  <th>Nome proprietario</th>
+                  <th>Data</th>
+                  <th>Agente assegnato</th>
+                  <th>Azioni</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredData.map((row, i) => (
+                  <tr key={i}>
+                    <td>
+                      <div className="cell-content">
+                        {row.tipo === "contratti" && <FaCheckCircle size={32} color="#2ECC71" />}
+                        {row.tipo === "incarichi" && <TbProgressCheck size={32} color="#FFA726" />}
+                        {row.tipo === "valutazioni" && <PiWarningCircleBold size={32} color="#546E7A" />}
+                        <h3>{filterOptions.find(f => f.value === row.tipo)?.label || row.tipo}</h3>
+                      </div>
+                    </td>
+                    <td>{row.proprietario}</td>
+                    <td>{row.data}</td>
+                    <td>{row.agente}</td>
+                    <td>
+                      <Button className="lightblu" onClick={() => setSelected(immobili[i])}>Dettagli</Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-    // CARDS MOBILE
-    <div className="alerts-cards">
-      {filteredData.map((row, i) => (
-        <div className="alert-card" key={i}>
-          <div className="card-row"><b>Tipo:</b> {filterOptions.find(f => f.value === row.tipo)?.label || row.tipo}</div>
-          <div className="card-row"><b>Nome proprietario:</b> {row.proprietario || "—"}</div>
-          <div className="card-row"><b>Data:</b> {row.data || "—"}</div>
-          <div className="card-row"><b>Agente assegnato:</b> {row.agente || "—"}</div>
-          <div className="card-actions">
-            <Button className="lightblu" onClick={() => setSelected(immobili[i])}>Dettagli</Button>
-          </div>
-        </div>
-      ))}
-    </div>
+          // MOBILE CARDS
+          <div className="alerts-cards">
+            {filteredData.map((row, i) => (
+              <div className="alert-card" key={i}>
+                <div className="card-row"><b>Tipo:</b> {filterOptions.find(f => f.value === row.tipo)?.label || row.tipo}</div>
+                <div className="card-row"><b>Nome proprietario:</b> {row.proprietario || "—"}</div>
+                <div className="card-row"><b>Data:</b> {row.data || "—"}</div>
+                <div className="card-row"><b>Agente assegnato:</b> {row.agente || "—"}</div>
+                <div className="card-actions">
+                  <Button className="lightblu" onClick={() => setSelected(immobili[i])}>Dettagli</Button>
+                </div>
+              </div>
+            ))}
+          </div>
 
-    // LOAD MORE
-    {hasMore && (
-      <div className="btn-table">
-        <Button onClick={handleLoadMore} disabled={loading} className="blu">
-          {loading ? "Caricamento..." : "Mostra altri avvisi"}
-        </Button>
-      </div>
-    )}
-  </div>
-</div>
-*/}
+          // LOAD MORE
+          {hasMore && (
+            <div className="btn-table">
+              <Button onClick={handleLoadMore} disabled={loading} className="blu">
+                {loading ? "Caricamento..." : "Mostra altri avvisi"}
+              </Button>
+            </div>
+          )}
+        </div>
+      </div>
+      */}
 
-        {/* MODAL (COMMENTATA - USA STATO selected MA NON I DATI) 
+        {/* MODAL (COMMENTED OUT - USES selected STATE BUT NOT THE DATA) 
         {selected && (
           <div className="modal-overlay" onClick={() => setSelected(false)}>
             <div className="modal" onClick={e => e.stopPropagation()}>
               <h3>Dettagli Avviso</h3>
-              {/* I DATI QUI SONO COMMENTATI IN QUANTO LE VARIABILI NON ESISTONO PIÙ */}
+              {/* THE DATA HERE IS COMMENTED OUT AS THE VARIABLES NO LONGER EXIST 
               {/* <div className="card-row"><b>Tipo:</b> {filterOptions.find(f => f.value === selected.tipo)?.label || selected.tipo}</div>
-              <div className="card-row"><b>Nome proprietario:</b> {selected.nomeProprietario || "—"}</div>
-              <div className="card-row"><b>Data:</b> {selected.dataInserimento || "—"}</div>
-              <div className="card-row"><b>Agente assegnato:</b> {selected.agenteAssegnato || "—"}</div> 
+              <div className="card-row"><b>Nome proprietario:</b> {selected.nomeProprietario || "—"}</div>
+              <div className="card-row"><b>Data:</b> {selected.dataInserimento || "—"}</div>
+              <div className="card-row"><b>Agente assegnato:</b> {selected.agenteAssegnato || "—"}</div> 
               <div className="card-actions">
                 <Button className="red" onClick={() => setSelected(false)}>Chiudi</Button>
               </div>

@@ -7,15 +7,63 @@ import {
 } from "../../../services/api";
 import Loader from "../../../components/Loader";
 
+/**
+ * @typedef {object} ContrattoChiuso - Represents a closed contract object fetched from the API.
+ * @property {string} numeroContratto - The unique identifier/number of the contract.
+ * @property {string} nomeProprietario - The name of the property owner.
+ * @property {string} dataInizio - The contract start date.
+ * @property {string} dataFine - The contract end date.
+ * @property {string} agenteAssegnato - The name of the assigned agent.
+ * @property {string} tipo - The type of property (e.g., Appartamento, Villa).
+ * @property {string} dataInserimento - The date the contract was entered into the system.
+ */
+
+/**
+ * ContractsAdmin component.
+ * Manages the view for displaying, filtering, and loading closed contracts.
+ * @returns {JSX.Element} The ContractsAdmin dashboard component.
+ */
 export default function ContractsAdmin() {
+  /**
+   * State for storing the current search query for filtering contracts.
+   * @type {[string, function(string): void]}
+   */
   const [searchQuery, setSearchQuery] = useState("");
+
+  /**
+   * State for storing the list of fetched closed contracts.
+   * @type {[ContrattoChiuso[], function(ContrattoChiuso[]): void]}
+   */
   const [contratti, setContratti] = useState<ContrattoChiuso[]>([]);
+
+  /**
+   * State for storing the currently selected contract for modal display.
+   * @type {[ContrattoChiuso | null, function(ContrattoChiuso | null): void]}
+   */
   const [selectedContract, setSelectedContract] =
     useState<ContrattoChiuso | null>(null);
+
+  /**
+   * State for the offset used in pagination for the next batch of contracts.
+   * @type {[number, function(number): void]}
+   */
   const [nextOffset, setNextOffset] = useState(0);
+
+  /**
+   * State indicating if there are more contracts to load.
+   * @type {[boolean, function(boolean): void]}
+   */
   const [hasMore, setHasMore] = useState(true);
+
+  /**
+   * State indicating if data is currently being loaded.
+   * @type {[boolean, function(boolean): void]}
+   */
   const [loading, setLoading] = useState(false);
 
+  /**
+   * useEffect hook to fetch the initial set of closed contracts when the component mounts.
+   */
   useEffect(() => {
     (async () => {
       setLoading(true);
@@ -32,6 +80,12 @@ export default function ContractsAdmin() {
     })();
   }, []);
 
+  /**
+   * Handles loading the next batch of closed contracts (pagination).
+   * Appends the new contracts to the existing list.
+   * @async
+   * @returns {Promise<void>}
+   */
   async function handleLoadMore() {
     const res = await getContrattiChiusi(nextOffset, 10);
     setContratti((prev) => [...prev, ...res.contratti]);
@@ -39,6 +93,11 @@ export default function ContractsAdmin() {
     setHasMore(res.hasMore);
   }
 
+  /**
+   * Filters the list of contracts based on the current search query
+   * (matching against the owner's name).
+   * @type {ContrattoChiuso[]}
+   */
   const filteredContratti = contratti.filter((c) =>
     (c.nomeProprietario || "").toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -140,10 +199,15 @@ export default function ContractsAdmin() {
       )}
 
       {selectedContract && (
+        /**
+         * Modal overlay for displaying contract details.
+         * Closes when clicking the overlay.
+         */
         <div
           className="modal-overlay"
           onClick={() => setSelectedContract(null)}
         >
+          {/** Modal content, prevents closing when clicking inside. */}
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <h3>Dettagli Contratto</h3>
             <p>
