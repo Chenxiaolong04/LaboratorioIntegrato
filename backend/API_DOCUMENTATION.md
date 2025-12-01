@@ -87,83 +87,223 @@ Ottieni informazioni utente loggato
 ## 👨‍💼 Dashboard Admin
 
 
-### GET `/api/admin/dashboard?offset=0&limit=10`
+### GET `/api/admin/dashboard`
 **Richiede:** `ROLE_ADMIN`
-
-**Query Parameters:**
-- `offset` (opzionale, default: 0): quanti immobili sono già stati caricati
-- `limit` (opzionale, default: 10): quanti immobili caricare
 
 **Response (200 OK):**
 ```json
 {
   "statistics": {
+    "totaleImmobili": 50,
+    "immobiliInVerifica": 8,
     "contrattiConclusi": 15,
-    "valutazioniInCorso": 8,
-    "valutazioniConAI": 5,
-    "contrattiConclusiMensili": 3,
-    "valutazioniInCorsoMensili": 2,
-    "valutazioniConAIMensili": 1
+    "fatturatoTotale": 2500000,
+    "immobiliRegistratiMensili": 12,
+    "immobiliRegistratiSettimanali": 3,
+    "totaleAgenti": 5,
+    "agentiStage": 2
   },
-  "immobili": [
+  "contrattiPerMese": [
     {
-      "tipo": "Appartamento",
-      "nomeProprietario": "Mario Rossi",
-      // "dataRegistrazione": "2025-11-10", // campo non più restituito
-      "statoValutazione": "in_verifica",
-      "agenteAssegnato": "Luigi Verdi"
-    },
-    {
-      "tipo": "Villa",
-      "nomeProprietario": "Anna Bianchi",
-      // "dataRegistrazione": "2025-11-09", // campo non più restituito
-      "statoValutazione": "solo_AI",
-      "agenteAssegnato": null
+      "mese": "11/2025",
+      "numeroContratti": 5,
+      "totalePrezzoImmobili": 750000
     }
   ],
-  "nextOffset": 10,
-  "hasMore": true,
-  "pageSize": 10
+  "top3Agenti": [
+    {
+      "nome": "Luigi Verdi",
+      "numeroContratti": 8
+    }
+  ],
+  "immobiliPerTipo": {
+    "appartamento": 25,
+    "villa": 10,
+    "attico": 8,
+    "loft": 7
+  },
+  "agenti": [
+    {
+      "nome": "Luigi",
+      "cognome": "Verdi",
+      "contrattiConclusi": 5,
+      "immobiliInGestione": 3,
+      "fatturato": 500000
+    }
+  ],
+  "tempoAIaPresaInCarico": {
+    "giorni": 2,
+    "ore": 5,
+    "minuti": 30,
+    "secondi": 15,
+    "totaleSecondi": 192615
+  },
+  "tempoPresaInCaricoaContratto": {
+    "giorni": 7,
+    "ore": 12,
+    "minuti": 0,
+    "secondi": 0,
+    "totaleSecondi": 648000
+  },
+  "valutazionePerformance": "ottimo"
 }
 ```
 
 **Campi risposta:**
 - `statistics` (object): Statistiche admin
-- `immobili` (array): Array di immobili per questa richiesta
-- `nextOffset` (number): Offset da usare per la prossima richiesta ("Carica altri")
-- `hasMore` (boolean): `true` se ci sono altri immobili, `false` se sei alla fine
-- `pageSize` (number): Numero di immobili ritornati in questa richiesta
+- `contrattiPerMese` (array): Contratti stipulati per mese negli ultimi 6 mesi
+- `top3Agenti` (array): Top 3 agenti per numero di contratti conclusi
+- `immobiliPerTipo` (object): Conteggio immobili per tipologia
+- `agenti` (array): Lista di tutti gli agenti con statistiche complete
+- `tempoAIaPresaInCarico` (object): Tempo medio AI → presa in carico agente
+- `tempoPresaInCaricoaContratto` (object): Tempo medio presa in carico → contratto firmato
+- `valutazionePerformance` (string): Valutazione performance complessiva
 
-**Statistiche totali (dall'inizio):**
+**Statistiche generali:**
+- `totaleImmobili`: Totale immobili nel database
+- `immobiliInVerifica`: Immobili con valutazione in stato "in_verifica"
 - `contrattiConclusi`: Contratti con stato "chiuso"
-- `valutazioniInCorso`: Valutazioni con stato "in_verifica"
-- `valutazioniConAI`: Valutazioni con stato "solo_AI"
+- `fatturatoTotale`: Somma di prezzoUmano da tutte le valutazioni dei contratti conclusi
+- `immobiliRegistratiMensili`: Immobili registrati negli ultimi 30 giorni
+- `immobiliRegistratiSettimanali`: Immobili registrati negli ultimi 7 giorni
+- `totaleAgenti`: Numero di agenti (esclusi quelli con contratto "stage")
+- `agentiStage`: Numero di agenti con contratto "stage"
 
-**Statistiche mensili (ultimi 30 giorni):**
-- `contrattiConclusiMensili`: Contratti conclusi (basato su `Data_inizio`)
-- `valutazioniInCorsoMensili`: Valutazioni in corso (basato su `Data_valutazione`)
-- `valutazioniConAIMensili`: Valutazioni con AI (basato su `Data_valutazione`)
+**Campi di ogni agente:**
+- `nome`: Nome dell'agente
+- `cognome`: Cognome dell'agente
+- `contrattiConclusi`: Numero di contratti con stato "chiuso" gestiti dall'agente
+- `immobiliInGestione`: Numero di valutazioni con stato "in_verifica" assegnate all'agente
+- `fatturato`: Somma dei `Prezzo_Umano` delle valutazioni collegate ai contratti chiusi dell'agente
 
-**Campi di ogni immobile:**
-- `tipo`: Tipologia immobile (Appartamento, Villa, Ufficio, ecc.)
-- `nomeProprietario`: Nome completo proprietario
-// `dataRegistrazione`: Data registrazione immobile (non restituito nel JSON)
-- `statoValutazione`: Stato della valutazione dell'immobile (recuperato dalla tabella Valutazioni)
-  - `"solo_AI"`: Valutazione effettuata solo dall'intelligenza artificiale
-  - `"in_verifica"`: Valutazione in corso di verifica da parte di un agente
-  - `"approvata"`: Valutazione approvata dall'agente
-- `agenteAssegnato`: Nome completo dell'agente che gestisce la valutazione
-  - Viene mostrato **solo** se `statoValutazione` è `"in_verifica"` o `"approvata"`
-  - Sarà `null` se lo stato è `"solo_AI"` o se non c'è un agente assegnato
+**Nota sugli agenti:**
+Gli agenti sono ordinati in modo decrescente per numero di contratti conclusi. Il fatturato viene calcolato sommando il campo `Prezzo_Umano` dalla tabella Valutazioni per tutti i contratti chiusi dell'agente.
 
-**Nota importante sulla logica di visualizzazione:**
-Il sistema recupera lo stato della valutazione dalla tabella `Valutazioni` (non dalla tabella `Immobili`). Per ogni immobile viene cercata la valutazione più recente (ordinata per `Data_valutazione DESC`). L'agente viene mostrato solo quando la valutazione è in fase di verifica umana o è stata approvata, garantendo che le valutazioni AI non mostrino erroneamente un agente assegnato.
+**Tempi di processo e performance:**
+- `tempoAIaPresaInCarico`: Tempo medio tra la registrazione dell'immobile (valutazione AI) e la presa in carico da parte di un agente
+  - `giorni`: Numero di giorni
+  - `ore`: Numero di ore (0-23)
+  - `minuti`: Numero di minuti (0-59)
+  - `secondi`: Numero di secondi (0-59)
+  - `totaleSecondi`: Tempo totale in secondi
+- `tempoPresaInCaricoaContratto`: Tempo medio tra la presa in carico da parte dell'agente e la firma del contratto
+  - `giorni`, `ore`, `minuti`, `secondi`, `totaleSecondi`
+- `valutazionePerformance`: Valutazione complessiva basata sui tempi
+  - `"eccellente"`: Processo completato entro 7 giorni
+  - `"ottimo"`: Processo completato entro 14 giorni
+  - `"buono"`: Processo completato entro 30 giorni
+  - `"standard"`: Processo completato oltre 30 giorni
 
 **Response (403):** Se non hai ROLE_ADMIN
 
 ---
 
-### GET `/api/admin/immobili?page=0&size=10`
+### GET `/api/admin/immobili?offset=0&limit=12`
+**Richiede:** `ROLE_ADMIN`
+
+Restituisce tutti gli immobili con dettagli completi inclusi **prezzoAI** e **prezzoUmano** dalla valutazione più recente. Supporta caricamento progressivo con offset/limit.
+
+**Query Parameters:**
+- `offset` (opzionale, default: 0): quanti immobili sono già stati caricati
+- `limit` (opzionale, default: 12): quanti immobili caricare
+
+**Response (200 OK):**
+```json
+{
+  "immobili": [
+    {
+      "id": 123,
+      "via": "Via Roma 12",
+      "citta": "Torino",
+      "cap": "10100",
+      "provincia": "TO",
+      "tipologia": "Appartamento",
+      "metratura": 85,
+      "condizioni": "Buone condizioni",
+      "stanze": 3,
+      "bagni": 1,
+      "riscaldamento": "Centralizzato",
+      "piano": 3,
+      "ascensore": true,
+      "garage": true,
+      "giardino": false,
+      "balcone": true,
+      "terrazzo": false,
+      "cantina": false,
+      "prezzo": null,
+      "descrizione": "Appartamento luminoso in centro",
+      "dataRegistrazione": "2025-11-10T14:30:00",
+      "statoImmobile": "disponibile",
+      "nomeProprietario": "Luca Bianchi",
+      "emailProprietario": "luca.bianchi@email.com",
+      "telefonoProprietario": "3201234567",
+      "prezzoAI": 215000,
+      "prezzoUmano": 220000,
+      "dataValutazione": "2025-11-12T10:15:00",
+      "descrizioneValutazione": "Valutazione completata",
+      "statoValutazione": "approvata",
+      "agenteAssegnato": "Mattia Rossi"
+    }
+  ],
+  "nextOffset": 10,
+  "hasMore": true,
+  "pageSize": 10,
+  "total": 45
+}
+```
+
+**Campi risposta:**
+- `immobili` (array): Array di immobili con dettagli completi
+- `nextOffset` (number): Offset da usare per la prossima richiesta
+- `hasMore` (boolean): `true` se ci sono altri immobili, `false` se sei alla fine
+- `pageSize` (number): Numero di immobili ritornati in questa richiesta
+- `total` (number): Numero totale di immobili nel sistema
+
+**Campi di ogni immobile (dalla tabella Immobili):**
+- `id`: ID immobile
+- `via`: Indirizzo
+- `citta`: Città
+- `cap`: CAP
+- `provincia`: Provincia (sigla)
+- `tipologia`: Tipo immobile (Appartamento, Villa, ecc.)
+- `metratura`: Superficie in mq
+- `condizioni`: Stato di conservazione
+- `stanze`: Numero stanze
+- `bagni`: Numero bagni
+- `riscaldamento`: Tipo di riscaldamento
+- `piano`: Piano
+- `ascensore`: Presenza ascensore (boolean)
+- `garage`: Presenza garage (boolean)
+- `giardino`: Presenza giardino (boolean)
+- `balcone`: Presenza balcone (boolean)
+- `terrazzo`: Presenza terrazzo (boolean)
+- `cantina`: Presenza cantina (boolean)
+- `prezzo`: Prezzo immobile (può essere null)
+- `descrizione`: Descrizione immobile
+- `dataRegistrazione`: Data registrazione immobile
+- `statoImmobile`: Stato dell'immobile (es: disponibile, venduto, ecc.)
+
+**Campi proprietario:**
+- `nomeProprietario`: Nome completo proprietario
+- `emailProprietario`: Email proprietario
+- `telefonoProprietario`: Telefono proprietario
+
+**Campi valutazione (dalla valutazione più recente):**
+- `prezzoAI`: Prezzo stimato dall'AI (null se nessuna valutazione)
+- `prezzoUmano`: Prezzo stimato dall'agente (null se non completato)
+- `dataValutazione`: Data della valutazione (null se nessuna valutazione)
+- `descrizioneValutazione`: Descrizione della valutazione (null se nessuna valutazione)
+- `statoValutazione`: Stato della valutazione (solo_AI, in_verifica, approvata) (null se nessuna valutazione)
+- `agenteAssegnato`: Nome completo agente che gestisce la valutazione (null se non assegnato o stato solo_AI)
+
+**Nota importante:**
+Questa API restituisce **tutti i dati** disponibili per ogni immobile, inclusi i prezzi AI e umani dalla tabella Valutazioni. Gli immobili sono ordinati per data registrazione discendente (più recenti prima).
+
+**Response (403):** Se non hai ROLE_ADMIN
+
+---
+
+### GET `/api/admin/immobili (vecchia versione)?page=0&size=10`
 **Richiede:** `ROLE_ADMIN`
 
 Endpoint alternativo per paginazione basata su **pagine** (non offset). Utile se preferisci navigare per numero di pagina anziché offset.

@@ -2,7 +2,7 @@
 
 .dashboard-admin {
   background-color: rgb(244, 245, 252);
-  min-height: 100vh;
+  min-height: calc(100vh - 86px);
 
   .dashboard-container {
     background-color: rgb(244, 245, 252);

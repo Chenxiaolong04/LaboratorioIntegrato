@@ -57,29 +57,50 @@ export async function loginUser(
   );
 }
 
-export type Immobile = {
-  tipo: string;
-  nomeProprietario: string;
-  dataInserimento: string;
-  agenteAssegnato: string | null;
-  id: number;
-  via: string;
-  citta: string;
-};
-
 export type AdminDashboardData = {
   statistics: {
+    totaleImmobili: number;
+    immobiliInVerifica: number;
     contrattiConclusi: number;
-    valutazioniInCorso: number;
-    valutazioniConAI: number;
-    contrattiConclusiMensili: number;
-    valutazioniInCorsoMensili: number;
-    valutazioniConAIMensili: number;
+    fatturatoTotale: number;
+    immobiliRegistratiMensili: number;
+    immobiliRegistratiSettimanali: number;
+    totaleAgenti: number;
+    agentiStage: number;
   };
-  immobili: Immobile[];
-  nextOffset: number;
-  hasMore: boolean;
-  pageSize: number;
+  contrattiPerMese: {
+    mese: string;
+    numeroContratti: number;
+    totalePrezzoImmobili: number;
+  }[];
+  top3Agenti: {
+    nomeAgente: string;
+    numeroContratti: number;
+    prezzTotaleImmobili: number;
+  }[];
+  agenti: {
+    nome: string;
+    cognome: string;
+    contrattiConclusi: number;
+    immobiliInGestione: number;
+    fatturato: number;
+  }[];
+  tempoAIaPresaInCarico: {
+    giorni: number;
+    ore: number;
+    minuti: number;
+    secondi: number;
+    totaleSecondi: number;
+  };
+  tempoPresaInCaricoaContratto: {
+    giorni: number;
+    ore: number;
+    minuti: number;
+    secondi: number;
+    totaleSecondi: number;
+  };
+  valutazionePerformance: "eccellente" | "ottimo" | "buono" | "standard";
+  immobiliPerTipo: Record<string, number>;
 };
 
 export async function getAdminDashboard(
@@ -92,6 +113,55 @@ export async function getAdminDashboard(
       method: "GET",
     }
   );
+}
+
+export type Immobile = {
+  id: number;
+  via: string;
+  citta: string;
+  cap: string;
+  provincia: string;
+  tipologia: string;
+  metratura: number;
+  condizioni: string;
+  stanze: number;
+  bagni: number | null;
+  riscaldamento: string | null;
+  piano: number;
+  ascensore: boolean;
+  garage: boolean;
+  giardino: boolean;
+  balcone: boolean;
+  terrazzo: boolean;
+  cantina: boolean;
+  prezzo: number;
+  descrizione: string;
+  dataRegistrazione: string;
+  statoImmobile: string;
+  nomeProprietario: string;
+  emailProprietario: string;
+  telefonoProprietario: string;
+  prezzoAI: number | null;
+  prezzoUmano: number | null;
+  dataValutazione: string | null;
+  descrizioneValutazione: string | null;
+  statoValutazione: string | null;
+  agenteAssegnato: string | null;
+};
+
+export async function getImmobili(
+  offset = 0,
+  limit = 12
+): Promise<{
+  immobili: Immobile[];
+  nextOffset: number;
+  hasMore: boolean;
+  pageSize: number;
+  total: number;
+}> {
+  return apiFetch(`/admin/immobili?offset=${offset}&limit=${limit}`, {
+    method: "GET",
+  });
 }
 
 export type AgenteDashboardData = {
@@ -132,6 +202,7 @@ export type Users = {
   nome: string;
   cognome: string;
   email: string;
+  password: string;
   telefono: string;
   via: string;
   citta: string;

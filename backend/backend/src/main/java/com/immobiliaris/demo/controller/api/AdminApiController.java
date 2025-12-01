@@ -21,26 +21,22 @@ public class AdminApiController {
     private StatisticsService statisticsService;
 
     @GetMapping("/dashboard")
-    public ResponseEntity<Map<String, Object>> getDashboard(Authentication authentication,
-                                                            @RequestParam(defaultValue = "0") int offset,
-                                                            @RequestParam(defaultValue = "10") int limit) {
+    public ResponseEntity<Map<String, Object>> getDashboard(Authentication authentication) {
         Map<String, Object> response = new LinkedHashMap<>();
 
         try {
             // Ottieni statistiche complete dal Service
             Map<String, Object> dashboardData = statisticsService.getAdminDashboardData();
 
+            // Ordine della risposta JSON
             response.put("statistics", dashboardData.get("statistics"));
-            response.put("contrattiPerMese", dashboardData.get("contrattiPerMese"));
             response.put("top3Agenti", dashboardData.get("top3Agenti"));
+            response.put("contrattiPerMese", dashboardData.get("contrattiPerMese"));
+            response.put("agenti", dashboardData.get("agenti"));
+            response.put("tempoAIaPresaInCarico", dashboardData.get("tempoAIaPresaInCarico"));
+            response.put("tempoPresaInCaricoaContratto", dashboardData.get("tempoPresaInCaricoaContratto"));
+            response.put("valutazionePerformance", dashboardData.get("valutazionePerformance"));
             response.put("immobiliPerTipo", dashboardData.get("immobiliPerTipo"));
-
-            // Ottieni batch di immobili usando offset/limit (per comportamento "Carica altri")
-            Map<String, Object> immobiliLoad = statisticsService.getImmobiliLoadMore(offset, limit);
-            response.put("immobili", immobiliLoad.get("immobili"));
-            response.put("nextOffset", immobiliLoad.get("nextOffset"));
-            response.put("hasMore", immobiliLoad.get("hasMore"));
-            response.put("pageSize", immobiliLoad.get("pageSize"));
 
         } catch (Exception e) {
             // Se c'è errore, ritorna almeno le info base
@@ -53,17 +49,17 @@ public class AdminApiController {
     }
 
     /**
-     * API per ottenere immobili con paginazione
-     * GET /api/admin/immobili?page=0&size=10
-     * @param page Numero pagina (0 = prima pagina)
-     * @param size Numero elementi per pagina (default 10)
+     * API per ottenere immobili con tutti i dettagli inclusi prezzoAI e prezzoUmano
+     * GET /api/admin/immobili?offset=0&limit=12
+     * @param offset Offset per la paginazione
+     * @param limit Numero elementi da restituire (default 12)
      */
     @GetMapping("/immobili")
-    public ResponseEntity<Map<String, Object>> getImmobiliPaginated(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+    public ResponseEntity<Map<String, Object>> getImmobiliCompleti(
+            @RequestParam(defaultValue = "0") int offset,
+            @RequestParam(defaultValue = "12") int limit) {
         
-        Map<String, Object> result = statisticsService.getImmobiliPaginated(page, size);
+        Map<String, Object> result = statisticsService.getTuttiImmobiliConDettagli(offset, limit);
         return ResponseEntity.ok(result);
     }
 

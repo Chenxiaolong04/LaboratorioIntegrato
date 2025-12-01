@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   FaChevronRight,
   FaChevronLeft,
@@ -11,257 +11,24 @@ import {
   FaLocationDot,
   FaFilterCircleXmark,
   FaMoneyBill,
+  FaX,
 } from "react-icons/fa6";
 import { RiCustomSize } from "react-icons/ri";
 import Button from "../../../components/Button";
-
-const fakeProperties = [
-  {
-    id: 1,
-    type: "Appartamento",
-    name: "Mario Rossi",
-    address: "Via Saluzzo 8, Torino",
-    state: "Nuovo",
-    price: 120000,
-    surface: 80,
-    plus: ["Box auto", "Balcone"],
-    description: "Luminoso appartamento al secondo piano con ottime finiture.",
-    image: "https://picsum.photos/seed/house1/1200/800",
-  },
-  {
-    id: 2,
-    type: "Villa",
-    name: "Lucia Bianchi",
-    address: "Corso Vittorio Emanuele 12, Torino",
-    state: "Ottimo stato",
-    price: 350000,
-    surface: 200,
-    plus: ["Giardino", "Terrazzo"],
-    description: "Villa con giardino privato e terrazzo panoramico.",
-    image: "https://picsum.photos/seed/house2/1200/800",
-  },
-  {
-    id: 3,
-    type: "Loft",
-    name: "Giovanni Verdi",
-    address: "Via Roma 25, Asti",
-    state: "Buono",
-    price: 180000,
-    surface: 100,
-    plus: ["Ascensore"],
-    description: "Loft moderno in zona centrale, ottima esposizione.",
-    image: "https://picsum.photos/seed/house3/1200/800",
-  },
-  {
-    id: 4,
-    type: "Attico",
-    name: "Anna Neri",
-    address: "Piazza Garibaldi 3, Alessandria",
-    state: "Da ristrutturare",
-    price: 250000,
-    surface: 150,
-    plus: ["Terrazzo", "Box auto"],
-    description: "Attico con terrazzo e vista panoramica, da ristrutturare.",
-    image: "https://picsum.photos/seed/house4/1200/800",
-  },
-
-  {
-    id: 5,
-    type: "Appartamento",
-    name: "Paolo Neri",
-    address: "Via Po 14, Torino",
-    state: "Ottimo stato",
-    price: 210000,
-    surface: 95,
-    plus: ["Balcone"],
-    description:
-      "Appartamento ristrutturato recentemente in zona universitaria.",
-    image: "https://picsum.photos/seed/house1/1200/800",
-  },
-  {
-    id: 6,
-    type: "Villa",
-    name: "Chiara Rosa",
-    address: "Via Monviso 6, Cuneo",
-    state: "Buono",
-    price: 420000,
-    surface: 240,
-    plus: ["Giardino", "Box auto"],
-    description: "Villa indipendente con ampio giardino privato.",
-    image: "https://picsum.photos/seed/house2/1200/800",
-  },
-  {
-    id: 7,
-    type: "Loft",
-    name: "Giorgio Blu",
-    address: "Via XX Settembre 9, Torino",
-    state: "Nuovo",
-    price: 160000,
-    surface: 70,
-    plus: ["Ascensore"],
-    description: "Loft moderno con design industriale.",
-    image: "https://picsum.photos/seed/house3/1200/800",
-  },
-  {
-    id: 8,
-    type: "Appartamento",
-    name: "Sara Magni",
-    address: "Via Dante 5, Asti",
-    state: "Buono",
-    price: 135000,
-    surface: 75,
-    plus: ["Terrazzo"],
-    description: "Appartamento luminoso con terrazzo abitabile.",
-    image: "https://picsum.photos/seed/house4/1200/800",
-  },
-  {
-    id: 9,
-    type: "Attico",
-    name: "Luca Viola",
-    address: "Corso Francia 220, Torino",
-    state: "Ottimo stato",
-    price: 370000,
-    surface: 140,
-    plus: ["Terrazzo", "Ascensore"],
-    description: "Attico panoramico con vista sulla collina torinese.",
-    image: "https://picsum.photos/seed/house1/1200/800",
-  },
-  {
-    id: 10,
-    type: "Villa",
-    name: "Giulia Serra",
-    address: "Via Milano 40, Alessandria",
-    state: "Da ristrutturare",
-    price: 280000,
-    surface: 260,
-    plus: ["Giardino"],
-    description: "Ampia villa con potenziale, da rinnovare.",
-    image: "https://picsum.photos/seed/house2/1200/800",
-  },
-  {
-    id: 11,
-    type: "Appartamento",
-    name: "Davide Basile",
-    address: "Via Garibaldi 18, Cuneo",
-    state: "Nuovo",
-    price: 190000,
-    surface: 85,
-    plus: ["Ascensore"],
-    description: "Appartamento moderno in stabile di nuova costruzione.",
-    image: "https://picsum.photos/seed/house3/1200/800",
-  },
-  {
-    id: 12,
-    type: "Loft",
-    name: "Martina Gallo",
-    address: "Corso Laghi 30, Avigliana",
-    state: "Buono",
-    price: 165000,
-    surface: 90,
-    plus: ["Box auto"],
-    description: "Loft spazioso vicino al centro storico.",
-    image: "https://picsum.photos/seed/house4/1200/800",
-  },
-  {
-    id: 13,
-    type: "Appartamento",
-    name: "Stefano Moretti",
-    address: "Via Nizza 120, Torino",
-    state: "Ottimo stato",
-    price: 230000,
-    surface: 100,
-    plus: ["Balcone", "Ascensore"],
-    description: "Appartamento in zona comoda ai servizi.",
-    image: "https://picsum.photos/seed/house1/1200/800",
-  },
-  {
-    id: 14,
-    type: "Attico",
-    name: "Francesca Riva",
-    address: "Via Alfieri 3, Asti",
-    state: "Buono",
-    price: 260000,
-    surface: 130,
-    plus: ["Terrazzo"],
-    description: "Attico centrale con ampia terrazza.",
-    image: "https://picsum.photos/seed/house2/1200/800",
-  },
-  {
-    id: 15,
-    type: "Villa",
-    name: "Alessandro De Luca",
-    address: "Via Cascina 17, Cuneo",
-    state: "Ottimo stato",
-    price: 400000,
-    surface: 230,
-    plus: ["Giardino", "Box auto"],
-    description: "Villa elegante immersa nel verde.",
-    image: "https://picsum.photos/seed/house3/1200/800",
-  },
-  {
-    id: 16,
-    type: "Appartamento",
-    name: "Elisa Romano",
-    address: "Corso Galileo Ferraris 55, Torino",
-    state: "Nuovo",
-    price: 270000,
-    surface: 110,
-    plus: ["Ascensore", "Balcone"],
-    description: "Ampio appartamento vicino al Politecnico.",
-    image: "https://picsum.photos/seed/house4/1200/800",
-  },
-  {
-    id: 17,
-    type: "Loft",
-    name: "Marco Gialli",
-    address: "Via Cavour 10, Alessandria",
-    state: "Da ristrutturare",
-    price: 120000,
-    surface: 85,
-    plus: ["Ascensore"],
-    description: "Loft open space da personalizzare.",
-    image: "https://picsum.photos/seed/house1/1200/800",
-  },
-  {
-    id: 18,
-    type: "Villa",
-    name: "Simona Righi",
-    address: "Strada del Bosco 4, Asti",
-    state: "Buono",
-    price: 380000,
-    surface: 210,
-    plus: ["Giardino", "Terrazzo"],
-    description: "Villa con vista panoramica sulle colline.",
-    image: "https://picsum.photos/seed/house2/1200/800",
-  },
-  {
-    id: 19,
-    type: "Appartamento",
-    name: "Tommaso Ricci",
-    address: "Via Madama Cristina 80, Torino",
-    state: "Ottimo stato",
-    price: 175000,
-    surface: 70,
-    plus: ["Balcone"],
-    description: "Bilocale completamente ristrutturato.",
-    image: "https://picsum.photos/seed/house3/1200/800",
-  },
-  {
-    id: 20,
-    type: "Attico",
-    name: "Sofia Leone",
-    address: "Via San Secondo 9, Torino",
-    state: "Nuovo",
-    price: 410000,
-    surface: 160,
-    plus: ["Terrazzo", "Ascensore"],
-    description: "Attico di lusso con finiture moderne.",
-    image: "https://picsum.photos/seed/house4/1200/800",
-  },
-];
+import InputGroup from "../../../components/InputGroup";
+import { getImmobili, type Immobile } from "../../../services/api";
 
 export default function PropertiesAdmin() {
   const [collapsed, setCollapsed] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editData, setEditData] = useState<Immobile | null>(null);
+
+  const [immobili, setImmobili] = useState<Immobile[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedProperty, setSelectedProperty] = useState<Immobile | null>(
+    null
+  );
 
   const [filters, setFilters] = useState({
     city: "",
@@ -271,10 +38,6 @@ export default function PropertiesAdmin() {
     surface: "",
     plus: [] as string[],
   });
-
-  const [selectedProperty, setSelectedProperty] = useState<
-    (typeof fakeProperties)[0] | null
-  >(null);
 
   const resetFilters = () =>
     setFilters({
@@ -295,28 +58,93 @@ export default function PropertiesAdmin() {
       ? "#348AA7"
       : "#333";
 
-  const filteredProperties = fakeProperties.filter((p) => {
-    if (filters.city && !p.address.includes(filters.city)) return false;
-    if (filters.type && p.type !== filters.type) return false;
-    if (filters.state && p.state !== filters.state) return false;
-    if (filters.price && p.price > Number(filters.price)) return false;
-    if (filters.surface && p.surface < Number(filters.surface)) return false;
+  const getPlusArray = (p: Immobile) => {
+    return [
+      p.ascensore && "Ascensore",
+      p.garage && "Garage",
+      p.giardino && "Giardino",
+      p.balcone && "Balcone",
+      p.terrazzo && "Terrazzo",
+      p.cantina && "Cantina",
+    ].filter(Boolean) as string[];
+  };
+
+  const filteredProperties = immobili.filter((p) => {
+    if (filters.city && !p.citta.includes(filters.city)) return false;
+    if (filters.type && p.tipologia !== filters.type) return false;
+    if (filters.state && p.condizioni !== filters.state) return false;
+    if (filters.price && p.prezzo > Number(filters.price)) return false;
+    if (filters.surface && p.metratura < Number(filters.surface)) return false;
+    const propertyPlus = getPlusArray(p);
+
     if (
       filters.plus.length > 0 &&
-      !filters.plus.every((pl) => p.plus.includes(pl))
+      !filters.plus.every((pl) => propertyPlus.includes(pl))
     )
       return false;
 
     return true;
   });
 
+  const isMobile = useMemo(() => window.innerWidth <= 768, []);
+
   useEffect(() => {
-    if (selectedProperty) {
+    const shouldBlockScroll =
+      (isMobile && (selectedProperty || isEditing)) || (!isMobile && isEditing);
+
+    if (shouldBlockScroll) {
       document.body.classList.add("no-scroll");
     } else {
       document.body.classList.remove("no-scroll");
     }
-  }, [selectedProperty]);
+
+    return () => {
+      document.body.classList.remove("no-scroll");
+    };
+  }, [selectedProperty, isEditing, isMobile]);
+
+  const imageMap: Record<string, string> = {
+    Appartamento:
+      "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?q=80&w=735&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    Loft: "https://plus.unsplash.com/premium_photo-1661950439212-558fa5cc82e0?q=80&w=1151&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    Villa:
+      "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    Attico:
+      "https://images.unsplash.com/photo-1724166483767-1a42883ccde5?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  };
+
+  const getPropertyImage = (tipologia: string) => {
+    return (
+      imageMap[tipologia] ||
+      "https://images.unsplash.com/photo-1570129477492-45c003edd2be?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    );
+  };
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const res = await getImmobili();
+        setImmobili(res.immobili);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("Errore sconosciuto");
+        }
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, []);
+
+  if (loading) return <div>Caricamento...</div>;
+  if (error) return <div>Errore: {error}</div>;
+
+  const openEditModal = (property: Immobile) => {
+    setEditData({ ...property });
+    setIsEditing(true);
+  };
 
   return (
     <section className="properties-admin">
@@ -338,7 +166,6 @@ export default function PropertiesAdmin() {
         </div>
 
         <div className="sidebar-filters">
-          {/* Filtri come prima */}
           <div className="filter-container">
             <FaLocationDot size={30} color={getIconColor(filters.city)} />
             <div className="filter-info">
@@ -452,6 +279,7 @@ export default function PropertiesAdmin() {
                     "Balcone",
                     "Terrazzo",
                     "Ascensore",
+                    "Garage",
                   ].map((plusItem) => (
                     <label key={plusItem} className="checkbox-item">
                       <input
@@ -495,23 +323,28 @@ export default function PropertiesAdmin() {
               key={property.id}
               className="card-property"
               style={{
-                backgroundImage: `url(${property.image})`,
+                backgroundImage: `url(${getPropertyImage(property.tipologia)})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
               }}
             >
               <div className="type">
-                <h4>{property.type}</h4>
+                <h4>{property.tipologia}</h4>
               </div>
               <div className="info-property">
                 <div className="info-first">
                   <div>
-                    <h3>{property.name}</h3>
+                    <h3>{property.nomeProprietario}</h3>
                     <h4>
-                      <FaLocationDot /> {property.address}
+                      <FaLocationDot /> {property.via}, {property.citta} (
+                      {property.provincia})
                     </h4>
                   </div>
-                  <button className="edit-btn" title="Modifica dati immobile">
+                  <button
+                    className="edit-btn"
+                    title="Modifica dati immobile"
+                    onClick={() => openEditModal(property)}
+                  >
                     <FaEdit size={24} />
                   </button>
                 </div>
@@ -535,42 +368,258 @@ export default function PropertiesAdmin() {
             className="close-details"
             onClick={() => setSelectedProperty(null)}
           >
-            ✕
+            <FaX />
           </button>
           <div className="details-image">
-            <img src={selectedProperty.image} alt={selectedProperty.name} />
+            <img
+              src={getPropertyImage(selectedProperty.tipologia)}
+              alt="foto immobile"
+            />
           </div>
 
           <div className="details-content">
-            <h2>{selectedProperty.type}</h2>
-
-            <h3>{selectedProperty.name}</h3>
+            <h2>{selectedProperty.tipologia}</h2>
 
             <p className="address">
-              <FaLocationDot /> {selectedProperty.address}
+              <FaLocationDot /> {selectedProperty.via}, {selectedProperty.citta}{" "}
+              ({selectedProperty.provincia})
             </p>
+
+            <h3>{selectedProperty.nomeProprietario}</h3>
 
             <div className="details-grid">
               <p>
-                <strong>Stato:</strong> {selectedProperty.state}
+                <strong>Email:</strong> {selectedProperty.emailProprietario}
+              </p>
+              <p>
+                <strong>Tel:</strong> {selectedProperty.telefonoProprietario}
+              </p>
+
+              <p>
+                <strong>Data di registrazione:</strong>{" "}
+                {new Date(
+                  selectedProperty.dataRegistrazione
+                ).toLocaleDateString("it-IT")}
+              </p>
+              <p>
+                <strong>Stato immobile:</strong>{" "}
+                {selectedProperty.statoImmobile}
               </p>
               <p>
                 <strong>Prezzo:</strong>{" "}
-                {selectedProperty.price.toLocaleString()} €
+                {selectedProperty.prezzo.toLocaleString()} €
               </p>
               <p>
-                <strong>Superficie:</strong> {selectedProperty.surface} m²
+                <strong>Metratura:</strong> {selectedProperty.metratura} m²
               </p>
               <p>
-                <strong>Plus:</strong> {selectedProperty.plus.join(", ")}
+                <strong>Piano:</strong> {selectedProperty.piano}
+              </p>
+              <p>
+                <strong>Stanze:</strong> {selectedProperty.stanze}
+              </p>
+              <p>
+                <strong>Bagni:</strong> {selectedProperty.bagni || 0}
+              </p>
+              <p>
+                <strong>Riscaldamento:</strong>{" "}
+                {selectedProperty.riscaldamento || "Nessuno"}
+              </p>
+              <p>
+                <strong>Condizioni:</strong> {selectedProperty.condizioni}
+              </p>
+              <p>
+                <strong>Agente assegnato:</strong>{" "}
+                {selectedProperty.agenteAssegnato || "Nessuno"}
+              </p>
+              <p>
+                <strong>Plus:</strong>{" "}
+                {[
+                  selectedProperty.ascensore && "Ascensore",
+                  selectedProperty.garage && "Garage",
+                  selectedProperty.giardino && "Giardino",
+                  selectedProperty.balcone && "Balcone",
+                  selectedProperty.terrazzo && "Terrazzo",
+                  selectedProperty.cantina && "Cantina",
+                ]
+                  .filter(Boolean)
+                  .join(", ") || "Nessuno"}
               </p>
             </div>
 
-            <p className="description">{selectedProperty.description}</p>
+            <p className="description">
+              <strong>Descrizione:</strong> {selectedProperty.descrizione}
+            </p>
 
-            <Button className="lightblu">Modifica immobile</Button>
+            <Button
+              className="lightblu"
+              onClick={() => openEditModal(selectedProperty)}
+            >
+              Modifica immobile
+            </Button>
           </div>
         </aside>
+      )}
+
+      {isEditing && editData && (
+        <div className="modal-overlay-property">
+          <div className="modal-content-property">
+            <button className="close-btn" onClick={() => setIsEditing(false)}>
+              <FaX />
+            </button>
+
+            <div className="modal-header">
+              <img
+                src={getPropertyImage(editData.tipologia)}
+                alt="foto immobile"
+              />
+
+              <div className="modal-title">
+                <h2>Modifica immobile</h2>
+                <h3>{editData.tipologia}</h3>
+                <p>
+                  {editData.via}, {editData.citta} ({editData.provincia})
+                </p>
+              </div>
+            </div>
+
+            <div className="modal-body">
+              <InputGroup
+                label="Nome proprietario"
+                name="Nome proprietario"
+                placeholder="Inserisci nuovo proprietario"
+                required
+                value={editData.nomeProprietario}
+                onChange={(e) =>
+                  setEditData({ ...editData, nomeProprietario: e.target.value })
+                }
+              ></InputGroup>
+              <InputGroup
+                label="Via"
+                name="Via"
+                placeholder="Inserisci nuova via"
+                required
+                value={editData.via}
+                onChange={(e) =>
+                  setEditData({ ...editData, via: e.target.value })
+                }
+              ></InputGroup>
+              <InputGroup
+                label="Città"
+                name="Città"
+                placeholder="Inserisci nuova città"
+                required
+                value={editData.citta}
+                onChange={(e) =>
+                  setEditData({ ...editData, citta: e.target.value })
+                }
+              ></InputGroup>
+              <InputGroup
+                label="Cap"
+                name="Cap"
+                placeholder="Inserisci nuovo cap"
+                required
+                value={editData.cap}
+                onChange={(e) =>
+                  setEditData({ ...editData, cap: e.target.value })
+                }
+              ></InputGroup>
+              <InputGroup
+                label="Provincia"
+                name="Provincia"
+                placeholder="Inserisci nuova provincia"
+                required
+                value={editData.provincia}
+                onChange={(e) =>
+                  setEditData({ ...editData, provincia: e.target.value })
+                }
+              ></InputGroup>
+              <label>
+                <p>Stato immobile *</p>
+                <select
+                  value={editData.condizioni}
+                  onChange={(e) =>
+                    setEditData({ ...editData, condizioni: e.target.value })
+                  }
+                >
+                  <option>Nuovo</option>
+                  <option>Ottimo stato</option>
+                  <option>Buono</option>
+                  <option>Da ristrutturare</option>
+                </select>
+              </label>
+
+              <InputGroup
+                label="Prezzo (€)"
+                name="Prezzo"
+                type="number"
+                placeholder="Inserisci nuovo prezzo"
+                required
+                value={editData.prezzo}
+                onChange={(e) =>
+                  setEditData({ ...editData, prezzo: Number(e.target.value) })
+                }
+              ></InputGroup>
+
+              <InputGroup
+                label="Superficie (m²)"
+                name="Superficie"
+                type="number"
+                placeholder="Inserisci nuova superficie"
+                required
+                value={editData.metratura}
+                onChange={(e) =>
+                  setEditData({
+                    ...editData,
+                    metratura: Number(e.target.value),
+                  })
+                }
+              ></InputGroup>
+
+              {/* <div className="edit-plus">
+                <p>Plus *</p>
+                <div className="checkbox-group">
+                  {[
+                    "Box auto",
+                    "Giardino",
+                    "Balcone",
+                    "Terrazzo",
+                    "Ascensore",
+                  ].map((plusItem) => (
+                    <label key={plusItem} className="checkbox-item">
+                      <input
+                        type="checkbox"
+                        checked={editData.plus.includes(plusItem)}
+                        onChange={(e) => {
+                          const updated = e.target.checked
+                            ? [...editData.plus, plusItem]
+                            : editData.plus.filter(
+                                (p: string) => p !== plusItem
+                              );
+
+                          setEditData({ ...editData, plus: updated });
+                        }}
+                      />
+                      <span>{plusItem}</span>
+                    </label>
+                  ))}
+                </div>
+              </div> */}
+            </div>
+
+            <div className="modal-footer">
+              <Button
+                className="lightblu"
+                onClick={() => {
+                  console.log("Dati salvati:", editData);
+                  setIsEditing(false);
+                }}
+              >
+                Salva modifiche
+              </Button>
+            </div>
+          </div>
+        </div>
       )}
     </section>
   );

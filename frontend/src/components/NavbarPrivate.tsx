@@ -59,9 +59,9 @@ export default function NavbarPrivate() {
             {isAdmin && (
               <>
                 <li><Link to={"/admin"}>Dashboard</Link></li>
+                <li><Link to={"/admin/properties"}>Immobili</Link></li>
                 <li><Link to={"/admin/evaluationsAI"}>Valutazioni AI</Link></li>
                 <li><Link to={"/admin/assignments"}>Incarichi</Link></li>
-                <li><Link to={"/admin/properties"}>Immobili</Link></li>
                 <li><Link to={"/admin/contracts"}>Vendite</Link></li>
                 <li><Link to={"/admin/users"}>Gestione Utenti</Link></li>
                 <li><Link to={"/admin/create-user"}>Registra Utenti</Link></li>

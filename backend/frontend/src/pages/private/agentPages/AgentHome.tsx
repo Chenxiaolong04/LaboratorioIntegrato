@@ -1,325 +1,201 @@
-import { useEffect, useState } from "react";
-import { FaCheckCircle, FaFilter } from "react-icons/fa";
-import { FaSquareArrowUpRight } from "react-icons/fa6";
-import { TbProgressCheck } from "react-icons/tb";
-import { PiWarningCircleBold } from "react-icons/pi";
-import Button from "../../../components/Button";
-import { Link } from "react-router-dom";
-import SearchBar from "../../../components/SearchBar";
-import {
-  getAgenteDashboard,
-  type AgenteDashboardData,
-  type Immobile,
-} from "../../../services/api";
+import { FaEdit, FaHome, FaHandshake } from "react-icons/fa";
+import { useAuth } from "../../../context/AuthContext";
 
-const AGENTE_CORRENTE_ID = "ID_O_NOME_AGENTE_LOGGATO";
+export default function AgentHome() {
+  const { user } = useAuth();
 
-const filterOptions = [
-  { label: "Miei Contratti", value: "contratti" },
-  { label: "Miei Incarichi", value: "incarichi" },
-  { label: "Valutazioni AI (Generali)", value: "valutazioni" },
-];
+  const monthlyPerformanceData = [
+    { month: "Giu", sales: 48 },
+    { month: "Lug", sales: 61 },
+    { month: "Ago", sales: 42 },
+    { month: "Set", sales: 55 },
+    { month: "Ott", sales: 67 },
+    { month: "Nov", sales: 72 },
+  ];
 
-export default function AgenteHome() {
-  const [filter, setFilter] = useState<string | null>(null);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [statistics, setStatistics] = useState<
-    AgenteDashboardData["statistics"] | null
-  >(null);
-  const [selected, setSelected] = useState<Immobile | null>(null);
-  const [immobili, setImmobili] = useState<Immobile[]>([]);
-  const [nextOffset, setNextOffset] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
-  const [loading, setLoading] = useState(false);
+  const MAX_SALES_SCALE = 75;
+  const MAX_BAR_HEIGHT_PX = 200;
 
-  useEffect(() => {
-    async function fetchInitialData() {
-      if (!AGENTE_CORRENTE_ID) return;
-
-      setLoading(true);
-      try {
-        const data = await getAgenteDashboard(0, 10, AGENTE_CORRENTE_ID);
-
-        setStatistics(data.statistics);
-        setImmobili(data.immobili);
-        setNextOffset(data.nextOffset);
-        setHasMore(data.hasMore);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchInitialData();
-  }, []);
-
-  const handleLoadMore = async () => {
-    if (!hasMore || !AGENTE_CORRENTE_ID) return;
-    setLoading(true);
-    try {
-      const data = await getAgenteDashboard(nextOffset, 10, AGENTE_CORRENTE_ID);
-
-      setImmobili((prev) => [...prev, ...data.immobili]);
-      setNextOffset(data.nextOffset);
-      setHasMore(data.hasMore);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
+  const getBarHeight = (sales: number): string => {
+    const heightInPx = (sales / MAX_SALES_SCALE) * MAX_BAR_HEIGHT_PX;
+    return `${heightInPx}px`;
   };
-
-  if (!statistics) return <p>Caricamento...</p>;
-
-  const mappedData = immobili.map((i) => ({
-    tipo:
-      i.tipo.toLowerCase() === "appartamento"
-        ? "contratti"
-        : i.tipo.toLowerCase() === "villa"
-        ? "incarichi"
-        : "valutazioni",
-    proprietario: i.nomeProprietario,
-    data: i.dataInserimento,
-    agente: i.agenteAssegnato || "-",
-  }));
-
-  const filteredData = mappedData
-    .filter((d) => (filter ? d.tipo === filter : true))
-    .filter((d) => {
-      const query = searchQuery.toLowerCase();
-      return (
-        d.tipo.toLowerCase().includes(query) ||
-        d.proprietario.toLowerCase().includes(query) ||
-        d.agente.toLowerCase().includes(query) ||
-        d.data.toLowerCase().includes(query)
-      );
-    });
 
   return (
     <div className="dashboard-container">
-      <div className="general-latest-container">
-        <div className="general-dashboard">
+      <div className="header-dashboard">
+        <h1>Dashboard Immobiliaris</h1>
+      </div>
+      <div className="general-dashboard">
+        <div className="agent-card">
+          <div className="agent-info">
+            <h2>Ciao {user?.name}</h2>
+            <h3>ID #{user?.id}</h3>
+          </div>
+          <img
+            src="https://images.unsplash.com/photo-1647580427155-0483906cb9de?q=80&w=928&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            alt=""
+          />
+        </div>
+        <div className="general">
           <div className="general-container">
             <div className="title-card">
-              <span>
-                <FaCheckCircle size={36} color="green" />
-              </span>
-              <h3>Miei Contratti conclusi</h3>
+              <h3>Valutazioni richieste:</h3>
             </div>
             <div className="data-card">
-              <h3>{statistics.mieiContrattiConclusi}</h3>
-              <Link to="/agente/contratti">
-                <FaSquareArrowUpRight size={50} color="white" />
-              </Link>
+              <h3>348</h3>
+            </div>
+            <div className="data-card2">
+              <h3>+ 8 questo mese</h3>
             </div>
           </div>
-
           <div className="general-container">
             <div className="title-card">
-              <span>
-                <TbProgressCheck size={36} color="orange" />
-              </span>
-              <h3>Miei Incarichi in corso</h3>
+              <h3>Immobili acquisiti:</h3>
             </div>
             <div className="data-card">
-              <h3>{statistics.mieiIncarichiInCorso}</h3>
-              <Link to="/agente/incarichi">
-                <FaSquareArrowUpRight size={50} color="white" />
-              </Link>
+              <h3>67</h3>
+            </div>
+            <div className="data-card2">
+              <h3>12 in esclusiva</h3>
             </div>
           </div>
-
           <div className="general-container">
             <div className="title-card">
-              <span>
-                <PiWarningCircleBold size={36} color="gray" />
-              </span>
-              <h3>Valutazioni AI (Generali)</h3>
+              <h3>Trattative attive:</h3>
             </div>
             <div className="data-card">
-              <h3>{statistics.valutazioniConAI}</h3>
-              <Link to="/agente/valutazioniAI">
-                <FaSquareArrowUpRight size={50} color="white" />
-              </Link>
+              <h3>187</h3>
+            </div>
+            <div className="data-card2">
+              <h3>7 in fase finale</h3>
+            </div>
+          </div>
+          <div className="general-container">
+            <div className="title-card">
+              <h3>Vendite chiuse:</h3>
+            </div>
+            <div className="data-card">
+              <h3>12</h3>
+            </div>
+            <div className="data-card2">
+              <h3>€ 2.8M valore totale</h3>
             </div>
           </div>
         </div>
+      </div>
 
-        <div className="table-container">
-          <h2>Ultimi avvisi</h2>
-
-          <div className="filter-buttons">
-            <SearchBar
-              placeholder="Cerca un proprietario"
-              onSearch={(query) => setSearchQuery(query)}
-            />
-            <div className="dropdown">
-              <Button
-                onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="blu"
-              >
-                <FaFilter color={"white"} />
-              </Button>
-              {dropdownOpen && (
-                <ul className="dropdown-menu">
-                  {filterOptions.map((opt) => (
-                    <li
-                      key={opt.value}
-                      className={filter === opt.value ? "active" : ""}
-                      onClick={() => {
-                        setFilter(opt.value);
-                        setDropdownOpen(false);
-                      }}
-                    >
-                      {opt.label}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-
-            {filter && (
-              <Button className="remove-filter" onClick={() => setFilter(null)}>
-                Rimuovi filtro
-              </Button>
-            )}
-          </div>
-
-          <div className="table-wrapper">
-            <table className="alerts-table">
-              <thead>
-                <tr>
-                  <th>Tipo</th>
-                  <th>Nome proprietario</th>
-                  <th>Data</th>
-                  <th>Agente assegnato</th>
-                  <th>Azioni</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredData.map((row, i) => (
-                  <tr key={i}>
-                    <td>
-                      <div className="cell-content">
-                        {row.tipo === "contratti" && (
-                          <FaCheckCircle size={32} color="green" />
-                        )}
-                        {row.tipo === "incarichi" && (
-                          <TbProgressCheck size={32} color="orange" />
-                        )}
-                        {row.tipo === "valutazioni" && (
-                          <PiWarningCircleBold size={32} color="gray" />
-                        )}
-                        <h3>
-                          {filterOptions.find((f) => f.value === row.tipo)
-                            ?.label || row.tipo}
-                        </h3>
-                      </div>
-                    </td>
-                    <td>{row.proprietario}</td>
-                    <td>{row.data}</td>
-                    <td>{row.agente}</td>
-                    <td>
-                      <Button
-                        className="blu"
-                        onClick={() => setSelected(immobili[i])}
-                      >
-                        Dettagli
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          <div className="alerts-cards">
-            {filteredData.map((row, i) => (
-              <div className="alert-card" key={i}>
-                <div className="card-row">
-                  <b>Tipo:</b>{" "}
-                  {filterOptions.find((f) => f.value === row.tipo)?.label ||
-                    row.tipo}
-                </div>
-                <div className="card-row">
-                  <b>Nome proprietario:</b> {row.proprietario || "—"}
-                </div>
-                <div className="card-row">
-                  <b>Data:</b> {row.data || "—"}
-                </div>
-                <div className="card-row">
-                  <b>Agente assegnato:</b> {row.agente || "—"}
-                </div>
-
-                <div className="card-actions">
-                  <Button
-                    className="blu"
-                    onClick={() => setSelected(immobili[i])}
-                  >
-                    Dettagli
-                  </Button>
-                </div>
+      <div className="performance-container">
+        <div className="chart-section">
+          <h2>Performance mensili - acquisizioni e vendite</h2>
+          <div className="bar-chart-mock">
+            {monthlyPerformanceData.map((data) => (
+              <div key={data.month} className="bar-wrapper">
+                <div className="bar-value">{data.sales}</div>
+                <div
+                  className="bar"
+                  style={{ height: getBarHeight(data.sales) }}
+                ></div>
+                <div className="bar-label">{data.month}</div>
               </div>
             ))}
           </div>
-
-          {hasMore && (
-            <div className="btn-table">
-              <Button
-                onClick={handleLoadMore}
-                disabled={loading}
-                className="blu"
-              >
-                {loading ? "Caricamento..." : "Mostra altri avvisi"}
-              </Button>
-            </div>
-          )}
         </div>
-
-        {selected && (
-          <div className="modal-overlay" onClick={() => setSelected(null)}>
-            <div className="modal" onClick={(e) => e.stopPropagation()}>
-              <h3>Dettagli Avviso</h3>
-
-              <div className="card-row">
-                <b>Tipo:</b>{" "}
-                {filterOptions.find((f) => f.value === selected.tipo)?.label ||
-                  selected.tipo}
+        <div className="pipeline-section">
+          <h2>Pipeline comparativa</h2>
+          {[
+            { label: "Richieste valutazioni", value: 120 },
+            { label: "In trattativa", value: 48 },
+            { label: "Contratti conclusi", value: 22 },
+          ].map((step) => (
+            <div key={step.label} className="pipeline-row">
+              <div className="pipeline-label">{step.label}</div>
+              <div className="pipeline-bar-wrapper">
+                <div
+                  className="pipeline-bar"
+                  style={{
+                    width: `${(step.value / 120) * 100}%`,
+                  }}
+                ></div>
               </div>
-              <div className="card-row">
-                <b>Nome proprietario:</b> {selected.nomeProprietario || "—"}
-              </div>
-              <div className="card-row">
-                <b>Data:</b> {selected.dataInserimento || "—"}
-              </div>
-              <div className="card-row">
-                <b>Agente assegnato:</b> {selected.agenteAssegnato || "—"}
-              </div>
-
-              <div className="card-actions">
-                <Button className="red" onClick={() => setSelected(null)}>
-                  Chiudi
-                </Button>
-              </div>
+              <div className="pipeline-value">{step.value}</div>
             </div>
-          </div>
-        )}
+          ))}
+        </div>
       </div>
 
-      <div className="stats-today">
-        <h2>Statistiche mensili</h2>
-        <div className="card">
-          <h3>Miei Contratti conclusi</h3>
-          <p>+ {statistics.mieiContrattiConclusiMensili}</p>
-        </div>
-        <div className="card">
-          <h3>Miei Incarichi nuovi</h3>
-          <p>+ {statistics.mieiIncarichiNuoviMensili}</p>
-        </div>
-        <div className="card">
-          <h3>Valutazioni AI effettuate</h3>
-          <p>+ {statistics.valutazioniConAIMensili}</p>
+      <div className="next-activities">
+        <h2>Prossime attività</h2>
+
+        {[
+          {
+            date: "02 Dic 2025",
+            time: "15:30",
+            type: "Visita immobile",
+            owner: "Marco Bianchi",
+            address: "Via Roma 24, Torino",
+          },
+          {
+            date: "03 Dic 2025",
+            time: "10:00",
+            type: "Valutazione appartamento",
+            owner: "Laura Neri",
+            address: "Corso Francia 98, Torino",
+          },
+          {
+            date: "05 Dic 2025",
+            time: "17:15",
+            type: "Firma preliminare",
+            owner: "Giulia Rinaldi",
+            address: "Via Po 12, Torino",
+          },
+        ].map((act, i) => (
+          <div key={i} className="activity-card">
+            <div className="activity-date">
+              <h3>{act.date}</h3>
+              <span>{act.time}</span>
+            </div>
+
+            <div className="activity-info">
+              <h4>{act.type}</h4>
+              <p>
+                <strong>Proprietario:</strong> {act.owner}
+              </p>
+              <p>
+                <strong>Indirizzo:</strong> {act.address}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="month-properties">
+        <h2>Immobili in gestione - mese corrente</h2>
+
+        <div className="three-stats">
+          {[
+            {
+              icon: <FaEdit size={40} />,
+              value: 14,
+              label: "In valutazione",
+            },
+            {
+              icon: <FaHandshake size={40} />,
+              value: 9,
+              label: "In trattativa",
+            },
+            {
+              icon: <FaHome size={40} />,
+              value: 5,
+              label: "Venduti",
+            },
+          ].map((item, i) => (
+            <div key={i} className="stat-card">
+              <div className="icon">{item.icon}</div>
+              <h3 className="number">{item.value}</h3>
+              <p className="label">{item.label}</p>
+            </div>
+          ))}
         </div>
       </div>
     </div>

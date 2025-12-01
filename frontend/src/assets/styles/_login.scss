@@ -65,6 +65,10 @@
         input {
           width: 100%;
         }
+
+        .error-message {
+          color: red;
+        }
       }
       .email {
         display: flex;

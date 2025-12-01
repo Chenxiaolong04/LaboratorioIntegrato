@@ -47,6 +47,9 @@ public class User {
     @Column(name = "CAP", length = 5)
     private String cap;
 
+    @Column(name = "Contratto", length = 100)
+    private String contratto;
+
     @CreationTimestamp
     @Column(name = "Data_registrazione", updatable = false)
     @JsonFormat(pattern = "dd/MM/yyyy HH:mm")

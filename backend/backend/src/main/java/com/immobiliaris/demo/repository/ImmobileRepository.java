@@ -80,4 +80,15 @@ public class ImmobileRepository {
         String sql = "SELECT COUNT(*) FROM Immobili";
         return jdbcTemplate.queryForObject(sql, Integer.class);
     }
+
+    /**
+     * Conta gli immobili registrati dopo una certa data
+     * @param dataLimite Data limite per il conteggio
+     * @return Numero di immobili registrati dopo la data specificata
+     */
+    public Integer countByDataRegistrazioneAfter(java.time.LocalDateTime dataLimite) {
+        String sql = "SELECT COUNT(*) FROM Immobili WHERE Data_registrazione > ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, dataLimite);
+        return count != null ? count : 0;
+    }
 }

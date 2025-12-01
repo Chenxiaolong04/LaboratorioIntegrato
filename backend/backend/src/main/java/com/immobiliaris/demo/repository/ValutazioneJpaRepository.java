@@ -47,4 +47,16 @@ public interface ValutazioneJpaRepository extends JpaRepository<Valutazione, Int
      *         Include le relazioni JPA: StatoValutazione e User (agente)
      */
     List<Valutazione> findByImmobileIdOrderByDataValutazioneDesc(Integer immobileId);
+    
+    /**
+     * Trova tutte le valutazioni di un agente con uno specifico stato valutazione
+     * Spring genera automaticamente: WHERE agente.idUtente = ? AND statoValutazione.id = ?
+     */
+    List<Valutazione> findByAgenteIdUtenteAndStatoValutazioneId(Long agenteIdUtente, Integer statoId);
+    
+    /**
+     * Trova tutte le valutazioni di un agente
+     * Spring genera automaticamente: WHERE agente.idUtente = ?
+     */
+    List<Valutazione> findByAgenteIdUtente(Long agenteIdUtente);
 }

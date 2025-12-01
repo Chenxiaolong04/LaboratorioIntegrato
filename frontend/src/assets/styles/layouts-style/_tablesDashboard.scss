@@ -198,7 +198,6 @@
     align-items: center;
     justify-content: center;
     z-index: 999;
-
     backdrop-filter: blur(3px);
     animation: fadeIn 0.25s ease forwards;
   }
@@ -241,6 +240,30 @@
     button {
       margin-top: 1.6rem;
       width: 100%;
+    }
+
+    form {
+      .row {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        padding-bottom: 1rem;
+
+        @media (min-width: 768px) {
+          flex-direction: row;
+        }
+
+        .input-group {
+          width: 100%;
+
+          select {
+            padding: 1rem;
+            background-color: var.$palette-gray;
+            border: none;
+            border-radius: 10px;
+          }
+        }
+      }
     }
   }
 

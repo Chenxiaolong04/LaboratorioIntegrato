@@ -84,6 +84,7 @@ export default function Users() {
                             nome: row.nome,
                             cognome: row.cognome,
                             email: row.email,
+                            password: row.password,
                             telefono: row.telefono,
                             via: row.via,
                             tipoUtente: { idTipo: row.tipoUtente.idTipo },
@@ -222,8 +223,8 @@ export default function Users() {
                   editFormData.nome !== editingUser.nome ||
                   editFormData.cognome !== editingUser.cognome ||
                   editFormData.email !== editingUser.email ||
+                  editFormData.password !== editingUser.password ||
                   editFormData.telefono !== editingUser.telefono ||
-                  editFormData.via !== editingUser.via ||
                   editFormData.tipoUtente?.idTipo !==
                     editingUser.tipoUtente.idTipo;
 
@@ -290,6 +291,21 @@ export default function Users() {
                   }
                 />
                 <InputGroup
+                  label="Password"
+                  name="password"
+                  type="password"
+                  value={editFormData.password || ""}
+                  required={false}
+                  onChange={(e) =>
+                    setEditFormData((prev) => ({
+                      ...prev,
+                      password: e.target.value,
+                    }))
+                  }
+                />
+              </div>
+              <div className="row">
+                <InputGroup
                   label="Telefono"
                   name="telefono"
                   value={editFormData.telefono || ""}
@@ -301,27 +317,12 @@ export default function Users() {
                     }))
                   }
                 />
-              </div>
-              <div className="row">
-                <InputGroup
-                  label="Via"
-                  name="via"
-                  value={editFormData.via || ""}
-                  required={false}
-                  onChange={(e) =>
-                    setEditFormData((prev) => ({
-                      ...prev,
-                      via: e.target.value,
-                    }))
-                  }
-                />
                 <div className="input-group">
                   <label htmlFor="role">Ruolo</label>
                   <select
                     id="role"
                     value={editFormData.tipoUtente?.idTipo}
                     required={false}
-                    className="btn gray"
                     onChange={(e) => {
                       const idTipo = parseInt(e.target.value);
                       setEditFormData((prev) => ({

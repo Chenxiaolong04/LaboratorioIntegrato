@@ -55,21 +55,63 @@ public class StatisticsService {
     public Map<String, Object> getAdminDashboardData() {
         Map<String, Object> data = new LinkedHashMap<>();
 
+
+
         // Statistiche totali e mensili
         Map<String, Long> stats = new LinkedHashMap<>();
 
-        // Data limite per statistiche mensili (ultimi 30 giorni)
-        LocalDateTime dataLimite = LocalDateTime.now().minusMonths(1);
+        // Data limite per statistiche mensili (ultimi 30 giorni) e settimanali (ultimi 7 giorni)
+        LocalDateTime dataLimiteMensile = LocalDateTime.now().minusMonths(1);
+        LocalDateTime dataLimiteSettimanale = LocalDateTime.now().minusWeeks(1);
 
-        // TOTALI
-        stats.put("contrattiConclusi", contrattoRepository.countByStatoContrattoNome("chiuso"));
-        stats.put("valutazioniInCorso", valutazioneRepository.countByStatoValutazioneNome("in_verifica"));
-        stats.put("valutazioniConAI", valutazioneRepository.countByStatoValutazioneNome("solo_AI"));
+        // TOTALE IMMOBILI
+        Long totaleImmobili = immobileRepository.count();
+        stats.put("totaleImmobili", totaleImmobili);
 
-        // MENSILI (ultimi 30 giorni)
-        stats.put("contrattiConclusiMensili", contrattoRepository.countByStatoContrattoNomeAndDataInizioAfter("chiuso", dataLimite));
-        stats.put("valutazioniInCorsoMensili", valutazioneRepository.countByStatoValutazioneNomeAndDataValutazioneAfter("in_verifica", dataLimite));
-        stats.put("valutazioniConAIMensili", valutazioneRepository.countByStatoValutazioneNomeAndDataValutazioneAfter("solo_AI", dataLimite));
+        // TOTALE IMMOBILI CON VALUTAZIONE IN VERIFICA
+        Long immobiliInVerifica = valutazioneRepository.countByStatoValutazioneNome("in_verifica");
+        stats.put("immobiliInVerifica", immobiliInVerifica);
+
+        // CONTRATTI CONCLUSI
+        Long contrattiConclusi = contrattoRepository.countByStatoContrattoNome("chiuso");
+        stats.put("contrattiConclusi", contrattiConclusi);
+
+        // FATTURATO TOTALE DEI CONTRATTI CONCLUSI (somma prezzoUmano dalle valutazioni)
+        List<Contratto> contrattiChiusi = contrattoRepository.findByStatoContrattoNome("chiuso");
+        long fatturatoTotale = contrattiChiusi.stream()
+            .map(c -> {
+                if (c.getValutazione() != null && c.getValutazione().getPrezzoUmano() != null) {
+                    return (long) c.getValutazione().getPrezzoUmano();
+                }
+                return 0L;
+            })
+            .reduce(0L, Long::sum);
+        stats.put("fatturatoTotale", fatturatoTotale);
+
+        // REGISTRAZIONI IMMOBILI NELL'ULTIMO MESE (ultimi 30 giorni)
+        Long immobiliRegistratiMensili = immobileRepository.countByDataRegistrazioneAfter(dataLimiteMensile);
+        stats.put("immobiliRegistratiMensili", immobiliRegistratiMensili);
+
+        // REGISTRAZIONI IMMOBILI NELL'ULTIMA SETTIMANA (ultimi 7 giorni)
+        Long immobiliRegistratiSettimanali = immobileRepository.countByDataRegistrazioneAfter(dataLimiteSettimanale);
+        stats.put("immobiliRegistratiSettimanali", immobiliRegistratiSettimanali);
+
+        // TOTALE AGENTI
+        List<com.immobiliaris.demo.entity.User> tuttiAgenti = userRepository.findAll().stream()
+            .filter(u -> u.getTipoUtente() != null && u.getTipoUtente().getIdTipo() == 2)
+            .collect(Collectors.toList());
+        
+        // Separa agenti normali da agenti stage
+        long agentiNormali = tuttiAgenti.stream()
+            .filter(u -> u.getContratto() == null || !u.getContratto().equalsIgnoreCase("stage"))
+            .count();
+        
+        long agentiStage = tuttiAgenti.stream()
+            .filter(u -> u.getContratto() != null && u.getContratto().equalsIgnoreCase("stage"))
+            .count();
+        
+        stats.put("totaleAgenti", agentiNormali);
+        stats.put("agentiStage", agentiStage);
 
         data.put("statistics", stats);
 
@@ -106,6 +148,12 @@ public class StatisticsService {
 
         // Aggiungi top 3 agenti
         data.putAll(getTop3Agenti());
+
+        // Aggiungi tutti gli agenti con statistiche
+        data.putAll(getTuttiAgentiConStatistiche());
+
+        // Aggiungi tempi medi di processo e performance
+        data.putAll(getTempiProcessoEPerformance());
 
         return data;
     }
@@ -166,12 +214,12 @@ public class StatisticsService {
         System.out.println("DEBUG: Data inizio mese: " + inizio);
         System.out.println("DEBUG: Data fine mese: " + fine);
 
+
         List<Contratto> tuttiContratti = contrattoRepository.findByStatoContrattoNome("chiuso");
-        System.out.println("DEBUG: Contratti conclusi TOTALI trovati: " + tuttiContratti.size());
-        tuttiContratti.forEach(c -> System.out.println("  - Contratto ID: " + c.getId() + 
-                ", data_inizio: " + c.getDataInizio() + 
-                ", stato: " + (c.getStatoContratto() != null ? c.getStatoContratto().getNome() : "NULL") +
-                ", agente ID: " + (c.getAgente() != null ? c.getAgente().getIdUtente() : "NULL")));
+        logger.info("DEBUG: Contratti chiusi trovati: {}", tuttiContratti.size());
+        for (Contratto c : tuttiContratti) {
+            logger.info("DEBUG: Contratto ID: {}, data_inizio: {}, stato: {}, agente: {}", c.getId(), c.getDataInizio(), (c.getStatoContratto() != null ? c.getStatoContratto().getNome() : "NULL"), (c.getAgente() != null ? c.getAgente().getIdUtente() : "NULL"));
+        }
 
         List<Contratto> contrattiConclusiMese = tuttiContratti.stream()
                 .filter(c -> {
@@ -794,6 +842,10 @@ public class StatisticsService {
         StatoValutazione nuovoStato = statoValutazioneRepository.findByNome("in_verifica")
             .orElseThrow(() -> new RuntimeException("Stato 'in_verifica' non trovato"));
         valutazione.setStatoValutazione(nuovoStato);
+        
+        // Imposta la data valutazione quando l'agente prende in carico
+        valutazione.setDataValutazione(LocalDateTime.now());
+        
         valutazioneRepository.save(valutazione);
     }
 
@@ -812,4 +864,300 @@ public class StatisticsService {
                 })
                 .collect(Collectors.toList());
     }
+
+    /**
+     * Ottiene la lista di tutti gli agenti con le loro statistiche
+     * Ordinati in modo decrescente per numero di contratti conclusi
+     * @return Map con lista agenti e totale
+     */
+    public Map<String, Object> getTuttiAgentiConStatistiche() {
+        Map<String, Object> result = new LinkedHashMap<>();
+
+        // Ottieni tutti gli agenti (idTipo = 2)
+        List<com.immobiliaris.demo.entity.User> tuttiAgenti = userRepository.findAll().stream()
+            .filter(u -> u.getTipoUtente() != null && u.getTipoUtente().getIdTipo() == 2)
+            .collect(Collectors.toList());
+
+        // Per ogni agente, calcola le statistiche richieste
+        List<Map<String, Object>> agentiDati = tuttiAgenti.stream()
+            .map(agente -> {
+                Map<String, Object> agentMap = new LinkedHashMap<>();
+                
+                // Nome e Cognome
+                agentMap.put("nome", agente.getNome());
+                agentMap.put("cognome", agente.getCognome());
+                
+                // Contratti conclusi dell'agente (stato "chiuso")
+                List<Contratto> contrattiConclusi = contrattoRepository.findByStatoContrattoNome("chiuso")
+                    .stream()
+                    .filter(c -> c.getAgente() != null && c.getAgente().getIdUtente().equals(agente.getIdUtente()))
+                    .collect(Collectors.toList());
+                
+                agentMap.put("contrattiConclusi", (long) contrattiConclusi.size());
+                
+                // Immobili in gestione = valutazioni con stato "in_verifica" dell'agente
+                long immobiliInGestione = valutazioneRepository.countByStatoValutazioneNomeAndAgenteIdUtente("in_verifica", agente.getIdUtente().intValue());
+                agentMap.put("immobiliInGestione", immobiliInGestione);
+                
+                // Fatturato = somma dei prezzoUmano delle valutazioni collegate ai contratti chiusi
+                long fatturato = contrattiConclusi.stream()
+                    .map(c -> {
+                        if (c.getValutazione() != null && c.getValutazione().getPrezzoUmano() != null) {
+                            return (long) c.getValutazione().getPrezzoUmano();
+                        }
+                        return 0L;
+                    })
+                    .reduce(0L, Long::sum);
+                agentMap.put("fatturato", fatturato);
+                
+                return agentMap;
+            })
+            // Ordina per numero di contratti conclusi in modo decrescente
+            .sorted((a, b) -> Long.compare((Long) b.get("contrattiConclusi"), (Long) a.get("contrattiConclusi")))
+            .collect(Collectors.toList());
+
+        result.put("agenti", agentiDati);
+        return result;
+    }
+
+    /**
+     * Calcola i tempi medi del processo e la valutazione di performance
+     * @return Map con tempi e valutazione performance
+     */
+    public Map<String, Object> getTempiProcessoEPerformance() {
+        Map<String, Object> result = new LinkedHashMap<>();
+
+        // Ottieni tutti gli immobili con valutazione e contratto
+        List<Immobile> immobili = immobileRepository.findAll();
+        
+        // Lista per calcolare tempo AI -> Presa in carico
+        List<Long> tempiAIaPresaInCarico = new java.util.ArrayList<>();
+        
+        // Lista per calcolare tempo Presa in carico -> Firma contratto
+        List<Long> tempiPresaInCaricoaContratto = new java.util.ArrayList<>();
+
+        for (Immobile immobile : immobili) {
+            // Trova la valutazione più recente dell'immobile
+            List<Valutazione> valutazioni = valutazioneRepository.findByImmobileIdOrderByDataValutazioneDesc(immobile.getId());
+            
+            if (!valutazioni.isEmpty()) {
+                Valutazione valutazione = valutazioni.get(0);
+                
+                // Tempo AI -> Presa in carico (se esiste dataValutazione)
+                if (valutazione.getDataValutazione() != null && immobile.getDataRegistrazione() != null) {
+                    long secondi = java.time.Duration.between(
+                        immobile.getDataRegistrazione(), 
+                        valutazione.getDataValutazione()
+                    ).getSeconds();
+                    tempiAIaPresaInCarico.add(secondi);
+                }
+                
+                // Tempo Presa in carico -> Firma contratto
+                if (valutazione.getDataValutazione() != null) {
+                    // Trova contratto collegato a questa valutazione
+                    List<Contratto> contratti = contrattoRepository.findByStatoContrattoNome("chiuso").stream()
+                        .filter(c -> c.getValutazione() != null && 
+                                     c.getValutazione().getId().equals(valutazione.getId()) &&
+                                     c.getDataInizio() != null)
+                        .collect(Collectors.toList());
+                    
+                    if (!contratti.isEmpty()) {
+                        Contratto contratto = contratti.get(0);
+                        long secondi = java.time.Duration.between(
+                            valutazione.getDataValutazione(), 
+                            contratto.getDataInizio()
+                        ).getSeconds();
+                        tempiPresaInCaricoaContratto.add(secondi);
+                    }
+                }
+            }
+        }
+
+        // Calcola medie
+        Map<String, Object> tempoAIaPresaInCaricoMap = calcolaTempoMedio(tempiAIaPresaInCarico);
+        Map<String, Object> tempoPresaInCaricoaContrattoMap = calcolaTempoMedio(tempiPresaInCaricoaContratto);
+
+        result.put("tempoAIaPresaInCarico", tempoAIaPresaInCaricoMap);
+        result.put("tempoPresaInCaricoaContratto", tempoPresaInCaricoaContrattoMap);
+
+        // Calcola performance basata sui tempi medi
+        String performance = calcolaPerformance(tempoAIaPresaInCaricoMap, tempoPresaInCaricoaContrattoMap);
+        result.put("valutazionePerformance", performance);
+
+        return result;
+    }
+
+    /**
+     * Calcola il tempo medio in giorni, ore, minuti e secondi
+     * @param tempiInSecondi Lista di tempi in secondi
+     * @return Map con giorni, ore, minuti, secondi
+     */
+    private Map<String, Object> calcolaTempoMedio(List<Long> tempiInSecondi) {
+        Map<String, Object> result = new LinkedHashMap<>();
+        
+        if (tempiInSecondi.isEmpty()) {
+            result.put("giorni", 0);
+            result.put("ore", 0);
+            result.put("minuti", 0);
+            result.put("secondi", 0);
+            result.put("totaleSecondi", 0L);
+            return result;
+        }
+
+        // Calcola media
+        long mediaSecondi = (long) tempiInSecondi.stream()
+            .mapToLong(Long::longValue)
+            .average()
+            .orElse(0.0);
+
+        // Converti in giorni, ore, minuti, secondi
+        long giorni = mediaSecondi / 86400;
+        long resto = mediaSecondi % 86400;
+        long ore = resto / 3600;
+        resto = resto % 3600;
+        long minuti = resto / 60;
+        long secondi = resto % 60;
+
+        result.put("giorni", giorni);
+        result.put("ore", ore);
+        result.put("minuti", minuti);
+        result.put("secondi", secondi);
+        result.put("totaleSecondi", mediaSecondi);
+
+        return result;
+    }
+
+    /**
+     * Calcola la valutazione di performance basata sui tempi
+     * @param tempoAIaPresaInCarico Tempo medio AI -> Presa in carico
+     * @param tempoPresaInCaricoaContratto Tempo medio Presa in carico -> Contratto
+     * @return Valutazione: "eccellente", "ottimo", "buono", "standard"
+     */
+    private String calcolaPerformance(Map<String, Object> tempoAIaPresaInCarico, 
+                                       Map<String, Object> tempoPresaInCaricoaContratto) {
+        long totaleSecondi1 = (Long) tempoAIaPresaInCarico.getOrDefault("totaleSecondi", 0L);
+        long totaleSecondi2 = (Long) tempoPresaInCaricoaContratto.getOrDefault("totaleSecondi", 0L);
+        
+        long totaleSecondi = totaleSecondi1 + totaleSecondi2;
+        long totaleGiorni = totaleSecondi / 86400;
+
+        // Valutazione basata sul tempo totale
+        if (totaleGiorni <= 7) {
+            return "eccellente";
+        } else if (totaleGiorni <= 14) {
+            return "ottimo";
+        } else if (totaleGiorni <= 30) {
+            return "buono";
+        } else {
+            return "standard";
+        }
+    }
+
+    /**
+     * Ottiene tutti gli immobili con tutti i dettagli inclusi prezzoAI e prezzoUmano dalla valutazione
+     * @param offset Offset per la paginazione
+     * @param limit Numero di elementi da restituire
+     * @return Map con immobili e metadati di paginazione
+     */
+    public Map<String, Object> getTuttiImmobiliConDettagli(int offset, int limit) {
+        Map<String, Object> result = new LinkedHashMap<>();
+
+        // Ottieni tutti gli immobili ordinati per data registrazione discendente
+        List<Immobile> tuttiImmobili = immobileRepository.findAll().stream()
+            .sorted((a, b) -> b.getDataRegistrazione().compareTo(a.getDataRegistrazione()))
+            .collect(Collectors.toList());
+
+        // Applica offset e limit
+        int totalImmobili = tuttiImmobili.size();
+        List<Immobile> immobiliBatch = tuttiImmobili.stream()
+            .skip(offset)
+            .limit(limit)
+            .collect(Collectors.toList());
+
+        // Trasforma in Map con tutti i dettagli
+        List<Map<String, Object>> immobiliData = immobiliBatch.stream().map(immobile -> {
+            Map<String, Object> m = new LinkedHashMap<>();
+
+            // Dati base immobile
+            m.put("id", immobile.getId());
+            m.put("via", immobile.getVia());
+            m.put("citta", immobile.getCitta());
+            m.put("cap", immobile.getCap());
+            m.put("provincia", immobile.getProvincia());
+            m.put("tipologia", immobile.getTipologia());
+            m.put("metratura", immobile.getMetratura());
+            m.put("condizioni", immobile.getCondizioni());
+            m.put("stanze", immobile.getStanze());
+            m.put("bagni", immobile.getBagni());
+            m.put("riscaldamento", immobile.getRiscaldamento());
+            m.put("piano", immobile.getPiano());
+            m.put("ascensore", immobile.getAscensore());
+            m.put("garage", immobile.getGarage());
+            m.put("giardino", immobile.getGiardino());
+            m.put("balcone", immobile.getBalcone());
+            m.put("terrazzo", immobile.getTerrazzo());
+            m.put("cantina", immobile.getCantina());
+            m.put("prezzo", immobile.getPrezzo());
+            m.put("descrizione", immobile.getDescrizione());
+            m.put("dataRegistrazione", immobile.getDataRegistrazione());
+
+            // Stato immobile
+            if (immobile.getStatoImmobile() != null) {
+                m.put("statoImmobile", immobile.getStatoImmobile().getNome());
+            } else {
+                m.put("statoImmobile", null);
+            }
+
+            // Dati proprietario
+            if (immobile.getProprietario() != null) {
+                m.put("nomeProprietario", immobile.getProprietario().getNome() + " " + immobile.getProprietario().getCognome());
+                m.put("emailProprietario", immobile.getProprietario().getEmail());
+                m.put("telefonoProprietario", immobile.getProprietario().getTelefono());
+            } else {
+                m.put("nomeProprietario", null);
+                m.put("emailProprietario", null);
+                m.put("telefonoProprietario", null);
+            }
+
+            // Trova la valutazione più recente per questo immobile
+            List<Valutazione> valutazioni = valutazioneRepository.findByImmobileIdOrderByDataValutazioneDesc(immobile.getId());
+            if (!valutazioni.isEmpty()) {
+                Valutazione valutazioneRecente = valutazioni.get(0);
+                m.put("prezzoAI", valutazioneRecente.getPrezzoAI());
+                m.put("prezzoUmano", valutazioneRecente.getPrezzoUmano());
+                m.put("dataValutazione", valutazioneRecente.getDataValutazione());
+                m.put("descrizioneValutazione", valutazioneRecente.getDescrizione());
+                
+                if (valutazioneRecente.getStatoValutazione() != null) {
+                    m.put("statoValutazione", valutazioneRecente.getStatoValutazione().getNome());
+                } else {
+                    m.put("statoValutazione", null);
+                }
+                
+                if (valutazioneRecente.getAgente() != null) {
+                    m.put("agenteAssegnato", valutazioneRecente.getAgente().getNome() + " " + valutazioneRecente.getAgente().getCognome());
+                } else {
+                    m.put("agenteAssegnato", null);
+                }
+            } else {
+                m.put("prezzoAI", null);
+                m.put("prezzoUmano", null);
+                m.put("dataValutazione", null);
+                m.put("descrizioneValutazione", null);
+                m.put("statoValutazione", null);
+                m.put("agenteAssegnato", null);
+            }
+
+            return m;
+        }).collect(Collectors.toList());
+
+        result.put("immobili", immobiliData);
+        result.put("nextOffset", offset + limit);
+        result.put("hasMore", (offset + limit) < totalImmobili);
+        result.put("pageSize", immobiliBatch.size());
+        result.put("total", totalImmobili);
+
+        return result;
+    }
 }
+

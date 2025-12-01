@@ -4,12 +4,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.immobiliaris.demo.entity.Immobile;
 import com.immobiliaris.demo.entity.Valutazione;
+import com.immobiliaris.demo.entity.StatoValutazione;
 import com.immobiliaris.demo.repository.ValutazioneJpaRepository;
+import com.immobiliaris.demo.repository.StatoValutazioneRepository;
 
 @Service
 public class ValutazioneService {
     @Autowired
     private ValutazioneJpaRepository valutazioneJpaRepository;
+
+    @Autowired
+    private StatoValutazioneRepository statoValutazioneRepository;
 
     /**
      * Esegue la valutazione automatica dell'immobile e la salva
@@ -19,7 +24,13 @@ public class ValutazioneService {
         valutazione.setImmobile(immobile);
         int prezzo = calcolaPrezzoAI(immobile);
         valutazione.setPrezzoAI(prezzo);
-        valutazione.setDataValutazione(java.time.LocalDateTime.now(java.time.ZoneId.of("Europe/Rome")));
+        // Non impostare dataValutazione qui - verrà impostata quando l'agente prende in carico
+
+        // Imposta lo stato valutazione su 'solo_AI'
+        StatoValutazione statoSoloAI = statoValutazioneRepository.findByNome("solo_AI")
+            .orElseThrow(() -> new RuntimeException("Stato valutazione 'solo_AI' non trovato"));
+        valutazione.setStatoValutazione(statoSoloAI);
+
         return valutazioneJpaRepository.save(valutazione);
     }
 
