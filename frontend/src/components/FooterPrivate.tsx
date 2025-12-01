@@ -10,27 +10,29 @@ const BRAND_NAME = "Immobiliaris";
  * FooterPrivate component.
  *
  * Renders a simple private footer with a logo and brand name.
- * Styled using inline CSS for layout and responsiveness.
+ * Uses inline CSS for layout and responsive behavior.
  *
  * @function FooterPrivate
  * @returns {React.JSX.Element} The footer element for authenticated/private pages.
  */
 export default function FooterPrivate(): React.JSX.Element {
 
+  /** Inline style for the footer container */
   const footerStyle: React.CSSProperties = {
     backgroundColor: '#000c1e',
     color: '#ffffff',
-    padding: '4.5rem',           // padding base
+    padding: '4.5rem',           // base padding
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
     width: '100%',
     boxSizing: 'border-box',
     borderTop: '1px solid rgba(255, 255, 255, 0.1)',
-    flexWrap: 'wrap',            // permette di andare a capo su mobile
-    gap: '1rem'                  // distanza tra elementi quando vanno a capo
+    flexWrap: 'wrap',            // allows wrapping on mobile
+    gap: '1rem'                  // spacing between elements when wrapping
   };
 
+  /** Inline style for the logo container */
   const logoContainerStyle: React.CSSProperties = {
     display: 'flex',
     alignItems: 'center',
@@ -41,6 +43,7 @@ export default function FooterPrivate(): React.JSX.Element {
     textDecoration: 'none'
   };
 
+  /** Inline style for the logo image */
   const logoImageStyle: React.CSSProperties = {
     width: '50px',
     height: '50px',
