@@ -2,10 +2,27 @@ import React from "react";
 import InputGroup from "../InputGroup";
 import { useFormContext } from "../../context/FormContext";
 
+/**
+ * StepContacts Component
+ *
+ * @description
+ * This component renders the contact information step of a multi-step form.
+ * It uses the `FormContext` to access and update the shared form state.
+ * The component includes input fields for first name, last name, email, and phone number.
+ *
+ * @component
+ * @returns {JSX.Element} The JSX structure for the contact information form step.
+ */
 const StepContacts: React.FC = () => {
   const { formData, setFormData } = useFormContext();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  /**
+   * Handles input change events and updates the form state accordingly.
+   *
+   * @param {React.ChangeEvent<HTMLInputElement>} e - The change event triggered by an input field.
+   * @returns {void}
+   */
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setFormData((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
@@ -14,12 +31,12 @@ const StepContacts: React.FC = () => {
 
   return (
     <div className="step step-contact">
-      <h2>Dati di contatto</h2>
+      <h2>Contact Information</h2>
 
       <InputGroup
-        label="Nome"
+        label="First Name"
         name="name"
-        placeholder="Es: Mario"
+        placeholder="e.g., Mario"
         autoComplete="given-name"
         value={formData.name || ""}
         required
@@ -27,9 +44,9 @@ const StepContacts: React.FC = () => {
       />
 
       <InputGroup
-        label="Cognome"
+        label="Last Name"
         name="surname"
-        placeholder="Es: Rossi"
+        placeholder="e.g., Rossi"
         autoComplete="family-name"
         value={formData.surname || ""}
         required
@@ -40,7 +57,7 @@ const StepContacts: React.FC = () => {
         label="Email"
         name="email"
         type="email"
-        placeholder="Es: mario.rossi@email.it"
+        placeholder="e.g., mario.rossi@email.it"
         autoComplete="email"
         value={formData.email || ""}
         required
@@ -48,18 +65,22 @@ const StepContacts: React.FC = () => {
       />
 
       <InputGroup
-        label="Telefono"
+        label="Phone"
         name="phone"
         type="tel"
-        placeholder="Es: 3331234567"
+        placeholder="e.g., 3331234567"
         autoComplete="tel"
         value={formData.phone || ""}
         required
         onChange={handleChange}
       />
 
-      <h3>Teniamo molto alla tua privacy e odiamo lo spam. Custodiremo con cura il tuo numero di telefono e non lo condivideremo con nessuno. Garantito.</h3>
-      <h3>Con l'invio dei miei dati autorizzo il loro trattamento secondo la normativa GDPR e accetto la privacy policy e le condizioni di servizio</h3>
+      <h3>
+        We care deeply about your privacy and hate spam. We will protect your phone number and never share it with anyone. Guaranteed.
+      </h3>
+      <h3>
+        By submitting my data, I authorize its processing according to GDPR regulations and accept the privacy policy and terms of service.
+      </h3>
     </div>
   );
 };

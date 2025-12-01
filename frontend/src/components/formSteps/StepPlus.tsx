@@ -21,6 +21,21 @@ const FEATURES = [
   { text: "Cantina", img: CantinaImg },
 ];
 
+/**
+ * StepPlus Component
+ *
+ * @description
+ * This component represents the optional features step in a multi-step form.
+ * Users can select various external spaces or additional amenities related to the property.
+ * The selected values are stored locally as component state and synchronized with the global
+ * form data through `FormContext`. This step does not require validation, and therefore the
+ * exposed `validate()` method always returns `true`.
+ *
+ * @component
+ * @param {any} props - No props are required for this component.
+ * @param {React.Ref<StepPlusRef>} ref - A forwarded ref exposing the `validate` function.
+ * @returns {JSX.Element} The JSX structure for the extra features selection step.
+ */
 const StepPlus = forwardRef<StepPlusRef>((props, ref) => {
   const { formData, setFormData } = useFormContext();
 
@@ -28,7 +43,15 @@ const StepPlus = forwardRef<StepPlusRef>((props, ref) => {
     formData.features || []
   );
 
-  const toggleFeature = (feature: string) => {
+  /**
+   * Toggles the selection of a feature. If the feature is already selected, it is removed.
+   * Otherwise, it is added to the selected features array. Updates both component state
+   * and global form state.
+   *
+   * @param {string} feature - The feature to toggle.
+   * @returns {void}
+   */
+  const toggleFeature = (feature: string): void => {
     let updated: string[];
 
     if (selectedFeatures.includes(feature)) {
@@ -41,15 +64,23 @@ const StepPlus = forwardRef<StepPlusRef>((props, ref) => {
     setFormData((prev) => ({ ...prev, features: updated }));
   };
 
+  /**
+   * Exposes the validate method to parent components through ref.
+   *
+   * @function validate
+   * @description
+   * This step does not require any validation, so this function always returns `true`.
+   *
+   * @returns {boolean} Always `true`.
+   */
   useImperativeHandle(ref, () => ({
-    // Questo step non ha validazioni
     validate: () => true,
   }));
 
   return (
     <div className="step">
       <h2>Spazi esterni e plus</h2>
-      <p>Seleziona se presenti</p>
+      <p>Select the features if available</p>
 
       <div className="card-group-input">
         {FEATURES.map(({ text, img }) => (

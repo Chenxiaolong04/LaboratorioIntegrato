@@ -12,6 +12,20 @@ interface StepGeneralProps {
   setError: React.Dispatch<React.SetStateAction<string>>;
 }
 
+/**
+ * StepGeneral Component
+ *
+ * @description
+ * This component represents the main property characteristics step in a multi-step form.
+ * It allows the user to input numerical values such as surface area, floor, rooms, bathrooms,
+ * and select the type of heating system. The component uses `forwardRef` and `useImperativeHandle`
+ * to expose a `validate()` method that can be triggered externally to validate the fields.
+ *
+ * @component
+ * @param {StepGeneralProps} props - The error message and the setter function for error handling.
+ * @param {React.Ref<StepGeneralRef>} ref - A forwarded ref used to expose the validate method.
+ * @returns {JSX.Element} The JSX structure for the general characteristics form step.
+ */
 const StepGeneral = forwardRef<StepGeneralRef, StepGeneralProps>(
   ({ error, setError }, ref) => {
     const { formData, setFormData } = useFormContext();
@@ -24,31 +38,70 @@ const StepGeneral = forwardRef<StepGeneralRef, StepGeneralProps>(
     );
     const [heating, setHeating] = useState(formData.heating || "");
 
-    const handleSurface = (e: React.ChangeEvent<HTMLInputElement>) => {
+    /**
+     * Handles surface input changes and updates form state.
+     *
+     * @param {React.ChangeEvent<HTMLInputElement>} e - The input change event.
+     * @returns {void}
+     */
+    const handleSurface = (e: React.ChangeEvent<HTMLInputElement>): void => {
       setSurface(e.target.value);
       setFormData({ ...formData, surface: e.target.value });
     };
 
-    const handleFloor = (e: React.ChangeEvent<HTMLInputElement>) => {
+    /**
+     * Handles floor input changes and updates form state.
+     *
+     * @param {React.ChangeEvent<HTMLInputElement>} e - The input change event.
+     * @returns {void}
+     */
+    const handleFloor = (e: React.ChangeEvent<HTMLInputElement>): void => {
       setFloor(e.target.value);
       setFormData({ ...formData, floor: e.target.value });
     };
 
-    const handleRooms = (e: React.ChangeEvent<HTMLInputElement>) => {
+    /**
+     * Handles rooms input changes and updates form state.
+     *
+     * @param {React.ChangeEvent<HTMLInputElement>} e - The input change event.
+     * @returns {void}
+     */
+    const handleRooms = (e: React.ChangeEvent<HTMLInputElement>): void => {
       setRooms(e.target.value);
       setFormData({ ...formData, rooms: e.target.value });
     };
 
-    const handleBathrooms = (e: React.ChangeEvent<HTMLInputElement>) => {
+    /**
+     * Handles bathrooms input changes and updates form state.
+     *
+     * @param {React.ChangeEvent<HTMLInputElement>} e - The input change event.
+     * @returns {void}
+     */
+    const handleBathrooms = (e: React.ChangeEvent<HTMLInputElement>): void => {
       setBathrooms(e.target.value);
       setFormData({ ...formData, bathrooms: e.target.value });
     };
 
-    const handleHeating = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    /**
+     * Handles heating selection changes and updates form state.
+     *
+     * @param {React.ChangeEvent<HTMLSelectElement>} e - The select change event.
+     * @returns {void}
+     */
+    const handleHeating = (e: React.ChangeEvent<HTMLSelectElement>): void => {
       setHeating(e.target.value);
       setFormData({ ...formData, heating: e.target.value });
     };
 
+    /**
+     * Exposes the `validate` method to the parent component via ref.
+     *
+     * @function validate
+     * @description
+     * Validates all fields in the general step. Checks numeric ranges and required fields.
+     *
+     * @returns {boolean} `true` if all fields are valid, otherwise `false`.
+     */
     useImperativeHandle(ref, () => ({
       validate() {
         if (parseInt(surface) < 10 || parseInt(surface) > 1000) {
