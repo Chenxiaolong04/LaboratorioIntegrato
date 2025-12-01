@@ -1220,6 +1220,9 @@ if (immobile.statoValutazione === "solo_AI") {
 | POST   | /api/contratti         | Creazione nuovo contratto          | ADMIN              |
 | PUT    | /api/contratti/{id}    | Modifica contratto                 | ADMIN              |
 | DELETE | /api/contratti/{id}    | Eliminazione contratto             | ADMIN              |
+| GET    | /api/contratti/valutazione/{idValutazione}/pdf| Genera contratto PDF e invia email | Tutti       |
+| GET    | /api/contratti/valutazione/{idValutazione}/pdf/preview | Genera PDF e invia email   | Tutti       |
+| GET    | /api/contratti/test    | Test endpoint controller           | Tutti              |
 | GET    | /api/valutazioni       | Elenco valutazioni                 | ADMIN, AGENT       |
 | GET    | /api/valutazioni/{id}  | Dettaglio valutazione              | ADMIN, AGENT       |
 | POST   | /api/valutazioni       | Creazione nuova valutazione        | ADMIN, AGENT       |
@@ -1228,6 +1231,194 @@ if (immobile.statoValutazione === "solo_AI") {
 | GET    | /api/home              | Pagina home                        | Nessuno            |
 | GET    | /api/welcome           | Pagina di benvenuto                | Nessuno            |
 | GET    | /api/error             | Gestione errori                    | Nessuno            |
+
+---
+
+## 📄 Generazione e Invio Contratti PDF via Email
+
+### 📋 Panoramica
+Il sistema genera automaticamente contratti di mediazione immobiliare in formato PDF professionale e li invia **esclusivamente via email** al proprietario e all'agente. Il PDF **non viene scaricato localmente**, ma inviato solo come allegato email.
+
+---
+
+### GET `/api/contratti/valutazione/{idValutazione}/pdf`
+Genera il contratto PDF dalla valutazione e lo invia via email (solo invio, nessun download)
+
+**Parametri:**
+- `idValutazione`: ID della valutazione (dalla tabella `valutazioni`)
+
+**Comportamento:**
+- Se esiste già un contratto per la valutazione → lo utilizza
+- Se NON esiste → crea automaticamente un nuovo contratto con:
+  - Immobile dalla valutazione
+  - Proprietario dall'immobile
+  - Agente dalla valutazione
+  - Data inizio: oggi
+  - Data fine: +6 mesi (default)
+  - Commissione: 3% (default)
+
+**Funzionalità:**
+1. ✅ Genera contratto PDF professionale completo
+2. ✉️ Invia email al **proprietario** con PDF allegato
+3. ✉️ Invia email all'**agente** con copia PDF
+4. ✅ Restituisce conferma JSON (nessun download locale)
+
+**Response (200 OK):**
+```json
+{
+  "success": true,
+  "message": "Contratto generato e inviato via email con successo",
+  "destinatari": {
+    "proprietario": "mario.rossi@example.com",
+    "agente": "agente@immobiliaris.demo"
+  },
+  "valutazioneId": 23,
+  "contrattoId": 1
+}
+```
+
+**Response (404):**
+```json
+{
+  "error": "Valutazione non trovata con id: {idValutazione}"
+}
+```
+
+**Response (400):**
+```json
+{
+  "error": "La valutazione non ha un immobile associato"
+}
+```
+oppure
+```json
+{
+  "error": "La valutazione non ha un agente assegnato. Assegnare prima un agente."
+}
+```
+
+**Response (500):**
+```json
+{
+  "error": "Errore invio email: {messaggio}"
+}
+```
+
+**Note:**
+- Il PDF NON viene più scaricato localmente
+- Il PDF viene inviato SOLO via email ai destinatari
+- Gli errori email bloccano la risposta (status 500)
+
+---
+
+### GET `/api/contratti/valutazione/{idValutazione}/pdf/preview`
+Stesso comportamento di `/pdf` (genera e invia via email, nessun download)
+
+**Response:** Identico all'endpoint `/pdf`
+
+**Prerequisiti:**
+- La valutazione deve esistere
+- La valutazione deve avere un immobile associato
+- La valutazione deve avere un agente assegnato
+- Se il contratto non esiste, viene creato automaticamente
+
+---
+
+### 📧 Email Inviate Automaticamente
+
+**Email al Proprietario:**
+- **Oggetto**: 📄 Contratto di Mediazione Immobiliare - [Via Immobile]
+- **Contenuto**: Messaggio personalizzato con saluto, dettagli immobile, spiegazione contratto
+- **Allegato**: PDF completo del contratto
+- **Design**: HTML professionale con logo IMMOBILIARIS, box evidenziato, footer contatti
+
+**Email all'Agente:**
+- **Oggetto**: 📄 [COPIA] Contratto di Mediazione - [Via Immobile]
+- **Contenuto**: Conferma invio al proprietario + autorizzazione a procedere con promozione immobile
+- **Allegato**: Stessa copia del PDF
+
+---
+
+### 📄 Contenuto PDF Contratto (11 Sezioni)
+
+1. **Intestazione Azienda** - IMMOBILIARIS S.R.L., sede Torino, P.IVA, REA, contatti
+2. **Le Parti** - Mandante (venditore) e Agente con dati completi
+3. **Oggetto Incarico** - Immobile dettagliato (via, CAP, tipologia, metratura, stanze, bagni, piano, ascensore, dotazioni)
+4. **Condizioni Vendita** - Prezzo richiesto (da valutazione umana o AI)
+5. **Durata Incarico** - Date inizio/fine, modalità cessazione
+6. **Compenso Provvigione** - Percentuale + IVA (default 3%), maturazione diritto
+7. **Dichiarazioni Mandante** - Conformità urbanistica, catastale, impianti, APE
+8. **Obblighi e Clausola Penale** - Esclusiva, penale 70% per violazione, obblighi agente
+9. **Trattamento Dati GDPR** - Consenso Reg. UE 2016/679
+10. **Firme** - Spazi firma mandante e agente con timbro
+11. **Clausole Vessatorie** - Approvazione specifica art. 1341-1342 C.C.
+
+---
+
+### 🛠️ Implementazione Tecnica
+
+**Servizio PDF:** `PdfContrattoService.java`
+- Libreria: iText PDF 5.5.13.3
+- Layout: A4 professionale, font multipli (titoli 16pt, sottotitoli 12pt, normale 10pt)
+- Tabelle per dati immobile, formattazione italiana date (dd/MM/yyyy)
+
+**Servizio Email:** `EmailService.java`
+- Metodo: `sendContrattoPdf(Contratto contratto, byte[] pdfBytes)`
+- Template HTML con logo inline (`static/logo.png`)
+- Allegato PDF via `ByteArrayResource`
+- Doppio invio (proprietario + agente)
+
+**Controller:** `ContrattoApiController.java`
+- Endpoint: `/api/contratti/{id}/pdf` e `/pdf/preview`
+- Risposta JSON (no download binario)
+- Errori: 404 contratto non trovato, 500 errore email
+
+---
+
+### ⚠️ Requisiti e Configurazione
+
+**Requisiti database:**
+- Contratto completo con relazioni: `immobile`, `utente` (proprietario), `agente`, `valutazione`
+- Email valide per proprietario e agente
+- Prezzo disponibile: priorità `prezzo_umano` > `prezzo_ai`
+
+**Configurazione SMTP (`application.properties`):**
+```properties
+spring.mail.host=smtp.gmail.com
+spring.mail.port=587
+spring.mail.username=xiao.chen@edu-its.it
+spring.mail.password=[app-password]
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true
+```
+
+**⚠️ IMPORTANTE:**
+- Il PDF **NON viene mai scaricato localmente** dal backend
+- Il PDF esiste **SOLO come allegato email**
+- Errori invio email → status 500 (bloccante)
+- File `static/logo.png` deve esistere in resources
+
+---
+
+### 🧪 Esempio Utilizzo
+
+```bash
+curl http://localhost:8080/api/contratti/1/pdf
+
+# Risposta JSON:
+{
+  "success": true,
+  "message": "Contratto generato e inviato via email con successo",
+  "destinatari": {
+    "proprietario": "mario.rossi@example.com",
+    "agente": "agente@immobiliaris.demo"
+  }
+}
+```
+
+**Workflow:** API Call → Genera PDF → Email Proprietario → Email Agente → Risposta JSON ✅
+
+---
 
 
 

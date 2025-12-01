@@ -36,9 +36,6 @@ public class StatisticsService {
     private ImmobileJpaRepository immobileRepository;
 
     @Autowired
-    private UtenteRepository utenteRepository;
-
-    @Autowired
     private ValutazioneJpaRepository valutazioneJpaRepository;
 
     @Autowired
@@ -327,7 +324,8 @@ public class StatisticsService {
         Map<String, Long> stats = new LinkedHashMap<>();
 
         // Ottieni ID dell'agente
-        Integer idAgente = utenteRepository.findIdByEmail(emailAgente);
+        Long idAgenteObj = userRepository.findIdByEmail(emailAgente);
+        Integer idAgente = idAgenteObj != null ? idAgenteObj.intValue() : null;
 
         if (idAgente == null) {
             // Ritorna statistiche vuote se l'agente non viene trovato

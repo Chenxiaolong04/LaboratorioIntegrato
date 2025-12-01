@@ -9,6 +9,17 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-        // JpaRepository già include deleteById e existsById
+    // JpaRepository già include deleteById e existsById
     Optional<User> findByEmail(String email);
+    
+    /**
+     * Trova l'ID utente tramite email
+     * @param email Email dell'utente
+     * @return Optional con l'utente trovato
+     */
+    default Long findIdByEmail(String email) {
+        return findByEmail(email)
+            .map(User::getIdUtente)
+            .orElse(null);
+    }
 }
