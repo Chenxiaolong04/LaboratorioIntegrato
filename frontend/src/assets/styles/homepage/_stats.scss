@@ -1,0 +1,39 @@
+@use "../variables" as var;
+
+.stats {
+  background-color: var.$palette-blu;
+  .container {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+    text-align: center;
+
+    .stat h3 {
+      font-size: var.$fs-mb-section-title;
+      color: white;
+    }
+
+    .stat p {
+      font-size: var.$fs-mb-section-subtitle;
+      color: var.$palette-lightblu;
+    }
+  }
+}
+
+@media (min-width: 768px) {
+  .stats {
+    .container {
+      flex-direction: row;
+      justify-content: space-between;
+      gap: 0;
+
+      .stat h3 {
+        font-size: var.$fs-dk-section-title;
+      }
+
+      .stat p {
+        font-size: var.$fs-dk-section-subtitle;
+      }
+    }
+  }
+}

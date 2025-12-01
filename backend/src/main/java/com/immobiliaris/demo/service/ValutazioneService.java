@@ -24,7 +24,7 @@ public class ValutazioneService {
         valutazione.setImmobile(immobile);
         int prezzo = calcolaPrezzoAI(immobile);
         valutazione.setPrezzoAI(prezzo);
-        valutazione.setDataValutazione(java.time.LocalDateTime.now(java.time.ZoneId.of("Europe/Rome")));
+        // Non impostare dataValutazione qui - verrà impostata quando l'agente prende in carico
 
         // Imposta lo stato valutazione su 'solo_AI'
         StatoValutazione statoSoloAI = statoValutazioneRepository.findByNome("solo_AI")

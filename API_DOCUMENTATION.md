@@ -98,13 +98,58 @@ Ottieni informazioni utente loggato
 ```json
 {
   "statistics": {
+    "totaleImmobili": 50,
+    "immobiliInVerifica": 8,
     "contrattiConclusi": 15,
-    "valutazioniInCorso": 8,
-    "valutazioniConAI": 5,
-    "contrattiConclusiMensili": 3,
-    "valutazioniInCorsoMensili": 2,
-    "valutazioniConAIMensili": 1
+    "fatturatoTotale": 2500000,
+    "immobiliRegistratiMensili": 12,
+    "immobiliRegistratiSettimanali": 3,
+    "totaleAgenti": 5,
+    "agentiStage": 2
   },
+  "contrattiPerMese": [
+    {
+      "mese": "11/2025",
+      "numeroContratti": 5,
+      "totalePrezzoImmobili": 750000
+    }
+  ],
+  "top3Agenti": [
+    {
+      "nome": "Luigi Verdi",
+      "numeroContratti": 8
+    }
+  ],
+  "immobiliPerTipo": {
+    "appartamento": 25,
+    "villa": 10,
+    "attico": 8,
+    "loft": 7
+  },
+  "agenti": [
+    {
+      "nome": "Luigi",
+      "cognome": "Verdi",
+      "contrattiConclusi": 5,
+      "immobiliInGestione": 3,
+      "fatturato": 500000
+    }
+  ],
+  "tempoAIaPresaInCarico": {
+    "giorni": 2,
+    "ore": 5,
+    "minuti": 30,
+    "secondi": 15,
+    "totaleSecondi": 192615
+  },
+  "tempoPresaInCaricoaContratto": {
+    "giorni": 7,
+    "ore": 12,
+    "minuti": 0,
+    "secondi": 0,
+    "totaleSecondi": 648000
+  },
+  "valutazionePerformance": "ottimo",
   "immobili": [
     {
       "tipo": "Appartamento",
@@ -129,22 +174,27 @@ Ottieni informazioni utente loggato
 
 **Campi risposta:**
 - `statistics` (object): Statistiche admin
+- `contrattiPerMese` (array): Contratti stipulati per mese negli ultimi 6 mesi
+- `top3Agenti` (array): Top 3 agenti per numero di contratti conclusi
+- `immobiliPerTipo` (object): Conteggio immobili per tipologia
 - `agenti` (array): Lista di tutti gli agenti con statistiche complete
-- `totaleAgenti` (number): Numero totale di agenti nel sistema
+- `tempoAIaPresaInCarico` (object): Tempo medio AI → presa in carico agente
+- `tempoPresaInCaricoaContratto` (object): Tempo medio presa in carico → contratto firmato
+- `valutazionePerformance` (string): Valutazione performance complessiva
 - `immobili` (array): Array di immobili per questa richiesta
 - `nextOffset` (number): Offset da usare per la prossima richiesta ("Carica altri")
 - `hasMore` (boolean): `true` se ci sono altri immobili, `false` se sei alla fine
 - `pageSize` (number): Numero di immobili ritornati in questa richiesta
 
-**Statistiche totali (dall'inizio):**
+**Statistiche generali:**
+- `totaleImmobili`: Totale immobili nel database
+- `immobiliInVerifica`: Immobili con valutazione in stato "in_verifica"
 - `contrattiConclusi`: Contratti con stato "chiuso"
-- `valutazioniInCorso`: Valutazioni con stato "in_verifica"
-- `valutazioniConAI`: Valutazioni con stato "solo_AI"
-
-**Statistiche mensili (ultimi 30 giorni):**
-- `contrattiConclusiMensili`: Contratti conclusi (basato su `Data_inizio`)
-- `valutazioniInCorsoMensili`: Valutazioni in corso (basato su `Data_valutazione`)
-- `valutazioniConAIMensili`: Valutazioni con AI (basato su `Data_valutazione`)
+- `fatturatoTotale`: Somma di prezzoUmano da tutte le valutazioni dei contratti conclusi
+- `immobiliRegistratiMensili`: Immobili registrati negli ultimi 30 giorni
+- `immobiliRegistratiSettimanali`: Immobili registrati negli ultimi 7 giorni
+- `totaleAgenti`: Numero di agenti (esclusi quelli con contratto "stage")
+- `agentiStage`: Numero di agenti con contratto "stage"
 
 **Campi di ogni agente:**
 - `nome`: Nome dell'agente
@@ -155,6 +205,21 @@ Ottieni informazioni utente loggato
 
 **Nota sugli agenti:**
 Gli agenti sono ordinati in modo decrescente per numero di contratti conclusi. Il fatturato viene calcolato sommando il campo `Prezzo_Umano` dalla tabella Valutazioni per tutti i contratti chiusi dell'agente.
+
+**Tempi di processo e performance:**
+- `tempoAIaPresaInCarico`: Tempo medio tra la registrazione dell'immobile (valutazione AI) e la presa in carico da parte di un agente
+  - `giorni`: Numero di giorni
+  - `ore`: Numero di ore (0-23)
+  - `minuti`: Numero di minuti (0-59)
+  - `secondi`: Numero di secondi (0-59)
+  - `totaleSecondi`: Tempo totale in secondi
+- `tempoPresaInCaricoaContratto`: Tempo medio tra la presa in carico da parte dell'agente e la firma del contratto
+  - `giorni`, `ore`, `minuti`, `secondi`, `totaleSecondi`
+- `valutazionePerformance`: Valutazione complessiva basata sui tempi
+  - `"eccellente"`: Processo completato entro 7 giorni
+  - `"ottimo"`: Processo completato entro 14 giorni
+  - `"buono"`: Processo completato entro 30 giorni
+  - `"standard"`: Processo completato oltre 30 giorni
 
 **Campi di ogni immobile:**
 - `tipo`: Tipologia immobile (Appartamento, Villa, Ufficio, ecc.)

@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -28,4 +29,10 @@ public interface ImmobileJpaRepository extends JpaRepository<Immobile, Integer> 
      * Spring usa automaticamente il Pageable per paginazione e ordinamento
      */
     Page<Immobile> findAllByOrderByIdDesc(Pageable pageable);
+    
+    /**
+     * Conta gli immobili registrati dopo una certa data
+     * Spring genera automaticamente: SELECT COUNT(*) WHERE dataRegistrazione > ?
+     */
+    Long countByDataRegistrazioneAfter(LocalDateTime dataLimite);
 }

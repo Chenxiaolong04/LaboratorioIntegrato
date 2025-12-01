@@ -60,47 +60,58 @@ public class StatisticsService {
         // Statistiche totali e mensili
         Map<String, Long> stats = new LinkedHashMap<>();
 
-        // Data limite per statistiche mensili (ultimi 30 giorni)
-        LocalDateTime dataLimite = LocalDateTime.now().minusMonths(1);
+        // Data limite per statistiche mensili (ultimi 30 giorni) e settimanali (ultimi 7 giorni)
+        LocalDateTime dataLimiteMensile = LocalDateTime.now().minusMonths(1);
+        LocalDateTime dataLimiteSettimanale = LocalDateTime.now().minusWeeks(1);
 
-        // Debug logging per la query dei contratti conclusi
-        logger.info("DEBUG: Chiamo countByStatoContrattoNome('chiuso')");
+        // TOTALE IMMOBILI
+        Long totaleImmobili = immobileRepository.count();
+        stats.put("totaleImmobili", totaleImmobili);
+
+        // TOTALE IMMOBILI CON VALUTAZIONE IN VERIFICA
+        Long immobiliInVerifica = valutazioneRepository.countByStatoValutazioneNome("in_verifica");
+        stats.put("immobiliInVerifica", immobiliInVerifica);
+
+        // CONTRATTI CONCLUSI
         Long contrattiConclusi = contrattoRepository.countByStatoContrattoNome("chiuso");
-        logger.info("DEBUG: Risultato countByStatoContrattoNome('chiuso'): {}", contrattiConclusi);
         stats.put("contrattiConclusi", contrattiConclusi);
 
-        // Conteggio totale contratti (debug)
-        Long totaleContratti = contrattoRepository.count();
-        logger.info("DEBUG: Risultato count() totale contratti: {}", totaleContratti);
-        stats.put("totaleContratti", totaleContratti);
-
-        Long valutazioniInCorso = valutazioneRepository.countByStatoValutazioneNome("in_verifica");
-        logger.info("DEBUG: Risultato countByStatoValutazioneNome('in_verifica'): {}", valutazioniInCorso);
-        stats.put("valutazioniInCorso", valutazioniInCorso);
-
-        Long valutazioniConAI = valutazioneRepository.countByStatoValutazioneNome("solo_AI");
-        logger.info("DEBUG: Risultato countByStatoValutazioneNome('solo_AI'): {}", valutazioniConAI);
-        stats.put("valutazioniConAI", valutazioniConAI);
-
-        // Calcolo valore totale immobili con contratti chiusi
+        // FATTURATO TOTALE DEI CONTRATTI CONCLUSI (somma prezzoUmano dalle valutazioni)
         List<Contratto> contrattiChiusi = contrattoRepository.findByStatoContrattoNome("chiuso");
-        Integer valoreTotaleImmobili = contrattiChiusi.stream()
-            .map(c -> c.getImmobile() != null && c.getImmobile().getPrezzo() != null ? c.getImmobile().getPrezzo() : 0)
-            .reduce(0, Integer::sum);
-        stats.put("valoreTotaleImmobili", valoreTotaleImmobili.longValue());
+        long fatturatoTotale = contrattiChiusi.stream()
+            .map(c -> {
+                if (c.getValutazione() != null && c.getValutazione().getPrezzoUmano() != null) {
+                    return (long) c.getValutazione().getPrezzoUmano();
+                }
+                return 0L;
+            })
+            .reduce(0L, Long::sum);
+        stats.put("fatturatoTotale", fatturatoTotale);
 
-        // MENSILI (ultimi 30 giorni)
-        Long contrattiConclusiMensili = contrattoRepository.countByStatoContrattoNomeAndDataInizioAfter("chiuso", dataLimite);
-        logger.info("DEBUG: Risultato countByStatoContrattoNomeAndDataInizioAfter('chiuso', {}): {}", dataLimite, contrattiConclusiMensili);
-        stats.put("contrattiConclusiMensili", contrattiConclusiMensili);
+        // REGISTRAZIONI IMMOBILI NELL'ULTIMO MESE (ultimi 30 giorni)
+        Long immobiliRegistratiMensili = immobileRepository.countByDataRegistrazioneAfter(dataLimiteMensile);
+        stats.put("immobiliRegistratiMensili", immobiliRegistratiMensili);
 
-        Long valutazioniInCorsoMensili = valutazioneRepository.countByStatoValutazioneNomeAndDataValutazioneAfter("in_verifica", dataLimite);
-        logger.info("DEBUG: Risultato countByStatoValutazioneNomeAndDataValutazioneAfter('in_verifica', {}): {}", dataLimite, valutazioniInCorsoMensili);
-        stats.put("valutazioniInCorsoMensili", valutazioniInCorsoMensili);
+        // REGISTRAZIONI IMMOBILI NELL'ULTIMA SETTIMANA (ultimi 7 giorni)
+        Long immobiliRegistratiSettimanali = immobileRepository.countByDataRegistrazioneAfter(dataLimiteSettimanale);
+        stats.put("immobiliRegistratiSettimanali", immobiliRegistratiSettimanali);
 
-        Long valutazioniConAIMensili = valutazioneRepository.countByStatoValutazioneNomeAndDataValutazioneAfter("solo_AI", dataLimite);
-        logger.info("DEBUG: Risultato countByStatoValutazioneNomeAndDataValutazioneAfter('solo_AI', {}): {}", dataLimite, valutazioniConAIMensili);
-        stats.put("valutazioniConAIMensili", valutazioniConAIMensili);
+        // TOTALE AGENTI
+        List<com.immobiliaris.demo.entity.User> tuttiAgenti = userRepository.findAll().stream()
+            .filter(u -> u.getTipoUtente() != null && u.getTipoUtente().getIdTipo() == 2)
+            .collect(Collectors.toList());
+        
+        // Separa agenti normali da agenti stage
+        long agentiNormali = tuttiAgenti.stream()
+            .filter(u -> u.getContratto() == null || !u.getContratto().equalsIgnoreCase("stage"))
+            .count();
+        
+        long agentiStage = tuttiAgenti.stream()
+            .filter(u -> u.getContratto() != null && u.getContratto().equalsIgnoreCase("stage"))
+            .count();
+        
+        stats.put("totaleAgenti", agentiNormali);
+        stats.put("agentiStage", agentiStage);
 
         data.put("statistics", stats);
 
@@ -140,6 +151,9 @@ public class StatisticsService {
 
         // Aggiungi tutti gli agenti con statistiche
         data.putAll(getTuttiAgentiConStatistiche());
+
+        // Aggiungi tempi medi di processo e performance
+        data.putAll(getTempiProcessoEPerformance());
 
         return data;
     }
@@ -828,6 +842,10 @@ public class StatisticsService {
         StatoValutazione nuovoStato = statoValutazioneRepository.findByNome("in_verifica")
             .orElseThrow(() -> new RuntimeException("Stato 'in_verifica' non trovato"));
         valutazione.setStatoValutazione(nuovoStato);
+        
+        // Imposta la data valutazione quando l'agente prende in carico
+        valutazione.setDataValutazione(LocalDateTime.now());
+        
         valutazioneRepository.save(valutazione);
     }
 
@@ -899,8 +917,140 @@ public class StatisticsService {
             .collect(Collectors.toList());
 
         result.put("agenti", agentiDati);
-        result.put("totaleAgenti", (long) agentiDati.size());
         return result;
+    }
+
+    /**
+     * Calcola i tempi medi del processo e la valutazione di performance
+     * @return Map con tempi e valutazione performance
+     */
+    public Map<String, Object> getTempiProcessoEPerformance() {
+        Map<String, Object> result = new LinkedHashMap<>();
+
+        // Ottieni tutti gli immobili con valutazione e contratto
+        List<Immobile> immobili = immobileRepository.findAll();
+        
+        // Lista per calcolare tempo AI -> Presa in carico
+        List<Long> tempiAIaPresaInCarico = new java.util.ArrayList<>();
+        
+        // Lista per calcolare tempo Presa in carico -> Firma contratto
+        List<Long> tempiPresaInCaricoaContratto = new java.util.ArrayList<>();
+
+        for (Immobile immobile : immobili) {
+            // Trova la valutazione più recente dell'immobile
+            List<Valutazione> valutazioni = valutazioneRepository.findByImmobileIdOrderByDataValutazioneDesc(immobile.getId());
+            
+            if (!valutazioni.isEmpty()) {
+                Valutazione valutazione = valutazioni.get(0);
+                
+                // Tempo AI -> Presa in carico (se esiste dataValutazione)
+                if (valutazione.getDataValutazione() != null && immobile.getDataRegistrazione() != null) {
+                    long secondi = java.time.Duration.between(
+                        immobile.getDataRegistrazione(), 
+                        valutazione.getDataValutazione()
+                    ).getSeconds();
+                    tempiAIaPresaInCarico.add(secondi);
+                }
+                
+                // Tempo Presa in carico -> Firma contratto
+                if (valutazione.getDataValutazione() != null) {
+                    // Trova contratto collegato a questa valutazione
+                    List<Contratto> contratti = contrattoRepository.findByStatoContrattoNome("chiuso").stream()
+                        .filter(c -> c.getValutazione() != null && 
+                                     c.getValutazione().getId().equals(valutazione.getId()) &&
+                                     c.getDataInizio() != null)
+                        .collect(Collectors.toList());
+                    
+                    if (!contratti.isEmpty()) {
+                        Contratto contratto = contratti.get(0);
+                        long secondi = java.time.Duration.between(
+                            valutazione.getDataValutazione(), 
+                            contratto.getDataInizio()
+                        ).getSeconds();
+                        tempiPresaInCaricoaContratto.add(secondi);
+                    }
+                }
+            }
+        }
+
+        // Calcola medie
+        Map<String, Object> tempoAIaPresaInCaricoMap = calcolaTempoMedio(tempiAIaPresaInCarico);
+        Map<String, Object> tempoPresaInCaricoaContrattoMap = calcolaTempoMedio(tempiPresaInCaricoaContratto);
+
+        result.put("tempoAIaPresaInCarico", tempoAIaPresaInCaricoMap);
+        result.put("tempoPresaInCaricoaContratto", tempoPresaInCaricoaContrattoMap);
+
+        // Calcola performance basata sui tempi medi
+        String performance = calcolaPerformance(tempoAIaPresaInCaricoMap, tempoPresaInCaricoaContrattoMap);
+        result.put("valutazionePerformance", performance);
+
+        return result;
+    }
+
+    /**
+     * Calcola il tempo medio in giorni, ore, minuti e secondi
+     * @param tempiInSecondi Lista di tempi in secondi
+     * @return Map con giorni, ore, minuti, secondi
+     */
+    private Map<String, Object> calcolaTempoMedio(List<Long> tempiInSecondi) {
+        Map<String, Object> result = new LinkedHashMap<>();
+        
+        if (tempiInSecondi.isEmpty()) {
+            result.put("giorni", 0);
+            result.put("ore", 0);
+            result.put("minuti", 0);
+            result.put("secondi", 0);
+            result.put("totaleSecondi", 0L);
+            return result;
+        }
+
+        // Calcola media
+        long mediaSecondi = (long) tempiInSecondi.stream()
+            .mapToLong(Long::longValue)
+            .average()
+            .orElse(0.0);
+
+        // Converti in giorni, ore, minuti, secondi
+        long giorni = mediaSecondi / 86400;
+        long resto = mediaSecondi % 86400;
+        long ore = resto / 3600;
+        resto = resto % 3600;
+        long minuti = resto / 60;
+        long secondi = resto % 60;
+
+        result.put("giorni", giorni);
+        result.put("ore", ore);
+        result.put("minuti", minuti);
+        result.put("secondi", secondi);
+        result.put("totaleSecondi", mediaSecondi);
+
+        return result;
+    }
+
+    /**
+     * Calcola la valutazione di performance basata sui tempi
+     * @param tempoAIaPresaInCarico Tempo medio AI -> Presa in carico
+     * @param tempoPresaInCaricoaContratto Tempo medio Presa in carico -> Contratto
+     * @return Valutazione: "eccellente", "ottimo", "buono", "standard"
+     */
+    private String calcolaPerformance(Map<String, Object> tempoAIaPresaInCarico, 
+                                       Map<String, Object> tempoPresaInCaricoaContratto) {
+        long totaleSecondi1 = (Long) tempoAIaPresaInCarico.getOrDefault("totaleSecondi", 0L);
+        long totaleSecondi2 = (Long) tempoPresaInCaricoaContratto.getOrDefault("totaleSecondi", 0L);
+        
+        long totaleSecondi = totaleSecondi1 + totaleSecondi2;
+        long totaleGiorni = totaleSecondi / 86400;
+
+        // Valutazione basata sul tempo totale
+        if (totaleGiorni <= 7) {
+            return "eccellente";
+        } else if (totaleGiorni <= 14) {
+            return "ottimo";
+        } else if (totaleGiorni <= 30) {
+            return "buono";
+        } else {
+            return "standard";
+        }
     }
 
     /**

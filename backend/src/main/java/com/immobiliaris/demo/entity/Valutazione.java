@@ -2,7 +2,6 @@ package com.immobiliaris.demo.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
-import org.hibernate.annotations.CreationTimestamp;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
@@ -20,8 +19,7 @@ public class Valutazione {
     @Column(name = "Prezzo_Umano")
     private Integer prezzoUmano;
     
-    @CreationTimestamp
-    @Column(name = "Data_valutazione", updatable = false)
+    @Column(name = "Data_valutazione")
     @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
     private LocalDateTime dataValutazione;
     

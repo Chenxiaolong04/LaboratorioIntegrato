@@ -30,12 +30,15 @@ public class AdminApiController {
             // Ottieni statistiche complete dal Service
             Map<String, Object> dashboardData = statisticsService.getAdminDashboardData();
 
+            // Ordine della risposta JSON
             response.put("statistics", dashboardData.get("statistics"));
             response.put("contrattiPerMese", dashboardData.get("contrattiPerMese"));
             response.put("top3Agenti", dashboardData.get("top3Agenti"));
             response.put("immobiliPerTipo", dashboardData.get("immobiliPerTipo"));
             response.put("agenti", dashboardData.get("agenti"));
-            response.put("totaleAgenti", dashboardData.get("totaleAgenti"));
+            response.put("tempoAIaPresaInCarico", dashboardData.get("tempoAIaPresaInCarico"));
+            response.put("tempoPresaInCaricoaContratto", dashboardData.get("tempoPresaInCaricoaContratto"));
+            response.put("valutazionePerformance", dashboardData.get("valutazionePerformance"));
 
             // Ottieni batch di immobili usando offset/limit (per comportamento "Carica altri")
             Map<String, Object> immobiliLoad = statisticsService.getImmobiliLoadMore(offset, limit);

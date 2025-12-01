@@ -1,37 +1,45 @@
 @use "./variables" as var;
 
 // components global styles
-@use "./button";
-@use "./input";
-@use "./inputGroup";
-@use "./cardInput";
-@use "./searchBar";
-@use "./loader";
+@use "./components-style/button";
+@use "./components-style/input";
+@use "./components-style/inputGroup";
+@use "./components-style/cardInput";
+@use "./components-style/searchBar";
+@use "./components-style/loader";
 
 // layout
-@use "./navbar";
-@use "./footer";
+@use "./layouts-style/navbar";
+@use "./layouts-style/footer";
+@use "./layouts-style/tablesDashboard";
 
 // homepage sections
-@use "./header";
-@use "./stats";
-@use "./steps";
-@use "./reasons";
-@use "./faq";
-@use "./cta";
+@use "./homepage/header";
+@use "./homepage/stats";
+@use "./homepage/steps";
+@use "./homepage/reasons";
+@use "./homepage/faq";
+@use "./homepage/cta";
 
 // Form
-@use "./stepForm";
-@use "./stepSuccess";
-@use "./stepContacts";
+@use "./form/stepForm";
+@use "./form/stepProgress";
+@use "./form/formCheck";
+@use "./form/stepSuccess";
+@use "./form/stepContacts";
 
 // Login
 @use "./login";
 
 // dashboard Admin
-@use "./adminHome";
-@use "./tablesDashboard";
-@use "./createUser";
+@use "./admin/adminHome";
+@use "./admin/adminProperties";
+@use "./admin/propertyModal";
+@use "./admin/createUser";
+
+// dashboard Admin
+@use "./agent/agentHome";
+
 
 // Global resets
 * {
@@ -51,11 +59,20 @@ ul {
 
 body {
   font-family: "Sora", sans-serif;
-  
 }
 
+body.no-scroll {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  touch-action: none;
+}
+
+
 main {
-  padding-top: 77px;
+  padding-top: 86px;
 }
 
 .container {
@@ -111,4 +128,5 @@ input[type="number"]::-webkit-outer-spin-button {
 /* Firefox */
 input[type="number"] {
   -moz-appearance: textfield;
+  appearance: textfield;
 }

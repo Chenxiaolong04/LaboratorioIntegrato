@@ -10,7 +10,6 @@ import com.immobiliaris.demo.entity.StatoValutazione;
 import com.immobiliaris.demo.repository.StatoValutazioneRepository;
 import com.immobiliaris.demo.entity.Immobile;
 import com.immobiliaris.demo.repository.ImmobileJpaRepository;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -225,7 +224,7 @@ public class ValutazioneApiController {
 
             Valutazione valutazione = new Valutazione();
             valutazione.setPrezzoAI(prezzoFinale);
-            valutazione.setDataValutazione(LocalDateTime.now());
+            // Non impostare dataValutazione qui - verrà impostata quando l'agente prende in carico
             valutazione.setImmobile(immobile);
 
             StatoValutazione stato = statoRepository.findByNome("solo_AI")
