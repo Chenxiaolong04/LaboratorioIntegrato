@@ -103,6 +103,13 @@ Ottieni informazioni utente loggato
     "totaleAgenti": 5,
     "agentiStage": 2
   },
+  "top3Agenti": [
+    {
+      "nomeAgente": "Luigi Verdi",
+      "numeroContratti": 8,
+      "fatturato": 800000
+    }
+  ],
   "contrattiPerMese": [
     {
       "mese": "11/2025",
@@ -110,18 +117,6 @@ Ottieni informazioni utente loggato
       "totalePrezzoImmobili": 750000
     }
   ],
-  "top3Agenti": [
-    {
-      "nome": "Luigi Verdi",
-      "numeroContratti": 8
-    }
-  ],
-  "immobiliPerTipo": {
-    "appartamento": 25,
-    "villa": 10,
-    "attico": 8,
-    "loft": 7
-  },
   "agenti": [
     {
       "nome": "Luigi",
@@ -145,19 +140,27 @@ Ottieni informazioni utente loggato
     "secondi": 0,
     "totaleSecondi": 648000
   },
-  "valutazionePerformance": "ottimo"
+  "valutazionePerformancePresaInCarico": "ottimo",
+  "valutazionePerformanceContratto": "buono",
+  "immobiliPerTipo": {
+    "Appartamento": 8,
+    "Villa": 3,
+    "Attico": 3,
+    "Loft": 2
+  }
 }
 ```
 
 **Campi risposta:**
 - `statistics` (object): Statistiche admin
-- `contrattiPerMese` (array): Contratti stipulati per mese negli ultimi 6 mesi
 - `top3Agenti` (array): Top 3 agenti per numero di contratti conclusi
-- `immobiliPerTipo` (object): Conteggio immobili per tipologia
+- `contrattiPerMese` (array): Contratti stipulati per mese negli ultimi 6 mesi
 - `agenti` (array): Lista di tutti gli agenti con statistiche complete
 - `tempoAIaPresaInCarico` (object): Tempo medio AI → presa in carico agente
 - `tempoPresaInCaricoaContratto` (object): Tempo medio presa in carico → contratto firmato
-- `valutazionePerformance` (string): Valutazione performance complessiva
+- `valutazionePerformancePresaInCarico` (string): Performance fase registrazione → presa in carico (eccellente ≤3d, ottimo ≤5d, buono ≤7d, standard >7d)
+- `valutazionePerformanceContratto` (string): Performance fase presa in carico → contratto (eccellente ≤7d, ottimo ≤14d, buono ≤30d, standard >30d)
+- `immobiliPerTipo` (object): Conteggio immobili per tipologia (solo: Appartamento, Villa, Attico, Loft)
 
 **Statistiche generali:**
 - `totaleImmobili`: Totale immobili nel database
@@ -187,12 +190,9 @@ Gli agenti sono ordinati in modo decrescente per numero di contratti conclusi. I
   - `secondi`: Numero di secondi (0-59)
   - `totaleSecondi`: Tempo totale in secondi
 - `tempoPresaInCaricoaContratto`: Tempo medio tra la presa in carico da parte dell'agente e la firma del contratto
-  - `giorni`, `ore`, `minuti`, `secondi`, `totaleSecondi`
-- `valutazionePerformance`: Valutazione complessiva basata sui tempi
-  - `"eccellente"`: Processo completato entro 7 giorni
-  - `"ottimo"`: Processo completato entro 14 giorni
-  - `"buono"`: Processo completato entro 30 giorni
-  - `"standard"`: Processo completato oltre 30 giorni
+  - Stessa struttura di `tempoAIaPresaInCarico`
+- `valutazionePerformancePresaInCarico`: Valutazione della velocità di presa in carico (eccellente se ≤3 giorni, ottimo se ≤5 giorni, buono se ≤7 giorni, standard se >7 giorni)
+- `valutazionePerformanceContratto`: Valutazione della velocità di firma contratto dopo presa in carico (eccellente se ≤7 giorni, ottimo se ≤14 giorni, buono se ≤30 giorni, standard se >30 giorni)
 
 **Response (403):** Se non hai ROLE_ADMIN
 
