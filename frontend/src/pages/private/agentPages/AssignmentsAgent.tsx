@@ -10,30 +10,98 @@ import {
   type Incarichi,
 } from "../../../services/api";
 
-
+/**
+ * AssignmentsAgent component.
+ * Displays and manages the list of assignments (incarichi) specific to the logged-in agent.
+ * Allows viewing details, searching, and deleting assignments.
+ * @returns {JSX.Element} The Assignments Agent dashboard view.
+ */
 export default function AssignmentsAgent() {
+  /**
+   * Retrieves the current authenticated user from the authentication context.
+   * @type {object}
+   */
   const { user } = useAuth();
+
+  /**
+   * State for storing the current search query used to filter assignments.
+   * @type {[string, function(string): void]}
+   */
   const [searchQuery, setSearchQuery] = useState("");
+
+  /**
+   * State for storing the list of assignments (Incarichi) for the current agent.
+   * @type {[Incarichi[], function(Incarichi[]): void]}
+   */
   const [incarichi, setIncarichi] = useState<Incarichi[]>([]);
-  const [selectedIncarico, setSelectedIncarico] = useState<Incarichi | null>(null);
+
+  /**
+   * State storing the assignment object whose details are currently displayed in the modal.
+   * @type {[Incarichi | null, function(Incarichi | null): void]}
+   */
+  const [selectedIncarico, setSelectedIncarico] = useState<Incarichi | null>(
+    null
+  );
+
+  /**
+   * State for the offset used in pagination for the next batch of assignments.
+   * @type {[number, function(number): void]}
+   */
   const [nextOffset, setNextOffset] = useState(0);
+
+  /**
+   * State indicating if there are more assignments to load via pagination.
+   * @type {[boolean, function(boolean): void]}
+   */
   const [hasMore, setHasMore] = useState(true);
+
+  /**
+   * State indicating if data is currently being loaded.
+   * @type {[boolean, function(boolean): void]}
+   */
   const [loading, setLoading] = useState(false);
 
+  /**
+   * useEffect hook to fetch the initial list of assignments upon component mount
+   * or when the user object changes. It filters results to only show the logged-in agent's assignments.
+   */
+  useEffect(() => {
+    if (!user) return;
 
-useEffect(() => {
-  if (!user) return;
+    (async () => {
+      setLoading(true);
+      try {
+        const res = await getIncarichi(0, 10); // only offset and limit are used in call
+        // filter assignments for the logged-in agent
+        const mieiIncarichi = res.valutazioni.filter(
+          (v) => v.nomeAgente === user.name
+        );
+        setIncarichi(mieiIncarichi);
+        setNextOffset(res.nextOffset);
+        setHasMore(res.hasMore);
+      } catch (err) {
+        console.error("Errore caricamento incarichi:", err);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [user]);
 
-
-  (async () => {
+  /**
+   * Handles loading the next page of assignments (pagination).
+   * Appends the new data to the existing list, filtering for the current agent.
+   * @async
+   * @returns {Promise<void>}
+   */
+  async function handleLoadMore() {
+    if (!user) return;
     setLoading(true);
     try {
-      const res = await getIncarichi(0, 10); // solo offset e limit
-      // filtro gli incarichi per l'agente loggato
+      const res = await getIncarichi(nextOffset, 10);
       const mieiIncarichi = res.valutazioni.filter(
         (v) => v.nomeAgente === user.name
       );
-      setIncarichi(mieiIncarichi);
+      setIncarichi((prev) => [...prev, ...mieiIncarichi]);
       setNextOffset(res.nextOffset);
       setHasMore(res.hasMore);
     } catch (err) {
@@ -41,46 +109,33 @@ useEffect(() => {
     } finally {
       setLoading(false);
     }
-  })();
-}, [user]);
-
-
-async function handleLoadMore() {
-  if (!user) return;
-  setLoading(true);
-  try {
-    const res = await getIncarichi(nextOffset, 10);
-    const mieiIncarichi = res.valutazioni.filter(
-      (v) => v.nomeAgente === user.name
-    );
-    setIncarichi((prev) => [...prev, ...mieiIncarichi]);
-    setNextOffset(res.nextOffset);
-    setHasMore(res.hasMore);
-  } catch (err) {
-    console.error("Errore caricamento incarichi:", err);
-  } finally {
-    setLoading(false);
   }
-}
 
-
-
-
+  /**
+   * Handles the deletion of a specific assignment by its ID.
+   * Requires user confirmation before proceeding.
+   * @async
+   * @param {number} id - The ID of the assignment to delete.
+   * @returns {Promise<void>}
+   */
   async function handleDelete(id: number) {
     if (!confirm("Vuoi davvero eliminare questo incarico?")) return;
     try {
       await deleteIncarichi(id);
+      // Remove the deleted assignment from the local state
       setIncarichi((prev) => prev.filter((v) => v.id !== id));
     } catch (err) {
       console.error("Errore eliminazione incarico:", err);
     }
   }
 
-
+  /**
+   * Filters the list of assignments based on the current search query, matching against the owner's name.
+   * @type {Incarichi[]}
+   */
   const filteredIncarichi = incarichi.filter((c) =>
     (c.nomeProprietario || "").toLowerCase().includes(searchQuery.toLowerCase())
   );
-
 
   return (
     <div className="dashboard-container">
@@ -90,14 +145,12 @@ async function handleLoadMore() {
         <div className="table-container">
           <h2>I miei incarichi</h2>
 
-
           <div className="filter-buttons">
             <SearchBar
               placeholder="Cerca un proprietario"
               onSearch={setSearchQuery}
             />
           </div>
-
 
           <div className="table-wrapper">
             <table className="alerts-table">
@@ -137,7 +190,6 @@ async function handleLoadMore() {
             </table>
           </div>
 
-
           <div className="assignments-cards">
             {filteredIncarichi.map((row) => (
               <div className="assignment-card" key={row.id}>
@@ -171,7 +223,6 @@ async function handleLoadMore() {
             ))}
           </div>
 
-
           {hasMore && (
             <div className="btn-table">
               <Button onClick={handleLoadMore} disabled={loading}>
@@ -182,19 +233,31 @@ async function handleLoadMore() {
         </div>
       )}
 
-
       {selectedIncarico && (
+        /**
+         * Modal overlay for displaying detailed information about a selected assignment.
+         */
         <div
           className="modal-overlay"
           onClick={() => setSelectedIncarico(null)}
         >
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <h3>Dettagli Incarico</h3>
-            <p><b>ID:</b> {selectedIncarico.id}</p>
-            <p><b>Descrizione:</b> {selectedIncarico.descrizione}</p>
-            <p><b>Prezzo AI:</b> {selectedIncarico.prezzoAI} €</p>
-            <p><b>Data inserimento:</b> {selectedIncarico.dataInserimento}</p>
-            <p><b>Agente assegnato:</b> {selectedIncarico.nomeAgente || "-"}</p>
+            <p>
+              <b>ID:</b> {selectedIncarico.id}
+            </p>
+            <p>
+              <b>Descrizione:</b> {selectedIncarico.descrizione}
+            </p>
+            <p>
+              <b>Prezzo AI:</b> {selectedIncarico.prezzoAI} €
+            </p>
+            <p>
+              <b>Data inserimento:</b> {selectedIncarico.dataInserimento}
+            </p>
+            <p>
+              <b>Agente assegnato:</b> {selectedIncarico.nomeAgente || "-"}
+            </p>
             <Button className="red" onClick={() => setSelectedIncarico(null)}>
               Chiudi
             </Button>
@@ -204,5 +267,3 @@ async function handleLoadMore() {
     </div>
   );
 }
-
-
