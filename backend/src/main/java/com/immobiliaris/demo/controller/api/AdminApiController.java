@@ -21,9 +21,7 @@ public class AdminApiController {
     private StatisticsService statisticsService;
 
     @GetMapping("/dashboard")
-    public ResponseEntity<Map<String, Object>> getDashboard(Authentication authentication,
-                                                            @RequestParam(defaultValue = "0") int offset,
-                                                            @RequestParam(defaultValue = "10") int limit) {
+    public ResponseEntity<Map<String, Object>> getDashboard(Authentication authentication) {
         Map<String, Object> response = new LinkedHashMap<>();
 
         try {
@@ -32,20 +30,13 @@ public class AdminApiController {
 
             // Ordine della risposta JSON
             response.put("statistics", dashboardData.get("statistics"));
-            response.put("contrattiPerMese", dashboardData.get("contrattiPerMese"));
             response.put("top3Agenti", dashboardData.get("top3Agenti"));
-            response.put("immobiliPerTipo", dashboardData.get("immobiliPerTipo"));
+            response.put("contrattiPerMese", dashboardData.get("contrattiPerMese"));
             response.put("agenti", dashboardData.get("agenti"));
             response.put("tempoAIaPresaInCarico", dashboardData.get("tempoAIaPresaInCarico"));
             response.put("tempoPresaInCaricoaContratto", dashboardData.get("tempoPresaInCaricoaContratto"));
             response.put("valutazionePerformance", dashboardData.get("valutazionePerformance"));
-
-            // Ottieni batch di immobili usando offset/limit (per comportamento "Carica altri")
-            Map<String, Object> immobiliLoad = statisticsService.getImmobiliLoadMore(offset, limit);
-            response.put("immobili", immobiliLoad.get("immobili"));
-            response.put("nextOffset", immobiliLoad.get("nextOffset"));
-            response.put("hasMore", immobiliLoad.get("hasMore"));
-            response.put("pageSize", immobiliLoad.get("pageSize"));
+            response.put("immobiliPerTipo", dashboardData.get("immobiliPerTipo"));
 
         } catch (Exception e) {
             // Se c'è errore, ritorna almeno le info base

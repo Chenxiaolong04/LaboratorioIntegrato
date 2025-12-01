@@ -87,12 +87,8 @@ Ottieni informazioni utente loggato
 ## 👨‍💼 Dashboard Admin
 
 
-### GET `/api/admin/dashboard?offset=0&limit=10`
+### GET `/api/admin/dashboard`
 **Richiede:** `ROLE_ADMIN`
-
-**Query Parameters:**
-- `offset` (opzionale, default: 0): quanti immobili sono già stati caricati
-- `limit` (opzionale, default: 10): quanti immobili caricare
 
 **Response (200 OK):**
 ```json
@@ -149,26 +145,7 @@ Ottieni informazioni utente loggato
     "secondi": 0,
     "totaleSecondi": 648000
   },
-  "valutazionePerformance": "ottimo",
-  "immobili": [
-    {
-      "tipo": "Appartamento",
-      "nomeProprietario": "Mario Rossi",
-      // "dataRegistrazione": "2025-11-10", // campo non più restituito
-      "statoValutazione": "in_verifica",
-      "agenteAssegnato": "Luigi Verdi"
-    },
-    {
-      "tipo": "Villa",
-      "nomeProprietario": "Anna Bianchi",
-      // "dataRegistrazione": "2025-11-09", // campo non più restituito
-      "statoValutazione": "solo_AI",
-      "agenteAssegnato": null
-    }
-  ],
-  "nextOffset": 10,
-  "hasMore": true,
-  "pageSize": 10
+  "valutazionePerformance": "ottimo"
 }
 ```
 
@@ -181,10 +158,6 @@ Ottieni informazioni utente loggato
 - `tempoAIaPresaInCarico` (object): Tempo medio AI → presa in carico agente
 - `tempoPresaInCaricoaContratto` (object): Tempo medio presa in carico → contratto firmato
 - `valutazionePerformance` (string): Valutazione performance complessiva
-- `immobili` (array): Array di immobili per questa richiesta
-- `nextOffset` (number): Offset da usare per la prossima richiesta ("Carica altri")
-- `hasMore` (boolean): `true` se ci sono altri immobili, `false` se sei alla fine
-- `pageSize` (number): Numero di immobili ritornati in questa richiesta
 
 **Statistiche generali:**
 - `totaleImmobili`: Totale immobili nel database
@@ -220,21 +193,6 @@ Gli agenti sono ordinati in modo decrescente per numero di contratti conclusi. I
   - `"ottimo"`: Processo completato entro 14 giorni
   - `"buono"`: Processo completato entro 30 giorni
   - `"standard"`: Processo completato oltre 30 giorni
-
-**Campi di ogni immobile:**
-- `tipo`: Tipologia immobile (Appartamento, Villa, Ufficio, ecc.)
-- `nomeProprietario`: Nome completo proprietario
-// `dataRegistrazione`: Data registrazione immobile (non restituito nel JSON)
-- `statoValutazione`: Stato della valutazione dell'immobile (recuperato dalla tabella Valutazioni)
-  - `"solo_AI"`: Valutazione effettuata solo dall'intelligenza artificiale
-  - `"in_verifica"`: Valutazione in corso di verifica da parte di un agente
-  - `"approvata"`: Valutazione approvata dall'agente
-- `agenteAssegnato`: Nome completo dell'agente che gestisce la valutazione
-  - Viene mostrato **solo** se `statoValutazione` è `"in_verifica"` o `"approvata"`
-  - Sarà `null` se lo stato è `"solo_AI"` o se non c'è un agente assegnato
-
-**Nota importante sulla logica di visualizzazione:**
-Il sistema recupera lo stato della valutazione dalla tabella `Valutazioni` (non dalla tabella `Immobili`). Per ogni immobile viene cercata la valutazione più recente (ordinata per `Data_valutazione DESC`). L'agente viene mostrato solo quando la valutazione è in fase di verifica umana o è stata approvata, garantendo che le valutazioni AI non mostrino erroneamente un agente assegnato.
 
 **Response (403):** Se non hai ROLE_ADMIN
 
