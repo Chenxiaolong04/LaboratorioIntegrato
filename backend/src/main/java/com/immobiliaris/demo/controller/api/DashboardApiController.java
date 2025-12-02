@@ -8,6 +8,7 @@ import com.immobiliaris.demo.repository.*;
 import com.immobiliaris.demo.entity.*;
 import com.immobiliaris.demo.dto.DashboardDTO;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.*;
 
@@ -59,7 +60,7 @@ public class DashboardApiController {
             
             // 4. Pipeline
             dashboard.pipeline = getPipeline(agenteId);
-            dashboard.immobiliPerStato = getImmobiliPerStato(agenteId); // ← AGGIUNGI
+            dashboard.immobiliPerStato = getImmobiliPerStato(agenteId);
             
             return ResponseEntity.ok(new Response("success", "Dashboard caricata", dashboard));
         } catch (Exception e) {
@@ -88,13 +89,14 @@ public class DashboardApiController {
         
         // Valutazioni create da agente questo mese
         long valutazioni = valutazioneRepository.findAll().stream()
-            .filter(v -> v.getAgente() != null && v.getAgente().getIdUtente().equals(agenteId) &&
-                    v.getDataValutazione() != null && !v.getDataValutazione().isBefore(inizioMese))
+            .filter(v -> v.getAgente() != null && v.getAgente().getIdUtente() != null && 
+                    v.getAgente().getIdUtente().equals(agenteId) &&
+                    v.getDataValutazione() != null && !v.getDataValutazione().toLocalDate().isBefore(inizioMese))
             .count();
         
         // Total valutazioni
         long totalValutazioni = valutazioneRepository.findAll().stream()
-            .filter(v -> v.getAgente() != null && v.getAgente().getIdUtente().equals(agenteId))
+            .filter(v -> v.getAgente() != null && v.getAgente().getIdUtente() != null && v.getAgente().getIdUtente().equals(agenteId))
             .count();
         
         return new DashboardDTO.StatisticheCard(
@@ -107,7 +109,8 @@ public class DashboardApiController {
     private DashboardDTO.StatisticheCard getImmobiliAcquisiti(Long agenteId) {
         // Immobili assegnati all'agente
         List<Immobile> immobili = immobileRepository.findAll().stream()
-            .filter(i -> i.getProprietario() != null && i.getProprietario().getIdUtente().equals(agenteId))
+            .filter(i -> i.getProprietario() != null && i.getProprietario().getIdUtente() != null && 
+                    i.getProprietario().getIdUtente().equals(agenteId))
             .toList();
         
         // In esclusiva (stato "attivo")
@@ -176,17 +179,21 @@ public class DashboardApiController {
             
             // Acquisizioni (immobili creati nel mese)
             long acquisizioni = immobileRepository.findAll().stream()
-                .filter(im -> im.getDataInserimento() != null && 
-                        !im.getDataInserimento().isBefore(inizio) && 
-                        !im.getDataInserimento().isAfter(fine))
+                .filter(im -> {
+                    if (im.getDataRegistrazione() != null) {
+                        LocalDate data = im.getDataRegistrazione().toLocalDate();
+                        return !data.isBefore(inizio) && !data.isAfter(fine);
+                    }
+                    return false;
+                })
                 .count();
             
             // Vendite (contratti chiusi nel mese)
             long vendite = contrattoRepository.findAll().stream()
                 .filter(c -> c.getAgente() != null && c.getAgente().getIdUtente().equals(agenteId) &&
                         c.getDataFine() != null && 
-                        !c.getDataFine().isBefore(inizio) && 
-                        !c.getDataFine().isAfter(fine) &&
+                        !c.getDataFine().toLocalDate().isBefore(inizio) && 
+                        !c.getDataFine().toLocalDate().isAfter(fine) &&
                         c.getStatoContratto() != null && "chiuso".equalsIgnoreCase(c.getStatoContratto().getNome()))
                 .count();
             
@@ -197,13 +204,13 @@ public class DashboardApiController {
     }
     
     private List<DashboardDTO.ImmobileItem> getProssimiAttivita(Long agenteId, int page) {
-        // 5 immobili per volta, ordinati per data_inserimento DESC
+        // 5 immobili per volta, ordinati per data_registrazione DESC
         int pageSize = 5;
         
         List<DashboardDTO.ImmobileItem> items = new ArrayList<>();
         
         List<Immobile> immobiliOrdinati = immobileRepository.findAll().stream()
-            .sorted(Comparator.comparing((Immobile i) -> i.getDataInserimento() != null ? i.getDataInserimento() : LocalDate.MIN).reversed())
+            .sorted(Comparator.comparing((Immobile i) -> i.getDataRegistrazione() != null ? i.getDataRegistrazione() : LocalDateTime.now()).reversed())
             .skip((long) page * pageSize)
             .limit(pageSize)
             .toList();
@@ -223,7 +230,7 @@ public class DashboardApiController {
                 proprietario,
                 stato,
                 immobile.getPrezzo(),
-                immobile.getDataInserimento() != null ? immobile.getDataInserimento().toString() : "N/A"
+                immobile.getDataRegistrazione() != null ? immobile.getDataRegistrazione().toString() : "N/A"
             ));
         }
         
@@ -253,7 +260,8 @@ public class DashboardApiController {
     
     private DashboardDTO.ImmobiliPerStato getImmobiliPerStato(Long agenteId) {
         List<Immobile> immobili = immobileRepository.findAll().stream()
-            .filter(i -> i.getProprietario() != null && i.getProprietario().getIdUtente().equals(agenteId))
+            .filter(i -> i.getProprietario() != null && i.getProprietario().getIdUtente() != null &&
+                    i.getProprietario().getIdUtente().equals(agenteId))
             .toList();
         
         long inVendita = immobili.stream()
