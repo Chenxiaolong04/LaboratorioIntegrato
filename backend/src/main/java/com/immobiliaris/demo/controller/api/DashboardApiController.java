@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.immobiliaris.demo.repository.*;
 import com.immobiliaris.demo.entity.*;
-import com.immobiliaris.dto.DashboardDTO;
+import com.immobiliaris.demo.dto.DashboardDTO;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.*;
