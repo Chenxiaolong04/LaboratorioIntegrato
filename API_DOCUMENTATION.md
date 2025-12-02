@@ -1419,13 +1419,16 @@ curl http://localhost:8080/api/contratti/1/pdf
 
 ## 📊 Dashboard Agente
 
-### GET `/api/dashboard/agente/{agenteId}`
+### GET `/api/dashboard/agente`
 **Richiede:** Autenticazione | **Ruolo:** Agente/Admin
 
-Recupera il dashboard completo dell'agente con statistiche, performance e pipeline.
+Recupera il dashboard completo dell'agente autenticato con statistiche, performance e pipeline.
+
+**Autenticazione:**
+L'agente viene identificato automaticamente dalla email dell'utente loggato. Non è necessario passare alcun parametro.
 
 **Path Parameters:**
-- `agenteId` (Long): ID dell'agente
+Nessuno
 
 **Response (200 OK):**
 ```json
@@ -1497,6 +1500,20 @@ Recupera il dashboard completo dell'agente con statistiche, performance e pipeli
 {
   "status": "error",
   "message": "Errore recupero dashboard: {dettaglio errore}"
+}
+```
+**Response (401 UNAUTHORIZED):**
+```json
+{
+  "status": "error",
+  "message": "Utente non autenticato"
+}
+```
+**Response (404 NOT FOUND):**
+```json
+{
+  "status": "error",
+  "message": "Agente non trovato"
 }
 ```
 

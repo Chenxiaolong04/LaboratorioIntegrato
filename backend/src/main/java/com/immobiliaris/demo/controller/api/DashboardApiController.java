@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.*;
+import java.security.Principal;
 
 @RestController
 @RequestMapping("/api/dashboard")
@@ -78,6 +79,50 @@ public class DashboardApiController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new Response("error", "Errore caricamento attività: " + e.getMessage(), null));
+        }
+    }
+    
+    @GetMapping("/agente")
+    public ResponseEntity<?> getDashboard(Principal principal) {
+        try {
+            if(principal == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new Response("error", "Utente non autenticato", null));
+            }
+            
+            // Recupera l'utente autenticato dalla email
+            String email = principal.getName();
+            var agenteOpt = userRepository.findByEmail(email);
+            
+            if(agenteOpt.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new Response("error", "Agente non trovato", null));
+            }
+            
+            Long agenteId = agenteOpt.get().getIdUtente();
+            
+            DashboardDTO.DashboardResponse dashboard = new DashboardDTO.DashboardResponse();
+            
+            // 1. Statistiche
+            dashboard.valutazioniRichieste = getValutazioniRichieste(agenteId);
+            dashboard.immobiliAcquisiti = getImmobiliAcquisiti(agenteId);
+            dashboard.trattativeAttive = getTrattativeAttive(agenteId);
+            dashboard.venditeChiuse = getVenditeChiuse(agenteId);
+            
+            // 2. Performance ultimi 6 mesi
+            dashboard.performance = getPerformance(agenteId);
+            
+            // 3. Prossime attività (prima pagina)
+            dashboard.prossimiAttivita = getProssimiAttivita(agenteId, 0);
+            
+            // 4. Pipeline
+            dashboard.pipeline = getPipeline(agenteId);
+            dashboard.immobiliPerStato = getImmobiliPerStato(agenteId);
+            
+            return ResponseEntity.ok(new Response("success", "Dashboard caricata", dashboard));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new Response("error", "Errore recupero dashboard: " + e.getMessage(), null));
         }
     }
     
