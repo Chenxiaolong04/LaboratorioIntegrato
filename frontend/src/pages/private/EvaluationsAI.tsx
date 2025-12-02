@@ -5,22 +5,26 @@ import { FaX } from "react-icons/fa6";
 import {
   getValutazioniSoloAI,
   deleteValutazioneAI,
-  assignIncaricoToMe,
   type ValutazioneAI,
+  assignAgenteToValutazione,
 } from "../../services/api";
 import Loader from "../../components/Loader";
-import { useAuth } from "../../context/AuthContext";
-
+import { FaUserPlus } from "react-icons/fa";
 
 export default function EvaluationsAI() {
-  const { user } = useAuth();
-  const [valutazioni, setValutazioni] = useState<(ValutazioneAI & { incaricoAssegnato?: boolean })[]>([]);
+  const [valutazioni, setValutazioni] = useState<
+    (ValutazioneAI & { incaricoAssegnato?: boolean })[]
+  >([]);
   const [selected, setSelected] = useState<ValutazioneAI | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
-
+  const [showAgentModal, setShowAgentModal] = useState(false);
+  const [valutazioneSelezionata, setValutazioneSelezionata] =
+    useState<ValutazioneAI | null>(null);
+  const [selectedAgent, setSelectedAgent] = useState<string>("");
+  const [agents, setAgents] = useState<{ nomeCognome: string }[]>([]);
 
   // Caricamento iniziale
   useEffect(() => {
@@ -28,7 +32,10 @@ export default function EvaluationsAI() {
       setLoading(true);
       try {
         const res = await getValutazioniSoloAI(0, 10);
-        setValutazioni(res.valutazioni.map(v => ({ ...v, incaricoAssegnato: false })));
+        setValutazioni(
+          res.valutazioni.map((v) => ({ ...v, incaricoAssegnato: false }))
+        );
+        setAgents(res.agents);
         setOffset(res.nextOffset);
         setHasMore(res.hasMore);
       } catch (err) {
@@ -39,15 +46,14 @@ export default function EvaluationsAI() {
     })();
   }, []);
 
-
   // Carica più valutazioni
   async function loadMore() {
     setLoading(true);
     try {
       const res = await getValutazioniSoloAI(offset, 10);
-      setValutazioni(prev => [
+      setValutazioni((prev) => [
         ...prev,
-        ...res.valutazioni.map(v => ({ ...v, incaricoAssegnato: false }))
+        ...res.valutazioni.map((v) => ({ ...v, incaricoAssegnato: false })),
       ]);
       setOffset(res.nextOffset);
       setHasMore(res.hasMore);
@@ -58,44 +64,51 @@ export default function EvaluationsAI() {
     }
   }
 
-
   // Elimina valutazione
   async function handleDelete(id: number) {
     if (!confirm("Vuoi davvero eliminare questa valutazione?")) return;
     try {
       await deleteValutazioneAI(id);
-      setValutazioni(prev => prev.filter(v => v.id !== id));
+      setValutazioni((prev) => prev.filter((v) => v.id !== id));
     } catch (err) {
       console.error("Errore eliminazione valutazione:", err);
     }
   }
 
+  // Assegna incarico ad un'agente
+  async function handleAssignment() {
+    if (!valutazioneSelezionata || !selectedAgent) {
+      alert("Seleziona un agente.");
+      return;
+    }
 
-  // Prendi incarico
-  async function handleTakeAssignment(row: ValutazioneAI & { incaricoAssegnato?: boolean }) {
-    if (!user) return;
     try {
-      const res = await assignIncaricoToMe(row.id, String(user.id), user.name);
-      if (res.success) {
-        setValutazioni(prev =>
-          prev.map(v => v.id === row.id ? { ...v, incaricoAssegnato: true } : v)
-        );
-        alert("Incarico preso con successo!");
-      } else {
-        alert("Errore: " + res.message);
-      }
+      const res = await assignAgenteToValutazione(
+        valutazioneSelezionata.id,
+        selectedAgent
+      );
+
+      alert(res.message);
+
+      // Rimuoviamo la valutazione dalla lista
+      setValutazioni((prev) =>
+        prev.filter((v) => v.id !== valutazioneSelezionata.id)
+      );
+
+      // Chiudiamo modale
+      setShowAgentModal(false);
+      setSelectedAgent("");
+      setValutazioneSelezionata(null);
     } catch (err) {
-      console.error(err);
-      alert("Errore nel prendere l'incarico.");
+      console.error("Errore assegnazione:", err);
+      alert("Errore durante l'assegnazione.");
     }
   }
 
-
   // Filtro ricerca
-  const filtered = valutazioni.filter(v =>
+  const filtered = valutazioni.filter((v) =>
     (v.nomeProprietario ?? "").toLowerCase().includes(searchQuery.toLowerCase())
   );
-
 
   return (
     <div className="dashboard-container">
@@ -105,9 +118,11 @@ export default function EvaluationsAI() {
         <div className="table-container">
           <h2>Valutazioni AI effettuate</h2>
           <div className="filter-buttons">
-            <SearchBar placeholder="Cerca un proprietario" onSearch={setSearchQuery} />
+            <SearchBar
+              placeholder="Cerca un proprietario"
+              onSearch={setSearchQuery}
+            />
           </div>
-
 
           {/* Table */}
           <div className="table-wrapper">
@@ -123,7 +138,7 @@ export default function EvaluationsAI() {
                 </tr>
               </thead>
               <tbody>
-                {filtered.map(row => (
+                {filtered.map((row) => (
                   <tr key={row.id}>
                     <td>{row.nomeProprietario || "—"}</td>
                     <td>{row.dataValutazione?.split("T")[0]}</td>
@@ -132,15 +147,29 @@ export default function EvaluationsAI() {
                     <td>{row.tipo || "—"}</td>
                     <td>
                       <div className="action-buttons">
-                        <Button className="lightblu" onClick={() => setSelected(row)}>
+                        <Button
+                          title="Dettagli valutazione"
+                          className="lightblu"
+                          onClick={() => setSelected(row)}
+                        >
                           Dettagli
                         </Button>
-                        {user?.role === "agente" && (
-                          <Button className="blu" disabled={!!row.incaricoAssegnato} onClick={() => handleTakeAssignment(row)}>
-                            {row.incaricoAssegnato ? "Incarico preso" : "Prendi incarico"}
-                          </Button>
-                        )}
-                        <Button className="red" onClick={() => handleDelete(row.id)}>
+                        <Button
+                          title="Assegna agente immobiliare"
+                          className="blu"
+                          onClick={() => {
+                            setValutazioneSelezionata(row);
+                            setShowAgentModal(true);
+                          }}
+                        >
+                          <FaUserPlus />
+                        </Button>
+
+                        <Button
+                          title="Elimina valutazione"
+                          className="red"
+                          onClick={() => handleDelete(row.id)}
+                        >
                           <FaX />
                         </Button>
                       </div>
@@ -151,29 +180,47 @@ export default function EvaluationsAI() {
             </table>
           </div>
 
-
           {/* Cards responsive */}
           <div className="evaluations-cards">
-            {filtered.map(row => (
+            {filtered.map((row) => (
               <div className="evaluation-card" key={row.id}>
-                <div className="card-row"><b>Nome:</b> {row.nomeProprietario || "—"}</div>
-                <div className="card-row"><b>Data:</b> {row.dataValutazione?.split("T")[0]}</div>
-                <div className="card-row"><b>Prezzo AI:</b> {row.prezzoAI ? row.prezzoAI + " €" : "—"}</div>
-                <div className="card-row"><b>Indirizzo:</b> {row.via ? `${row.via}, ${row.citta}` : "—"}</div>
-                <div className="card-row"><b>Tipologia:</b> {row.tipo || "—"}</div>
+                <div className="card-row">
+                  <b>Nome:</b> {row.nomeProprietario || "—"}
+                </div>
+                <div className="card-row">
+                  <b>Data:</b> {row.dataValutazione?.split("T")[0]}
+                </div>
+                <div className="card-row">
+                  <b>Prezzo AI:</b> {row.prezzoAI ? row.prezzoAI + " €" : "—"}
+                </div>
+                <div className="card-row">
+                  <b>Indirizzo:</b> {row.via ? `${row.via}, ${row.citta}` : "—"}
+                </div>
+                <div className="card-row">
+                  <b>Tipologia:</b> {row.tipo || "—"}
+                </div>
                 <div className="card-actions">
-                  <Button className="lightblu" onClick={() => setSelected(row)}>Dettagli</Button>
-                  {user?.role === "agente" && (
-                    <Button className="blu" disabled={!!row.incaricoAssegnato} onClick={() => handleTakeAssignment(row)}>
-                      {row.incaricoAssegnato ? "Incarico preso" : "Prendi incarico"}
-                    </Button>
-                  )}
-                  <Button className="red" onClick={() => handleDelete(row.id)}><FaX /></Button>
+                  <Button className="lightblu" onClick={() => setSelected(row)}>
+                    Dettagli
+                  </Button>
+                  <Button
+                    title="Assegna agente immobiliare"
+                    className="blu"
+                    onClick={() => {
+                      setValutazioneSelezionata(row);
+                      setShowAgentModal(true);
+                    }}
+                  >
+                    <FaUserPlus />
+                  </Button>
+
+                  <Button className="red" onClick={() => handleDelete(row.id)}>
+                    <FaX />
+                  </Button>
                 </div>
               </div>
             ))}
           </div>
-
 
           {hasMore && (
             <div className="btn-table">
@@ -183,27 +230,52 @@ export default function EvaluationsAI() {
         </div>
       )}
 
-
       {/* Modale dettagli */}
       {selected && (
         <div className="modal-overlay" onClick={() => setSelected(null)}>
-          <div className="modal" onClick={e => e.stopPropagation()}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
             <h3>Dettagli Valutazione</h3>
-            <p><b>ID:</b> {selected.id}</p>
-            <p><b>Descrizione:</b> {selected.descrizione}</p>
-            <p><b>Prezzo AI:</b> {selected.prezzoAI} €</p>
+            <p>
+              <b>ID:</b> {selected.id}
+            </p>
+            <p>
+              <b>Descrizione:</b> {selected.descrizione}
+            </p>
+            <p>
+              <b>Prezzo AI:</b> {selected.prezzoAI} €
+            </p>
             <h4>Dati immobile</h4>
-            <p><b>Tipo:</b> {selected.tipo}</p>
-            <p><b>Indirizzo:</b> {selected.via}, {selected.citta}</p>
-            <p><b>Metratura:</b> {selected.metratura} m²</p>
-            <p><b>Stanze:</b> {selected.stanze}</p>
-            <p><b>Bagni:</b> {selected.bagni}</p>
-            <p><b>Piano:</b> {selected.piano}</p>
+            <p>
+              <b>Tipo:</b> {selected.tipo}
+            </p>
+            <p>
+              <b>Indirizzo:</b> {selected.via}, {selected.citta}
+            </p>
+            <p>
+              <b>Metratura:</b> {selected.metratura} m²
+            </p>
+            <p>
+              <b>Stanze:</b> {selected.stanze}
+            </p>
+            <p>
+              <b>Bagni:</b> {selected.bagni}
+            </p>
+            <p>
+              <b>Piano:</b> {selected.piano}
+            </p>
             <h4>Proprietario</h4>
-            <p><b>Nome:</b> {selected.nomeProprietario}</p>
-            <p><b>Email:</b> {selected.emailProprietario}</p>
-            <p><b>Telefono:</b> {selected.telefonoProprietario}</p>
-            <Button className="red" onClick={() => setSelected(null)}>Chiudi</Button>
+            <p>
+              <b>Nome:</b> {selected.nomeProprietario}
+            </p>
+            <p>
+              <b>Email:</b> {selected.emailProprietario}
+            </p>
+            <p>
+              <b>Telefono:</b> {selected.telefonoProprietario}
+            </p>
+            <Button className="red" onClick={() => setSelected(null)}>
+              Chiudi
+            </Button>
           </div>
         </div>
       )}

@@ -153,7 +153,6 @@ const StepGeneral = forwardRef<StepGeneralRef, StepGeneralProps>(
             <option value="teleriscaldamento">Teleriscaldamento</option>
             <option value="nessuno">Nessuno</option>
           </select>
-          <FaChevronDown className="icon" />
         </div>
 
         {error && <p className="error">{error}</p>}

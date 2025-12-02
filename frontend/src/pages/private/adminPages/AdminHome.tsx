@@ -5,6 +5,7 @@ import {
   type AdminDashboardData,
 } from "../../../services/api";
 import { useEffect, useState } from "react";
+import Loader from "../../../components/Loader";
 
 // Dati statici per il grafico (Performance Mensile)
 // const monthlyPerformanceData = [
@@ -183,7 +184,7 @@ export default function AdminHome() {
     fetchData();
   }, []);
 
-  if (loading) return <div>Caricamento...</div>;
+  if (loading) return <Loader />;
   if (error) return <div>Errore: {error}</div>;
   if (!data) return null;
 
@@ -197,7 +198,7 @@ export default function AdminHome() {
     rank: index + 1,
     name: a.nomeAgente,
     sales: a.numeroContratti,
-    value: a.prezzTotaleImmobili,
+    value: a.fatturato,
   }));
 
   const colorsAvatar = ["#6AA84F", "#E9573F", "#FF8A3C", "#546E7A", "#00A4BA"];

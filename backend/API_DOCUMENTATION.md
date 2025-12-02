@@ -103,6 +103,13 @@ Ottieni informazioni utente loggato
     "totaleAgenti": 5,
     "agentiStage": 2
   },
+  "top3Agenti": [
+    {
+      "nomeAgente": "Luigi Verdi",
+      "numeroContratti": 8,
+      "fatturato": 800000
+    }
+  ],
   "contrattiPerMese": [
     {
       "mese": "11/2025",
@@ -110,18 +117,6 @@ Ottieni informazioni utente loggato
       "totalePrezzoImmobili": 750000
     }
   ],
-  "top3Agenti": [
-    {
-      "nome": "Luigi Verdi",
-      "numeroContratti": 8
-    }
-  ],
-  "immobiliPerTipo": {
-    "appartamento": 25,
-    "villa": 10,
-    "attico": 8,
-    "loft": 7
-  },
   "agenti": [
     {
       "nome": "Luigi",
@@ -145,19 +140,27 @@ Ottieni informazioni utente loggato
     "secondi": 0,
     "totaleSecondi": 648000
   },
-  "valutazionePerformance": "ottimo"
+  "valutazionePerformancePresaInCarico": "ottimo",
+  "valutazionePerformanceContratto": "buono",
+  "immobiliPerTipo": {
+    "Appartamento": 8,
+    "Villa": 3,
+    "Attico": 3,
+    "Loft": 2
+  }
 }
 ```
 
 **Campi risposta:**
 - `statistics` (object): Statistiche admin
-- `contrattiPerMese` (array): Contratti stipulati per mese negli ultimi 6 mesi
 - `top3Agenti` (array): Top 3 agenti per numero di contratti conclusi
-- `immobiliPerTipo` (object): Conteggio immobili per tipologia
+- `contrattiPerMese` (array): Contratti stipulati per mese negli ultimi 6 mesi
 - `agenti` (array): Lista di tutti gli agenti con statistiche complete
 - `tempoAIaPresaInCarico` (object): Tempo medio AI → presa in carico agente
 - `tempoPresaInCaricoaContratto` (object): Tempo medio presa in carico → contratto firmato
-- `valutazionePerformance` (string): Valutazione performance complessiva
+- `valutazionePerformancePresaInCarico` (string): Performance fase registrazione → presa in carico (eccellente ≤3d, ottimo ≤5d, buono ≤7d, standard >7d)
+- `valutazionePerformanceContratto` (string): Performance fase presa in carico → contratto (eccellente ≤7d, ottimo ≤14d, buono ≤30d, standard >30d)
+- `immobiliPerTipo` (object): Conteggio immobili per tipologia (solo: Appartamento, Villa, Attico, Loft)
 
 **Statistiche generali:**
 - `totaleImmobili`: Totale immobili nel database
@@ -187,12 +190,9 @@ Gli agenti sono ordinati in modo decrescente per numero di contratti conclusi. I
   - `secondi`: Numero di secondi (0-59)
   - `totaleSecondi`: Tempo totale in secondi
 - `tempoPresaInCaricoaContratto`: Tempo medio tra la presa in carico da parte dell'agente e la firma del contratto
-  - `giorni`, `ore`, `minuti`, `secondi`, `totaleSecondi`
-- `valutazionePerformance`: Valutazione complessiva basata sui tempi
-  - `"eccellente"`: Processo completato entro 7 giorni
-  - `"ottimo"`: Processo completato entro 14 giorni
-  - `"buono"`: Processo completato entro 30 giorni
-  - `"standard"`: Processo completato oltre 30 giorni
+  - Stessa struttura di `tempoAIaPresaInCarico`
+- `valutazionePerformancePresaInCarico`: Valutazione della velocità di presa in carico (eccellente se ≤3 giorni, ottimo se ≤5 giorni, buono se ≤7 giorni, standard se >7 giorni)
+- `valutazionePerformanceContratto`: Valutazione della velocità di firma contratto dopo presa in carico (eccellente se ≤7 giorni, ottimo se ≤14 giorni, buono se ≤30 giorni, standard se >30 giorni)
 
 **Response (403):** Se non hai ROLE_ADMIN
 
@@ -934,31 +934,88 @@ Se l'email del proprietario non esiste nel sistema, viene creato automaticamente
 ---
 
 ## 📊 Valutazione Immobili
-La **valutazione immobiliare** consiste esclusivamente nel calcolo automatico del prezzo dell'immobile tramite algoritmo AI.
+La **valutazione immobiliare** consiste nel calcolo automatico del prezzo dell'immobile tramite algoritmo AI avanzato.
 
-### 💰 Logica di Calcolo
+### 💰 Logica di Calcolo Algoritmo AI
 
-Quando viene registrato un immobile, il sistema calcola il prezzo stimato (`prezzoAI`) in base ai seguenti parametri principali:
+Quando viene registrato un immobile, il sistema calcola il prezzo stimato (`prezzoAI`) utilizzando un **algoritmo multi-fattoriale** che considera:
 
-- **Tipologia** (es. appartamento, villa, ufficio)
-- **Localizzazione** (città, zona, provincia)
-- **Metratura** (superficie in mq)
-- **Numero stanze**
-- **Numero bagni**
-- **Stato conservazione**
-- **Dotazioni** (ascensore, garage, giardino, balcone, terrazzo, cantina)
+#### 1. **Quotazione Base (da CAP)**
+Il sistema recupera il prezzo medio al mq dalla tabella `zone` in base al CAP dell'immobile:
+- Centro Torino (10121): 4.200 €/mq
+- Crocetta (10128): 3.700 €/mq
+- Mirafiori Sud (10135): 1.500 €/mq
+- E oltre 30 zone mappate...
 
-L'algoritmo AI analizza questi dati e restituisce un valore numerico che rappresenta il prezzo stimato di mercato per quell'immobile.
+**Se il CAP non è mappato, la valutazione restituisce 0.**
+
+#### 2. **Coefficiente di Efficienza Funzionale (C_Funzionale)**
+Verifica l'adeguatezza di bagni e stanze rispetto alla metratura:
+- **Bagni**: Penalità -5% se bagni < (metratura / 70)
+- **Stanze**: Penalità -3% se stanze > (metratura / 20)
+
+#### 3. **Coefficiente Qualitativo (C_Qualitativo)**
+Combina condizioni e tipologia:
+
+**Condizioni:**
+- Nuovo: +15%
+- Ottimo: +10%
+- Buono: 0% (neutro)
+- Da ristrutturare: -25%
+
+**Tipologia:**
+- Villa: +30%
+- Attico/Loft: +12%
+- Appartamento: 0% (neutro)
+
+#### 4. **Moltiplicatore Accessori e Caratteristiche (M_Finale)**
+Somma percentuali per ogni dotazione presente:
+- **Garage**: +25% (bonus maggiorato)
+- **Terrazzo**: +12%
+- **Giardino**: +10%
+- **Ascensore**: +8%
+- **Balcone**: +5%
+- **Cantina**: +3%
+
+**Riscaldamento:**
+- Teleriscaldamento: +8%
+- Autonomo: +5%
+- Centralizzato (obsoleto): -3%
+
+**Piano/Altezza:**
+- **Villa multi-livello** (piano > 1): +10% fisso
+- **Appartamento/Loft/Attico**: +2% per ogni piano
+
+#### 5. **Formula Finale**
+```
+Prezzo_AI = (metratura × quotazione_CAP) 
+            × C_Funzionale 
+            × C_Qualitativo 
+            × M_Finale
+```
+
+**Esempio di calcolo:**
+```
+Immobile: Appartamento 85 mq, CAP 10128 (Crocetta), Piano 3
+Condizioni: Buone, Con: Ascensore + Balcone + Garage
+Bagni: 2, Stanze: 3, Riscaldamento: Autonomo
+
+1. Base: 85 × 3.700 = 314.500 €
+2. C_Funzionale: 1.00 (bagni OK) × 1.00 (stanze OK) = 1.00
+3. C_Qualitativo: 1.00 (buono) × 1.00 (appartamento) = 1.00
+4. M_Finale: 1 + 0.08 (ascensore) + 0.05 (balcone) + 0.25 (garage) + 0.05 (autonomo) + 0.06 (3 piani) = 1.49
+5. Prezzo_AI = 314.500 × 1.00 × 1.00 × 1.49 = 468.605 €
+```
 
 **Esempio di risposta:**
 ```json
 {
   "idImmobile": 123,
-  "prezzoAI": 220000
+  "prezzoAI": 468605
 }
 ```
 
-> Non sono previsti altri stati, workflow, agenti o storici nella valutazione: il sistema si limita al calcolo automatico del prezzo.
+> **Nota**: L'algoritmo restituisce sempre un valore intero. Se metratura ≤ 0 o CAP non mappato, restituisce 0.
 
 ### POST `/api/address/validate`
 Valida un indirizzo usando l'API Geoapify
@@ -1163,6 +1220,9 @@ if (immobile.statoValutazione === "solo_AI") {
 | POST   | /api/contratti         | Creazione nuovo contratto          | ADMIN              |
 | PUT    | /api/contratti/{id}    | Modifica contratto                 | ADMIN              |
 | DELETE | /api/contratti/{id}    | Eliminazione contratto             | ADMIN              |
+| GET    | /api/contratti/valutazione/{idValutazione}/pdf| Genera contratto PDF e invia email | Tutti       |
+| GET    | /api/contratti/valutazione/{idValutazione}/pdf/preview | Genera PDF e invia email   | Tutti       |
+| GET    | /api/contratti/test    | Test endpoint controller           | Tutti              |
 | GET    | /api/valutazioni       | Elenco valutazioni                 | ADMIN, AGENT       |
 | GET    | /api/valutazioni/{id}  | Dettaglio valutazione              | ADMIN, AGENT       |
 | POST   | /api/valutazioni       | Creazione nuova valutazione        | ADMIN, AGENT       |
@@ -1171,6 +1231,194 @@ if (immobile.statoValutazione === "solo_AI") {
 | GET    | /api/home              | Pagina home                        | Nessuno            |
 | GET    | /api/welcome           | Pagina di benvenuto                | Nessuno            |
 | GET    | /api/error             | Gestione errori                    | Nessuno            |
+
+---
+
+## 📄 Generazione e Invio Contratti PDF via Email
+
+### 📋 Panoramica
+Il sistema genera automaticamente contratti di mediazione immobiliare in formato PDF professionale e li invia **esclusivamente via email** al proprietario e all'agente. Il PDF **non viene scaricato localmente**, ma inviato solo come allegato email.
+
+---
+
+### GET `/api/contratti/valutazione/{idValutazione}/pdf`
+Genera il contratto PDF dalla valutazione e lo invia via email (solo invio, nessun download)
+
+**Parametri:**
+- `idValutazione`: ID della valutazione (dalla tabella `valutazioni`)
+
+**Comportamento:**
+- Se esiste già un contratto per la valutazione → lo utilizza
+- Se NON esiste → crea automaticamente un nuovo contratto con:
+  - Immobile dalla valutazione
+  - Proprietario dall'immobile
+  - Agente dalla valutazione
+  - Data inizio: oggi
+  - Data fine: +6 mesi (default)
+  - Commissione: 3% (default)
+
+**Funzionalità:**
+1. ✅ Genera contratto PDF professionale completo
+2. ✉️ Invia email al **proprietario** con PDF allegato
+3. ✉️ Invia email all'**agente** con copia PDF
+4. ✅ Restituisce conferma JSON (nessun download locale)
+
+**Response (200 OK):**
+```json
+{
+  "success": true,
+  "message": "Contratto generato e inviato via email con successo",
+  "destinatari": {
+    "proprietario": "mario.rossi@example.com",
+    "agente": "agente@immobiliaris.demo"
+  },
+  "valutazioneId": 23,
+  "contrattoId": 1
+}
+```
+
+**Response (404):**
+```json
+{
+  "error": "Valutazione non trovata con id: {idValutazione}"
+}
+```
+
+**Response (400):**
+```json
+{
+  "error": "La valutazione non ha un immobile associato"
+}
+```
+oppure
+```json
+{
+  "error": "La valutazione non ha un agente assegnato. Assegnare prima un agente."
+}
+```
+
+**Response (500):**
+```json
+{
+  "error": "Errore invio email: {messaggio}"
+}
+```
+
+**Note:**
+- Il PDF NON viene più scaricato localmente
+- Il PDF viene inviato SOLO via email ai destinatari
+- Gli errori email bloccano la risposta (status 500)
+
+---
+
+### GET `/api/contratti/valutazione/{idValutazione}/pdf/preview`
+Stesso comportamento di `/pdf` (genera e invia via email, nessun download)
+
+**Response:** Identico all'endpoint `/pdf`
+
+**Prerequisiti:**
+- La valutazione deve esistere
+- La valutazione deve avere un immobile associato
+- La valutazione deve avere un agente assegnato
+- Se il contratto non esiste, viene creato automaticamente
+
+---
+
+### 📧 Email Inviate Automaticamente
+
+**Email al Proprietario:**
+- **Oggetto**: 📄 Contratto di Mediazione Immobiliare - [Via Immobile]
+- **Contenuto**: Messaggio personalizzato con saluto, dettagli immobile, spiegazione contratto
+- **Allegato**: PDF completo del contratto
+- **Design**: HTML professionale con logo IMMOBILIARIS, box evidenziato, footer contatti
+
+**Email all'Agente:**
+- **Oggetto**: 📄 [COPIA] Contratto di Mediazione - [Via Immobile]
+- **Contenuto**: Conferma invio al proprietario + autorizzazione a procedere con promozione immobile
+- **Allegato**: Stessa copia del PDF
+
+---
+
+### 📄 Contenuto PDF Contratto (11 Sezioni)
+
+1. **Intestazione Azienda** - IMMOBILIARIS S.R.L., sede Torino, P.IVA, REA, contatti
+2. **Le Parti** - Mandante (venditore) e Agente con dati completi
+3. **Oggetto Incarico** - Immobile dettagliato (via, CAP, tipologia, metratura, stanze, bagni, piano, ascensore, dotazioni)
+4. **Condizioni Vendita** - Prezzo richiesto (da valutazione umana o AI)
+5. **Durata Incarico** - Date inizio/fine, modalità cessazione
+6. **Compenso Provvigione** - Percentuale + IVA (default 3%), maturazione diritto
+7. **Dichiarazioni Mandante** - Conformità urbanistica, catastale, impianti, APE
+8. **Obblighi e Clausola Penale** - Esclusiva, penale 70% per violazione, obblighi agente
+9. **Trattamento Dati GDPR** - Consenso Reg. UE 2016/679
+10. **Firme** - Spazi firma mandante e agente con timbro
+11. **Clausole Vessatorie** - Approvazione specifica art. 1341-1342 C.C.
+
+---
+
+### 🛠️ Implementazione Tecnica
+
+**Servizio PDF:** `PdfContrattoService.java`
+- Libreria: iText PDF 5.5.13.3
+- Layout: A4 professionale, font multipli (titoli 16pt, sottotitoli 12pt, normale 10pt)
+- Tabelle per dati immobile, formattazione italiana date (dd/MM/yyyy)
+
+**Servizio Email:** `EmailService.java`
+- Metodo: `sendContrattoPdf(Contratto contratto, byte[] pdfBytes)`
+- Template HTML con logo inline (`static/logo.png`)
+- Allegato PDF via `ByteArrayResource`
+- Doppio invio (proprietario + agente)
+
+**Controller:** `ContrattoApiController.java`
+- Endpoint: `/api/contratti/{id}/pdf` e `/pdf/preview`
+- Risposta JSON (no download binario)
+- Errori: 404 contratto non trovato, 500 errore email
+
+---
+
+### ⚠️ Requisiti e Configurazione
+
+**Requisiti database:**
+- Contratto completo con relazioni: `immobile`, `utente` (proprietario), `agente`, `valutazione`
+- Email valide per proprietario e agente
+- Prezzo disponibile: priorità `prezzo_umano` > `prezzo_ai`
+
+**Configurazione SMTP (`application.properties`):**
+```properties
+spring.mail.host=smtp.gmail.com
+spring.mail.port=587
+spring.mail.username=xiao.chen@edu-its.it
+spring.mail.password=[app-password]
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true
+```
+
+**⚠️ IMPORTANTE:**
+- Il PDF **NON viene mai scaricato localmente** dal backend
+- Il PDF esiste **SOLO come allegato email**
+- Errori invio email → status 500 (bloccante)
+- File `static/logo.png` deve esistere in resources
+
+---
+
+### 🧪 Esempio Utilizzo
+
+```bash
+curl http://localhost:8080/api/contratti/1/pdf
+
+# Risposta JSON:
+{
+  "success": true,
+  "message": "Contratto generato e inviato via email con successo",
+  "destinatari": {
+    "proprietario": "mario.rossi@example.com",
+    "agente": "agente@immobiliaris.demo"
+  }
+}
+```
+
+**Workflow:** API Call → Genera PDF → Email Proprietario → Email Agente → Risposta JSON ✅
+
+---
 
 
 

@@ -309,6 +309,7 @@
         }
 
         .agent-metrics {
+          text-align: end;
           display: flex;
           justify-content: flex-end;
           flex: 1 1 50%;
@@ -317,8 +318,6 @@
           .metric-item {
             display: flex;
             flex-direction: column;
-            align-items: flex-start;
-            width: 80px;
 
             .metric-value {
               font-size: 1.2rem;

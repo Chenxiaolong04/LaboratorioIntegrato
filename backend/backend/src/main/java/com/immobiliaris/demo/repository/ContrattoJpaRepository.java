@@ -32,6 +32,12 @@ public interface ContrattoJpaRepository extends JpaRepository<Contratto, Integer
      * Trova tutti i contratti con uno specifico stato
      */
     List<Contratto> findByStatoContrattoNome(String nome);
+    
+    /**
+     * Trova il contratto associato a una specifica valutazione
+     * Spring genera automaticamente: WHERE id_valutazione = ?
+     */
+    java.util.Optional<Contratto> findByValutazioneId(Integer valutazioneId);
 
 
 }

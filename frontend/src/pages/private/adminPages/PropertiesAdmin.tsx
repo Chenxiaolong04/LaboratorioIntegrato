@@ -407,7 +407,7 @@ export default function PropertiesAdmin() {
               </p>
               <p>
                 <strong>Prezzo:</strong>{" "}
-                {selectedProperty.prezzo.toLocaleString()} €
+                {selectedProperty.prezzo || selectedProperty.prezzoAI} €
               </p>
               <p>
                 <strong>Metratura:</strong> {selectedProperty.metratura} m²

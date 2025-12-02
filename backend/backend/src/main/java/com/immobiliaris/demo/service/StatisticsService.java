@@ -36,9 +36,6 @@ public class StatisticsService {
     private ImmobileJpaRepository immobileRepository;
 
     @Autowired
-    private UtenteRepository utenteRepository;
-
-    @Autowired
     private ValutazioneJpaRepository valutazioneJpaRepository;
 
     @Autowired
@@ -270,10 +267,10 @@ public class StatisticsService {
                             System.out.println("DEBUG: Agente trovato: " + user.getNome() + " " + user.getCognome() + 
                                     " con " + entry.getValue().size() + " contratti nel mese");
                             
-                            Integer totalePrezzoImmobili = entry.getValue().stream()
+                            Integer fatturato = entry.getValue().stream()
                                 .map(c -> {
-                                    if (c.getImmobile() != null && c.getImmobile().getPrezzo() != null) {
-                                        return c.getImmobile().getPrezzo();
+                                    if (c.getValutazione() != null && c.getValutazione().getPrezzoUmano() != null) {
+                                        return c.getValutazione().getPrezzoUmano();
                                     } else {
                                         return 0;
                                     }
@@ -282,7 +279,7 @@ public class StatisticsService {
                             
                             agente.put("nomeAgente", user.getNome() + " " + user.getCognome());
                             agente.put("numeroContratti", (long) entry.getValue().size());
-                            agente.put("prezzTotaleImmobili", totalePrezzoImmobili);
+                            agente.put("fatturato", fatturato);
                             
                             System.out.println("DEBUG: Agente aggiunto a top3. Map size: " + agente.size());
                         } else {
@@ -327,7 +324,8 @@ public class StatisticsService {
         Map<String, Long> stats = new LinkedHashMap<>();
 
         // Ottieni ID dell'agente
-        Integer idAgente = utenteRepository.findIdByEmail(emailAgente);
+        Long idAgenteObj = userRepository.findIdByEmail(emailAgente);
+        Integer idAgente = idAgenteObj != null ? idAgenteObj.intValue() : null;
 
         if (idAgente == null) {
             // Ritorna statistiche vuote se l'agente non viene trovato
@@ -980,9 +978,12 @@ public class StatisticsService {
         result.put("tempoAIaPresaInCarico", tempoAIaPresaInCaricoMap);
         result.put("tempoPresaInCaricoaContratto", tempoPresaInCaricoaContrattoMap);
 
-        // Calcola performance basata sui tempi medi
-        String performance = calcolaPerformance(tempoAIaPresaInCaricoMap, tempoPresaInCaricoaContrattoMap);
-        result.put("valutazionePerformance", performance);
+        // Calcola performance separate per ogni fase
+        String performancePresaInCarico = calcolaPerformancePresaInCarico(tempoAIaPresaInCaricoMap);
+        String performanceContratto = calcolaPerformanceContratto(tempoPresaInCaricoaContrattoMap);
+        
+        result.put("valutazionePerformancePresaInCarico", performancePresaInCarico);
+        result.put("valutazionePerformanceContratto", performanceContratto);
 
         return result;
     }
@@ -1042,6 +1043,48 @@ public class StatisticsService {
         long totaleGiorni = totaleSecondi / 86400;
 
         // Valutazione basata sul tempo totale
+        if (totaleGiorni <= 7) {
+            return "eccellente";
+        } else if (totaleGiorni <= 14) {
+            return "ottimo";
+        } else if (totaleGiorni <= 30) {
+            return "buono";
+        } else {
+            return "standard";
+        }
+    }
+
+    /**
+     * Calcola la valutazione di performance per la fase di presa in carico
+     * @param tempoFase Tempo medio di presa in carico
+     * @return Valutazione: "eccellente" (≤3d), "ottimo" (≤5d), "buono" (≤7d), "standard" (>7d)
+     */
+    private String calcolaPerformancePresaInCarico(Map<String, Object> tempoFase) {
+        long totaleSecondi = (Long) tempoFase.getOrDefault("totaleSecondi", 0L);
+        long totaleGiorni = totaleSecondi / 86400;
+
+        // Valutazione basata sul tempo della fase di presa in carico
+        if (totaleGiorni <= 3) {
+            return "eccellente";
+        } else if (totaleGiorni <= 5) {
+            return "ottimo";
+        } else if (totaleGiorni <= 7) {
+            return "buono";
+        } else {
+            return "standard";
+        }
+    }
+
+    /**
+     * Calcola la valutazione di performance per la fase di contratto
+     * @param tempoFase Tempo medio fino al contratto
+     * @return Valutazione: "eccellente" (≤7d), "ottimo" (≤14d), "buono" (≤30d), "standard" (>30d)
+     */
+    private String calcolaPerformanceContratto(Map<String, Object> tempoFase) {
+        long totaleSecondi = (Long) tempoFase.getOrDefault("totaleSecondi", 0L);
+        long totaleGiorni = totaleSecondi / 86400;
+
+        // Valutazione basata sul tempo della fase di contratto
         if (totaleGiorni <= 7) {
             return "eccellente";
         } else if (totaleGiorni <= 14) {

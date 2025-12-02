@@ -107,10 +107,10 @@ export default function Footer() {
             <li>
               <FaEnvelope size={28} />
               <a
-                href="mailto:wneognwi@gmail.com"
-                aria-label="Invia un'email a wneognwi@gmail.com"
+                href="mailto:immobiliaris@gmail.com"
+                aria-label="Invia un'email a immobiliaris@gmail.com"
               >
-                wneognwi@gmail.com
+                immobiliaris@gmail.com
               </a>
             </li>
             <li>

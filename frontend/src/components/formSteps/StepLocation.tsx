@@ -3,6 +3,7 @@ import React, {
   useImperativeHandle,
   forwardRef,
   useRef,
+  useEffect,
 } from "react";
 import InputGroup from "../InputGroup";
 import { useFormContext } from "../../context/FormContext";
@@ -71,6 +72,35 @@ const StepLocation = forwardRef<StepLocationRef, StepLocationProps>(
       }
     };
 
+    useEffect(() => {
+      if (!address || !city) return;
+
+      if (selectedAddress) return;
+
+      if (address.length > 3 && city.length > 2) {
+        fetchSuggestions(address, city).then((_) => {
+          const found = suggestions.find(
+            (s) =>
+              s.via.toLowerCase() === address.toLowerCase() ||
+              s.displayName.toLowerCase() === address.toLowerCase()
+          );
+
+          if (found) {
+            setSelectedAddress(found);
+
+            setCap(found.cap);
+            setCivico(found.civico || "");
+
+            setFormData((prev) => ({
+              ...prev,
+              address: found.displayName,
+              cap: found.cap,
+            }));
+          }
+        });
+      }
+    }, []);
+
     const debouncedFetch = useRef(debounce(fetchSuggestions, 400)).current;
 
     const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -128,18 +158,6 @@ const StepLocation = forwardRef<StepLocationRef, StepLocationProps>(
     return (
       <div className="step">
         <h2>Dove si trova l'immobile da valutare?</h2>
-
-        <InputGroup
-          name="address"
-          label="Indirizzo dell'immobile"
-          type="text"
-          placeholder="Es: Via Roma"
-          autoComplete="street-address"
-          value={address}
-          required
-          onChange={handleAddressChange}
-        />
-
         <div className="form-group">
           <label htmlFor="city">Città *</label>
           <select
@@ -156,6 +174,17 @@ const StepLocation = forwardRef<StepLocationRef, StepLocationProps>(
             <option value="Cuneo">Cuneo</option>
           </select>
         </div>
+
+        <InputGroup
+          name="address"
+          label="Indirizzo dell'immobile"
+          type="text"
+          placeholder="Es: Via Roma"
+          autoComplete="street-address"
+          value={address}
+          required
+          onChange={handleAddressChange}
+        />
 
         {(suggestions.length > 0 || isLoading) && (
           <ul className="suggestions-list">

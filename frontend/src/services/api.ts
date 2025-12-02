@@ -76,7 +76,7 @@ export type AdminDashboardData = {
   top3Agenti: {
     nomeAgente: string;
     numeroContratti: number;
-    prezzTotaleImmobili: number;
+    fatturato: number;
   }[];
   agenti: {
     nome: string;
@@ -163,6 +163,21 @@ export async function getImmobili(
     method: "GET",
   });
 }
+
+
+export async function assignAgenteToValutazione(
+  valutazioneId: number,
+  idAgente: number
+): Promise<{ success: boolean; message: string }> {
+  return apiFetch<{ success: boolean; message: string }>(
+    `/admin/valutazioni/solo-ai/${valutazioneId}/assegna-agente`,
+    {
+      method: "PUT",
+      body: { idAgente },
+    }
+  );
+}
+
 
 export type AgenteDashboardData = {
   statistics: {
@@ -336,8 +351,13 @@ export interface ValutazioneAI {
   dataInserimento: string | null;
 }
 
+type Agent = {
+  nomeCognome: string;
+}
+
 export interface ValutazioniAIResponse {
   valutazioni: ValutazioneAI[];
+  agents: Agent[];
   nextOffset: number;
   hasMore: boolean;
   pageSize: number;

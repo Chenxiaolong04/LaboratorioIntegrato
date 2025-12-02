@@ -6,11 +6,14 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.core.io.ByteArrayResource;
 import com.immobiliaris.demo.entity.Valutazione;
 import com.immobiliaris.demo.entity.Immobile;
+import com.immobiliaris.demo.entity.Contratto;
 import com.immobiliaris.demo.repository.ValutazioneJpaRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import java.time.format.DateTimeFormatter;
 
 @Service
 public class EmailService {
@@ -134,8 +137,8 @@ public class EmailService {
                 + "<div class='field'><span class='field-label'>Cantina:</span><span class='field-value'>" + (immobile.getCantina() != null && immobile.getCantina() ? "Sì" : "No") + "</span></div>"
                 + "<hr />"
                 + "<h3 class='section-title'>Altri dettagli</h3>"
-                + "<div class='field'><span class='field-label'>Prezzo:</span><span class='field-value'>" + (immobile.getPrezzo() != null ? immobile.getPrezzo() : "N/A") + "€</span></div>"
-                + "<div class='field'><span class='field-label'>Data inserimento:</span><span class='field-value'>" + (immobile.getDataRegistrazione() != null ? immobile.getDataRegistrazione() : "N/A") + "</span></div>"
+                + "<div class='field'><span class='field-label'>Descrizione:</span><span class='field-value'>" + (immobile.getDescrizione() != null ? immobile.getDescrizione() : "N/A") + "</span></div>"
+                + "<div class='field'><span class='field-label'>Data inserimento:</span><span class='field-value'>" + formatDataOra(immobile.getDataRegistrazione()) + "</span></div>"
                 + "<div style='display:block; margin:15px auto; padding:12px 20px; background:#1e3a56; color:#fff; text-align:center; border-radius:10px; font-weight:bold; font-size:18px;'>"
                 + "Valutazione stimata: " + (valutazione.getPrezzoAI() != null ? valutazione.getPrezzoAI() : "N/A") + "€"
                 + "</div>"
@@ -154,6 +157,147 @@ public class EmailService {
                 + "<div style='text-align:center; margin:10px 0;'><img src='cid:logoImage' width='50' style='display:block; margin:0 auto;' /></div>"
                 + "<div class='footer'>© 2025 Immobiliaris — Tutti i diritti riservati</div>"
                 + "</div></body></html>";
+    }
+
+    /**
+     * Invia contratto PDF via email al proprietario e all'agente
+     *
+     * @param contratto Contratto da inviare
+     * @param pdfBytes Contenuto PDF in byte array
+     * @throws MessagingException se errore invio mail
+     */
+    public void sendContrattoPdf(Contratto contratto, byte[] pdfBytes) throws MessagingException {
+        Immobile immobile = contratto.getImmobile();
+        String emailProprietario = contratto.getUtente().getEmail();
+        String nomeProprietario = contratto.getUtente().getNome() + " " + contratto.getUtente().getCognome();
+        String emailAgente = contratto.getAgente().getEmail();
+        String nomeAgente = contratto.getAgente().getNome() + " " + contratto.getAgente().getCognome();
+        
+        // Genera nome file
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        String dataStr = contratto.getDataInizio() != null 
+            ? contratto.getDataInizio().format(formatter) 
+            : "senza_data";
+        String nomeFile = "Contratto_" + contratto.getId() + "_" + dataStr + ".pdf";
+        
+        // HTML per il proprietario
+        String htmlProprietario = generaHtmlContratto(
+            nomeProprietario, 
+            immobile.getVia() + ", " + immobile.getCitta(),
+            "Gentile " + nomeProprietario,
+            "In allegato trova il contratto di mediazione in esclusiva per la vendita del suo immobile sito in " + 
+            immobile.getVia() + ", " + immobile.getCitta() + ".\n\n" +
+            "Il contratto è stato generato in data odierna e contiene tutti i dettagli dell'incarico conferito alla nostra agenzia.\n\n" +
+            "La preghiamo di leggerlo attentamente e di contattarci per qualsiasi chiarimento."
+        );
+        
+        // HTML per l'agente
+        String htmlAgente = generaHtmlContratto(
+            nomeAgente,
+            immobile.getVia() + ", " + immobile.getCitta(),
+            "Gentile " + nomeAgente,
+            "In allegato trova copia del contratto di mediazione in esclusiva per l'immobile sito in " +
+            immobile.getVia() + ", " + immobile.getCitta() + ".\n\n" +
+            "Il contratto è stato generato e inviato al proprietario " + nomeProprietario + ".\n\n" +
+            "Potrà procedere con le attività di promozione e vendita dell'immobile."
+        );
+        
+        // Invia al proprietario
+        inviaEmailConAllegato(
+            emailProprietario,
+            "📄 Contratto di Mediazione Immobiliare - " + immobile.getVia(),
+            htmlProprietario,
+            nomeFile,
+            pdfBytes
+        );
+        
+        // Invia all'agente
+        inviaEmailConAllegato(
+            emailAgente,
+            "📄 [COPIA] Contratto di Mediazione - " + immobile.getVia(),
+            htmlAgente,
+            nomeFile,
+            pdfBytes
+        );
+    }
+    
+    /**
+     * Metodo helper per inviare email con allegato PDF
+     */
+    private void inviaEmailConAllegato(String destinatario, String oggetto, String htmlContent, 
+                                       String nomeFile, byte[] pdfBytes) throws MessagingException {
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+        
+        helper.setFrom("xiao.chen@edu-its.it");
+        helper.setTo(destinatario);
+        helper.setSubject(oggetto);
+        helper.setText(htmlContent, true);
+        
+        // Aggiungi logo inline
+        ClassPathResource image = new ClassPathResource("static/logo.png");
+        helper.addInline("logoImage", image);
+        
+        // Aggiungi PDF come allegato
+        helper.addAttachment(nomeFile, new ByteArrayResource(pdfBytes));
+        
+        mailSender.send(mimeMessage);
+    }
+    
+    /**
+     * Genera HTML per email contratto
+     */
+    private String generaHtmlContratto(String destinatario, String indirizzo, 
+                                       String saluto, String messaggio) {
+        return "<!DOCTYPE html>"
+                + "<html lang='it'>"
+                + "<head>"
+                + "<meta charset='UTF-8' />"
+                + "<style>"
+                + "body { font-family: Arial, sans-serif; background-color: #f3f6fa; margin:0; padding:0; }"
+                + ".container { max-width:600px; margin:40px auto; background:#fff; border-radius:12px; padding:30px; box-shadow:0 2px 10px rgba(0,0,0,0.1); }"
+                + ".header { text-align:center; margin-bottom:30px; }"
+                + ".title { color:#1e3a56; font-size:24px; font-weight:bold; margin:15px 0; }"
+                + ".content { color:#475466; font-size:15px; line-height:1.8; white-space:pre-line; }"
+                + ".highlight { background:#e3f2fd; padding:15px; border-radius:8px; margin:20px 0; border-left:4px solid #1e3a56; }"
+                + ".footer { text-align:center; margin-top:30px; padding-top:20px; border-top:2px solid #e0e0e0; color:#7d8a97; font-size:12px; }"
+                + "</style>"
+                + "</head>"
+                + "<body>"
+                + "<div class='container'>"
+                + "<div class='header'>"
+                + "<img src='cid:logoImage' width='60' />"
+                + "<div class='title'>IMMOBILIARIS S.R.L.</div>"
+                + "</div>"
+                + "<div class='content'>"
+                + "<p>" + saluto + ",</p>"
+                + "<div class='highlight'>"
+                + "<strong>Oggetto:</strong> Contratto di Mediazione Immobiliare<br>"
+                + "<strong>Immobile:</strong> " + indirizzo
+                + "</div>"
+                + "<p>" + messaggio + "</p>"
+                + "<p style='margin-top:25px;'>Cordiali saluti,<br><strong>Il Team IMMOBILIARIS</strong></p>"
+                + "</div>"
+                + "<div class='footer'>"
+                + "<img src='cid:logoImage' width='40' style='margin-bottom:10px;' /><br>"
+                + "IMMOBILIARIS S.R.L. - Corso Duca degli Abruzzi, 24 - 10129 Torino<br>"
+                + "Tel: 011.555.555 - Email: info@immobiliaris.demo<br>"
+                + "© 2025 Immobiliaris - Tutti i diritti riservati"
+                + "</div>"
+                + "</div>"
+                + "</body>"
+                + "</html>";
+    }
+
+    /**
+     * Formatta la data/ora nel formato dd-MM-yyyy HH:mm:ss
+     */
+    private String formatDataOra(java.time.LocalDateTime dateTime) {
+        if (dateTime == null) {
+            return "N/A";
+        }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+        return dateTime.format(formatter);
     }
 
 }

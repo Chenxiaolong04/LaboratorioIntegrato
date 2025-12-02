@@ -35,7 +35,8 @@ public class AdminApiController {
             response.put("agenti", dashboardData.get("agenti"));
             response.put("tempoAIaPresaInCarico", dashboardData.get("tempoAIaPresaInCarico"));
             response.put("tempoPresaInCaricoaContratto", dashboardData.get("tempoPresaInCaricoaContratto"));
-            response.put("valutazionePerformance", dashboardData.get("valutazionePerformance"));
+            response.put("valutazionePerformancePresaInCarico", dashboardData.get("valutazionePerformancePresaInCarico"));
+            response.put("valutazionePerformanceContratto", dashboardData.get("valutazionePerformanceContratto"));
             response.put("immobiliPerTipo", dashboardData.get("immobiliPerTipo"));
 
         } catch (Exception e) {
