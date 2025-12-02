@@ -1,7 +1,9 @@
 package com.immobiliaris.demo.entity;
 
 import jakarta.persistence.*;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import org.hibernate.annotations.CreationTimestamp;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 @Table(name = "Immobili")
@@ -73,8 +75,10 @@ public class Immobile {
     @Column(name = "Descrizione")
     private String descrizione;
     
-    @Column(name = "Data_inserimento")
-    private LocalDate dataInserimento;
+    @CreationTimestamp
+    @Column(name = "Data_registrazione", updatable = false)
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
+    private LocalDateTime dataRegistrazione;
     
     @ManyToOne
     @JoinColumn(name = "Id_utente")
@@ -249,13 +253,10 @@ public class Immobile {
         this.descrizione = descrizione;
     }
     
-    public LocalDate getDataInserimento() {
-        return dataInserimento;
+    public LocalDateTime getDataRegistrazione() {
+        return dataRegistrazione;
     }
-    
-    public void setDataInserimento(LocalDate dataInserimento) {
-        this.dataInserimento = dataInserimento;
-    }
+
     
     public User getProprietario() {
         return proprietario;

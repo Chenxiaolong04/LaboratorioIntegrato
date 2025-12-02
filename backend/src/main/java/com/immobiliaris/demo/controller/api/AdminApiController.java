@@ -6,38 +6,43 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/admin")
 public class AdminApiController {
+    private static final Logger logger = LoggerFactory.getLogger(AdminApiController.class);
 
     @Autowired
     private StatisticsService statisticsService;
 
     @GetMapping("/dashboard")
-    public ResponseEntity<Map<String, Object>> getDashboard(Authentication authentication,
-                                                            @RequestParam(defaultValue = "0") int offset,
-                                                            @RequestParam(defaultValue = "10") int limit) {
+    public ResponseEntity<Map<String, Object>> getDashboard(Authentication authentication) {
         Map<String, Object> response = new LinkedHashMap<>();
 
         try {
             // Ottieni statistiche complete dal Service
             Map<String, Object> dashboardData = statisticsService.getAdminDashboardData();
-            response.put("statistics", dashboardData.get("statistics"));
 
-            // Ottieni batch di immobili usando offset/limit (per comportamento "Carica altri")
-            Map<String, Object> immobiliLoad = statisticsService.getImmobiliLoadMore(offset, limit);
-            response.put("immobili", immobiliLoad.get("immobili"));
-            response.put("nextOffset", immobiliLoad.get("nextOffset"));
-            response.put("hasMore", immobiliLoad.get("hasMore"));
-            response.put("pageSize", immobiliLoad.get("pageSize"));
+            // Ordine della risposta JSON
+            response.put("statistics", dashboardData.get("statistics"));
+            response.put("top3Agenti", dashboardData.get("top3Agenti"));
+            response.put("contrattiPerMese", dashboardData.get("contrattiPerMese"));
+            response.put("agenti", dashboardData.get("agenti"));
+            response.put("tempoAIaPresaInCarico", dashboardData.get("tempoAIaPresaInCarico"));
+            response.put("tempoPresaInCaricoaContratto", dashboardData.get("tempoPresaInCaricoaContratto"));
+            response.put("valutazionePerformancePresaInCarico", dashboardData.get("valutazionePerformancePresaInCarico"));
+            response.put("valutazionePerformanceContratto", dashboardData.get("valutazionePerformanceContratto"));
+            response.put("immobiliPerTipo", dashboardData.get("immobiliPerTipo"));
 
         } catch (Exception e) {
             // Se c'è errore, ritorna almeno le info base
             System.err.println("Errore caricamento dashboard: " + e.getMessage());
-            e.printStackTrace();
+            logger.error("Errore caricamento dashboard: {}", e.getMessage(), e);
             response.put("error", e.getMessage());
         }
 
@@ -45,17 +50,17 @@ public class AdminApiController {
     }
 
     /**
-     * API per ottenere immobili con paginazione
-     * GET /api/admin/immobili?page=0&size=10
-     * @param page Numero pagina (0 = prima pagina)
-     * @param size Numero elementi per pagina (default 10)
+     * API per ottenere immobili con tutti i dettagli inclusi prezzoAI e prezzoUmano
+     * GET /api/admin/immobili?offset=0&limit=12
+     * @param offset Offset per la paginazione
+     * @param limit Numero elementi da restituire (default 12)
      */
     @GetMapping("/immobili")
-    public ResponseEntity<Map<String, Object>> getImmobiliPaginated(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+    public ResponseEntity<Map<String, Object>> getImmobiliCompleti(
+            @RequestParam(defaultValue = "0") int offset,
+            @RequestParam(defaultValue = "12") int limit) {
         
-        Map<String, Object> result = statisticsService.getImmobiliPaginated(page, size);
+        Map<String, Object> result = statisticsService.getTuttiImmobiliConDettagli(offset, limit);
         return ResponseEntity.ok(result);
     }
 
@@ -78,7 +83,7 @@ public class AdminApiController {
         try {
             return ResponseEntity.ok(statisticsService.getContrattiChiusiLoadMore(offset, limit));
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Errore recupero contratti: {}", e.getMessage(), e);
             return ResponseEntity.status(500).body("Errore recupero contratti");
         }
     }
@@ -95,7 +100,7 @@ public class AdminApiController {
         try {
             return ResponseEntity.ok(statisticsService.getValutazioniSoloAILoadMore(offset, limit));
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Errore recupero valutazioni: {}", e.getMessage(), e);
             return ResponseEntity.status(500).body("Errore recupero valutazioni");
         }
     }
@@ -112,7 +117,7 @@ public class AdminApiController {
         try {
             return ResponseEntity.ok(statisticsService.getValutazioniInVerficaLoadMore(offset, limit));
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Errore recupero valutazioni in verifica: {}", e.getMessage(), e);
             return ResponseEntity.status(500).body("Errore recupero valutazioni in verifica");
         }
     }
@@ -127,7 +132,7 @@ public class AdminApiController {
             statisticsService.deleteValutazione(id);
             return ResponseEntity.ok(Map.of("success", true, "message", "Valutazione AI eliminata con successo"));
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Errore eliminazione valutazione: {}", e.getMessage(), e);
             return ResponseEntity.status(500).body(Map.of("success", false, "message", "Errore eliminazione valutazione: " + e.getMessage()));
         }
     }
@@ -142,7 +147,7 @@ public class AdminApiController {
             statisticsService.deleteValutazione(id);
             return ResponseEntity.ok(Map.of("success", true, "message", "Valutazione in verifica eliminata con successo"));
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Errore eliminazione valutazione: {}", e.getMessage(), e);
             return ResponseEntity.status(500).body(Map.of("success", false, "message", "Errore eliminazione valutazione: " + e.getMessage()));
         }
     }
@@ -159,7 +164,7 @@ public class AdminApiController {
             statisticsService.updateValutazione(id, updates);
             return ResponseEntity.ok(Map.of("success", true, "message", "Valutazione aggiornata con successo"));
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Errore aggiornamento valutazione: {}", e.getMessage(), e);
             return ResponseEntity.status(500).body(Map.of("success", false, "message", "Errore aggiornamento valutazione: " + e.getMessage()));
         }
     }
@@ -179,7 +184,7 @@ public class AdminApiController {
             statisticsService.assegnaAgenteValutazioneAI(id, idAgente);
             return ResponseEntity.ok(Map.of("success", true, "message", "Agente assegnato con successo"));
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Errore assegnazione agente: {}", e.getMessage(), e);
             return ResponseEntity.status(500).body(Map.of("success", false, "message", "Errore assegnazione agente: " + e.getMessage()));
         }
     }

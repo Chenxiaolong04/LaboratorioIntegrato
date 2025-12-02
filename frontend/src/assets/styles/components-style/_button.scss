@@ -1,0 +1,52 @@
+@use '../variables' as var;
+
+.btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 0.8rem 1.5rem;
+    border: 0;
+    border-radius: 10px;
+    font-size: 1.2rem;
+    cursor: pointer;
+
+    &.red {
+        background-color: rgb(182, 0, 0);
+        color: white;
+    }
+
+    &.gray {
+        background-color: var.$palette-gray;
+
+        &:hover {
+            background-color: var.$palette-gray;
+        }
+    }
+
+    &.blu {
+        background-color: var.$palette-blu;
+        color: white;
+
+        &:hover {
+            background-color: var.$palette-blu;
+        }
+    }
+
+    &.lightblu {
+        background-color: var.$palette-lightblu;
+        color: white;
+
+        &:hover {
+            background-color: var.$palette-lightblu;
+        }
+    }
+
+    &.violet {
+        background-color: var.$palette-violet;
+
+        &:hover {
+            background-color: var.$palette-violet;
+        }
+    }
+}

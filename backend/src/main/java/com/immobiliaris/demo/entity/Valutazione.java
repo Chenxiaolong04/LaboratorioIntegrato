@@ -1,7 +1,8 @@
 package com.immobiliaris.demo.entity;
 
 import jakarta.persistence.*;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 @Table(name = "Valutazioni")
@@ -19,7 +20,8 @@ public class Valutazione {
     private Integer prezzoUmano;
     
     @Column(name = "Data_valutazione")
-    private LocalDate dataValutazione;
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
+    private LocalDateTime dataValutazione;
     
     @ManyToOne
     @JoinColumn(name = "Id_stato_valutazione")
@@ -61,11 +63,11 @@ public class Valutazione {
         this.prezzoUmano = prezzoUmano;
     }
     
-    public LocalDate getDataValutazione() {
+    public LocalDateTime getDataValutazione() {
         return dataValutazione;
     }
     
-    public void setDataValutazione(LocalDate dataValutazione) {
+    public void setDataValutazione(LocalDateTime dataValutazione) {
         this.dataValutazione = dataValutazione;
     }
     

@@ -1,0 +1,26 @@
+@use "../variables" as var;
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+
+  label {
+    font-size: 1rem;
+    margin-bottom: 0.3rem;
+  }
+
+  select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer;
+  }
+
+  .icon {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+    cursor: pointer;
+  }
+}

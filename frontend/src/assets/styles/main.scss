@@ -1,0 +1,132 @@
+@use "./variables" as var;
+
+// components global styles
+@use "./components-style/button";
+@use "./components-style/input";
+@use "./components-style/inputGroup";
+@use "./components-style/cardInput";
+@use "./components-style/searchBar";
+@use "./components-style/loader";
+
+// layout
+@use "./layouts-style/navbar";
+@use "./layouts-style/footer";
+@use "./layouts-style/tablesDashboard";
+
+// homepage sections
+@use "./homepage/header";
+@use "./homepage/stats";
+@use "./homepage/steps";
+@use "./homepage/reasons";
+@use "./homepage/faq";
+@use "./homepage/cta";
+
+// Form
+@use "./form/stepForm";
+@use "./form/stepProgress";
+@use "./form/formCheck";
+@use "./form/stepSuccess";
+@use "./form/stepContacts";
+
+// Login
+@use "./login";
+
+// dashboard Admin
+@use "./admin/adminHome";
+@use "./admin/adminProperties";
+@use "./admin/propertyModal";
+@use "./admin/createUser";
+
+// dashboard Admin
+@use "./agent/agentHome";
+
+
+// Global resets
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+ul {
+  list-style: none;
+}
+
+body {
+  font-family: "Sora", sans-serif;
+}
+
+body.no-scroll {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  touch-action: none;
+}
+
+
+main {
+  padding-top: 86px;
+}
+
+.container {
+  padding: 2rem 1rem;
+  width: 100%;
+  margin: 0 auto;
+
+  // Extra small (xs)
+  @media (min-width: 0) {
+    max-width: 100%;
+  }
+
+  // Small (sm)
+  @media (min-width: 576px) {
+    max-width: 540px;
+  }
+
+  // Medium (md)
+  @media (min-width: 768px) {
+    max-width: 720px;
+    padding: 5rem 1rem;
+  }
+
+  // Large (lg)
+  @media (min-width: 992px) {
+    max-width: 960px;
+  }
+
+  // Extra large (xl)
+  @media (min-width: 1200px) {
+    max-width: 1140px;
+  }
+
+  // Extra extra large (xxl)
+  @media (min-width: 1400px) {
+    max-width: 1320px;
+  }
+}
+
+img {
+  width: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Chrome, Safari, Edge */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}

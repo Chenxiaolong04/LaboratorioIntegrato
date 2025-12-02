@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -21,11 +22,17 @@ public interface ImmobileJpaRepository extends JpaRepository<Immobile, Integer> 
      * Ottiene gli ultimi 10 immobili ordinati per data inserimento
      * Spring capisce automaticamente "OrderBy" e "Desc"
      */
-    List<Immobile> findTop10ByOrderByDataInserimentoDesc();
+    List<Immobile> findTop10ByOrderByDataRegistrazioneDesc();
     
     /**
-     * Ottiene immobili con paginazione ordinati per data inserimento
+     * Ottiene immobili con paginazione ordinati per ID decrescente
      * Spring usa automaticamente il Pageable per paginazione e ordinamento
      */
-    Page<Immobile> findAllByOrderByDataInserimentoDesc(Pageable pageable);
+    Page<Immobile> findAllByOrderByIdDesc(Pageable pageable);
+    
+    /**
+     * Conta gli immobili registrati dopo una certa data
+     * Spring genera automaticamente: SELECT COUNT(*) WHERE dataRegistrazione > ?
+     */
+    Long countByDataRegistrazioneAfter(LocalDateTime dataLimite);
 }
