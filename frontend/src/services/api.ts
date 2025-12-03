@@ -164,7 +164,6 @@ export async function getImmobili(
   });
 }
 
-
 export async function assignAgenteToValutazione(
   valutazioneId: number,
   idAgente: number
@@ -178,6 +177,25 @@ export async function assignAgenteToValutazione(
   );
 }
 
+export interface GenerateContractResponse {
+  success: boolean;
+  message: string;
+  destinatari: {
+    proprietario: string;
+    agente: string;
+  };
+  valutazioneId: number;
+  contrattoId: number;
+}
+
+export async function generateContractFromValutazione(
+  idValutazione: number
+): Promise<GenerateContractResponse> {
+  return apiFetch<GenerateContractResponse>(
+    `/contratti/valutazione/${idValutazione}/pdf`,
+    { method: "GET" }
+  );
+}
 
 export type AgenteDashboardData = {
   statistics: {
@@ -353,7 +371,7 @@ export interface ValutazioneAI {
 
 type Agent = {
   nomeCognome: string;
-}
+};
 
 export interface ValutazioniAIResponse {
   valutazioni: ValutazioneAI[];
