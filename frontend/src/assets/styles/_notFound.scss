@@ -33,7 +33,7 @@
     transition: 0.2s;
 
     &:hover {
-      background-color: #176ed8;
+      background-color: var.$palette-lightblu;
     }
   }
 }
