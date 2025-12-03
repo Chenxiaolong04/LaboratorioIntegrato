@@ -36,6 +36,10 @@ public class ImmobileController {
     public ResponseEntity<?> saveImmobile(@RequestBody ImmobileRequest immobileRequest) {
         try {
             Immobile immobile = immobileRequest.toImmobile();
+            
+            // NON impostare ancora il proprietario - lo faremo dopo aver verificato/creato l'utente
+            immobile.setProprietario(null);
+            
             if (immobile.getCitta() != null) {
                 immobile.setProvincia(switch (immobile.getCitta().trim().toLowerCase()) {
                     case "torino" -> "TO";
@@ -45,36 +49,51 @@ public class ImmobileController {
                     default -> null;
                 });
             }
+            
             String emailProprietario = null;
-            if (immobile.getProprietario() != null && immobile.getProprietario().getEmail() != null) {
-                String email = immobile.getProprietario().getEmail();
+            // Estrai i dati del proprietario dal request
+            String email = immobileRequest.getEmail() != null ? immobileRequest.getEmail() : 
+                          (immobileRequest.getProprietario() != null ? immobileRequest.getProprietario().getEmail() : null);
+            String nome = immobileRequest.getNome() != null ? immobileRequest.getNome() : 
+                         (immobileRequest.getProprietario() != null ? immobileRequest.getProprietario().getNome() : null);
+            String cognome = immobileRequest.getCognome() != null ? immobileRequest.getCognome() : 
+                            (immobileRequest.getProprietario() != null ? immobileRequest.getProprietario().getCognome() : null);
+            String telefono = immobileRequest.getTelefono() != null ? immobileRequest.getTelefono() : 
+                             (immobileRequest.getProprietario() != null ? immobileRequest.getProprietario().getTelefono() : null);
+            
+            if (email != null) {
                 emailProprietario = email;
+                
+                // Cerca utente esistente per email
                 User utente = userRepository.findByEmail(email).orElse(null);
+                
                 if (utente == null) {
+                    // Se non esiste, crea nuovo utente
                     User nuovoUtente = new User();
                     nuovoUtente.setEmail(email);
-                    nuovoUtente.setNome(immobile.getProprietario().getNome());
-                    nuovoUtente.setCognome(immobile.getProprietario().getCognome());
-                    nuovoUtente.setTelefono(immobile.getProprietario().getTelefono());
+                    nuovoUtente.setNome(nome);
+                    nuovoUtente.setCognome(cognome);
+                    nuovoUtente.setTelefono(telefono);
+                    nuovoUtente.setDataRegistrazione(java.time.LocalDateTime.now());
+                    
                     org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder encoder = new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder();
                     String passwordHash = encoder.encode(email);
                     nuovoUtente.setPassword(passwordHash);
-                    TipoUtente tipoCliente = null;
-                    for (TipoUtente t : tipoUtenteRepository.findAll()) {
-                        if (t.getNome().equalsIgnoreCase("cliente")) {
-                            tipoCliente = t;
-                            break;
-                        }
-                    }
+                    
+                    TipoUtente tipoCliente = tipoUtenteRepository.findAll().stream()
+                            .filter(t -> t.getNome().equalsIgnoreCase("cliente"))
+                            .findFirst()
+                            .orElse(null);
+                    
                     if (tipoCliente != null) {
                         nuovoUtente.setTipoUtente(tipoCliente);
                     }
+                    
                     utente = userRepository.save(nuovoUtente);
                 }
-                User utenteGestito = userRepository.findById(utente.getIdUtente()).orElse(null);
-                if (utenteGestito != null) {
-                    immobile.setProprietario(utenteGestito);
-                }
+                
+                // Associa l'utente esistente o appena creato all'immobile
+                immobile.setProprietario(utente);
             }
             Immobile saved = immobileJpaRepository.save(immobile);
 
