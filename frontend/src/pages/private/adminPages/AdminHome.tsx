@@ -7,23 +7,6 @@ import {
 import { useEffect, useState } from "react";
 import Loader from "../../../components/Loader";
 
-// Dati statici per il grafico (Performance Mensile)
-// const monthlyPerformanceData = [
-//   { month: "Giu", sales: 48 },
-//   { month: "Lug", sales: 61 },
-//   { month: "Ago", sales: 42 },
-//   { month: "Set", sales: 55 },
-//   { month: "Ott", sales: 67 },
-//   { month: "Nov", sales: 72 },
-// ];
-
-// Dati statici per la classifica (Top Performers)
-// const topPerformers = [
-//   { rank: 1, name: "Marco Bellini", sales: 15, value: "4.2M" },
-//   { rank: 2, name: "Giulia Ferri", sales: 12, value: "3.5M" },
-//   { rank: 3, name: "Alice Bianchi", sales: 11, value: "2.9M" },
-// ];
-
 // Funzione helper per ottenere il colore del badge (per il rank)
 const getRankColor = (rank: number): string => {
   switch (rank) {
@@ -44,55 +27,6 @@ const getBarHeight = (sales: number, maxSales: number): string => {
   const heightInPx = (sales / maxSales) * MAX_BAR_HEIGHT_PX;
   return `${heightInPx}px`;
 };
-
-// Dati statici per la comparativa agenti
-// const agentData = [
-//   {
-//     initials: "MB",
-//     name: "Marco Bellini",
-//     role: "Agente Senior - Torino",
-//     color: "#00A4BA",
-//     immobili: 52,
-//     vendite: 15,
-//     fatturato: "€4.2M",
-//   },
-//   {
-//     initials: "GF",
-//     name: "Giulia Ferri",
-//     role: "Agente Senior - Cuneo",
-//     color: "#546E7A",
-//     immobili: 46,
-//     vendite: 12,
-//     fatturato: "€3.5M",
-//   },
-//   {
-//     initials: "AB",
-//     name: "Alice Bianchi",
-//     role: "Agente - Torino",
-//     color: "#FF8A3C",
-//     immobili: 41,
-//     vendite: 11,
-//     fatturato: "€2.9M",
-//   },
-//   {
-//     initials: "SR",
-//     name: "Sara Ricci",
-//     role: "Agente - Novara",
-//     color: "#E9573F",
-//     immobili: 34,
-//     vendite: 9,
-//     fatturato: "€2.4M",
-//   },
-//   {
-//     initials: "LM",
-//     name: "Luca Martini",
-//     role: "Agente Senior - Alessandria",
-//     color: "#6AA84F",
-//     immobili: 28,
-//     vendite: 7,
-//     fatturato: "€1.8M",
-//   },
-// ];
 
 // Dati statici per la tabella dei tempi medi
 const operationalData = [
@@ -133,30 +67,6 @@ type PerformanceLevel = "Ottimo" | "Eccellente" | "Buono" | "Standard";
 
 const getPerformanceClass = (level: PerformanceLevel): string =>
   `performance-${level.toLowerCase()}`;
-
-// Dati statici per la distribuzione del portfolio
-// const portfolioDistribution = [
-//   {
-//     IconComponent: FaBuilding,
-//     count: 120,
-//     label: "Appartamenti",
-//   },
-//   {
-//     IconComponent: FaHome,
-//     count: 43,
-//     label: "Ville",
-//   },
-//   {
-//     IconComponent: FaWarehouse,
-//     count: 20,
-//     label: "Attici",
-//   },
-//   {
-//     IconComponent: FaTree,
-//     count: 11,
-//     label: "Loft",
-//   },
-// ];
 
 export default function AdminHome() {
   const { user } = useAuth();

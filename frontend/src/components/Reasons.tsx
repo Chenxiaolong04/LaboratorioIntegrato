@@ -37,7 +37,7 @@ export default function Reasons() {
             moderno, personalizzato e vicino alle persone.
           </h3>
           <div className="steps-button">
-            <Link to={'/form'} className="btn lightblu">
+            <Link to={'/form-check'} className="btn lightblu">
               Valuta ora <FaLongArrowAltRight />
             </Link>
           </div>

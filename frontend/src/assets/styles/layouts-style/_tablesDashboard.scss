@@ -68,7 +68,7 @@
       table {
         border-collapse: collapse;
         width: max-content;
-        table-layout: auto;
+        table-layout: fixed;
 
         thead {
           background-color: var.$palette-blu;

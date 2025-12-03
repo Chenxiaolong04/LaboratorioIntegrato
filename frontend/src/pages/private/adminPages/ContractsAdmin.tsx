@@ -43,6 +43,17 @@ export default function ContractsAdmin() {
     (c.nomeProprietario || "").toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  function formatDate(isoDate?: string) {
+    if (!isoDate) return "-";
+    const date = new Date(isoDate);
+    // Opzioni: giorno mese anno
+    return date.toLocaleDateString("it-IT", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  }
+
   return (
     <div className="dashboard-container">
       {loading && contratti.length === 0 ? (
@@ -74,8 +85,8 @@ export default function ContractsAdmin() {
                 {filteredContratti.map((row) => (
                   <tr key={row.numeroContratto}>
                     <td>{row.nomeProprietario || "-"}</td>
-                    <td>{row.dataInizio || "-"}</td>
-                    <td>{row.dataFine || "-"}</td>
+                    <td>{formatDate(row.dataInizio)}</td>
+                    <td>{formatDate(row.dataFine)}</td>
                     <td>{row.agenteAssegnato || "-"}</td>
                     <td>
                       <div className="action-buttons">
@@ -104,12 +115,12 @@ export default function ContractsAdmin() {
 
                 <div className="card-row">
                   <b>Data inizio:</b>
-                  <span>{row.dataInizio || "-"}</span>
+                  <span>{formatDate(row.dataInizio)}</span>
                 </div>
 
                 <div className="card-row">
                   <b>Data fine:</b>
-                  <span>{row.dataFine || "-"}</span>
+                  <span>{formatDate(row.dataFine)}</span>
                 </div>
 
                 <div className="card-row">
@@ -150,10 +161,10 @@ export default function ContractsAdmin() {
               <b>Numero contratto:</b> {selectedContract.numeroContratto}
             </p>
             <p>
-              <b>Data inizio:</b> {selectedContract.dataInizio}
+              <b>Data inizio:</b> {formatDate(selectedContract.dataInizio)}
             </p>
             <p>
-              <b>Data fine:</b> {selectedContract.dataFine}
+              <b>Data fine:</b> {formatDate(selectedContract.dataFine)}
             </p>
 
             <h4>Immobile</h4>

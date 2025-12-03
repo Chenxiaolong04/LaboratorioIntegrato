@@ -72,7 +72,6 @@ export default function NavbarPrivate() {
                 <li><Link to={"/agent"}>Dashboard</Link></li>
                 <li><Link to={"/agent/contracts"}>Contratti</Link></li>
                 <li><Link to={"/agent/assignments"}>Incarichi</Link></li>
-                <li><Link to={"/agent/evaluationsAI"}>Valutazioni AI</Link></li>
               </>
             )}
           </ul>
@@ -104,7 +103,6 @@ export default function NavbarPrivate() {
                 <li><Link to={"/agent"} onClick={handleLinkClick}>Dashboard</Link></li>
                 <li><Link to={"/agent/contracts"} onClick={handleLinkClick}>I miei contratti</Link></li>
                 <li><Link to={"/agent/assignments"} onClick={handleLinkClick}>I miei incarichi</Link></li>
-                <li><Link to={"/agent/evaluationsAI"} onClick={handleLinkClick}>Le mie valutazioni AI</Link></li>
               </>
             )}
           </ul>

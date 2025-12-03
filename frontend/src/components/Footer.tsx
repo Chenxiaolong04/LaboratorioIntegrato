@@ -74,10 +74,10 @@ export default function Footer() {
               <a href="/">Home</a>
             </li>
             <li>
-              <a href="/chi-siamo">Chi siamo</a>
+              <a href="#chi-siamo">Chi siamo</a>
             </li>
             <li>
-              <a href="/contatti">Contatti</a>
+              <a href="#contatti">Contatti</a>
             </li>
             <li>
               <Link to="/login">Area riservata</Link>

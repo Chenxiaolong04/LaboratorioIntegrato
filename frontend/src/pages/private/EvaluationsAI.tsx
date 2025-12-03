@@ -130,7 +130,6 @@ export default function EvaluationsAI() {
               <thead>
                 <tr>
                   <th>Nome proprietario</th>
-                  <th>Data</th>
                   <th>Prezzo stimato da AI</th>
                   <th>Indirizzo</th>
                   <th>Tipologia</th>
@@ -140,11 +139,10 @@ export default function EvaluationsAI() {
               <tbody>
                 {filtered.map((row) => (
                   <tr key={row.id}>
-                    <td>{row.nomeProprietario || "—"}</td>
-                    <td>{row.dataValutazione?.split("T")[0]}</td>
-                    <td>{row.prezzoAI ? row.prezzoAI + " €" : "—"}</td>
-                    <td>{row.via ? `${row.via}, ${row.citta}` : "—"}</td>
-                    <td>{row.tipo || "—"}</td>
+                    <td>{row.nomeProprietario || "-"}</td>
+                    <td>{row.prezzoAI ? row.prezzoAI + " €" : "-"}</td>
+                    <td>{row.via ? `${row.via}, ${row.citta}` : "-"}</td>
+                    <td>{row.tipo || "-"}</td>
                     <td>
                       <div className="action-buttons">
                         <Button
@@ -186,9 +184,6 @@ export default function EvaluationsAI() {
               <div className="evaluation-card" key={row.id}>
                 <div className="card-row">
                   <b>Nome:</b> {row.nomeProprietario || "—"}
-                </div>
-                <div className="card-row">
-                  <b>Data:</b> {row.dataValutazione?.split("T")[0]}
                 </div>
                 <div className="card-row">
                   <b>Prezzo AI:</b> {row.prezzoAI ? row.prezzoAI + " €" : "—"}

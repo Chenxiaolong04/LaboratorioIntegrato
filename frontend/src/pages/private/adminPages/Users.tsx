@@ -9,6 +9,7 @@ import {
 import Button from "../../../components/Button";
 import { FaX } from "react-icons/fa6";
 import InputGroup from "../../../components/InputGroup";
+import { FaEdit } from "react-icons/fa";
 
 export default function Users() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -91,7 +92,7 @@ export default function Users() {
                           });
                         }}
                       >
-                        Modifica
+                        <FaEdit />
                       </Button>
                       <Button className="red" title="Elimina utente">
                         <FaX />
@@ -150,7 +151,7 @@ export default function Users() {
                     });
                   }}
                 >
-                  Modifica
+                  <FaEdit />
                 </Button>
                 <Button className="red" title="Elimina incarico">
                   <FaX />

@@ -1,41 +1,42 @@
 import { Link } from "react-router-dom";
 
+/**
+ * FormCheck component serves as the introduction page before starting
+ * the multi-step real estate evaluation form. It explains the process,
+ * displays requirements and steps, and provides navigation to start or return home.
+ *
+ * @component
+ * @returns {JSX.Element} Introductory section for the form evaluation process.
+ */
 export default function FormCheck() {
+  /**
+   * List of steps shown to the user to preview the form flow.
+   * Each step contains a number and a title.
+   *
+   * @type {{ number: string, title: string, desc?: string }[]}
+   */
   const steps = [
-    {
-      number: "1",
-      title: "Indirizzo immobile",
-    },
+    { number: "1", title: "Indirizzo immobile" },
     {
       number: "2",
       title: "Tipologia",
       desc: "Indica se è appartamento, villa, loft o attico.",
     },
-    {
-      number: "3",
-      title: "Stato dell’immobile",
-    },
-    {
-      number: "4",
-      title: "Informazioni generali",
-    },
-    {
-      number: "5",
-      title: "Plus dell’immobile",
-    },
-    {
-      number: "6",
-      title: "Contatti",
-    },
+    { number: "3", title: "Stato dell’immobile" },
+    { number: "4", title: "Informazioni generali" },
+    { number: "5", title: "Plus dell’immobile" },
+    { number: "6", title: "Contatti" },
   ];
 
   return (
     <section className="form-check">
+      {/* Logo section */}
       <div className="logo-container">
-        <img src="./logo.svg" alt="logo Immobiliaris" />
+        <img src="./logo.svg" alt="Immobiliaris logo" />
         <h3>Immobiliaris</h3>
       </div>
 
+      {/* Description text */}
       <div className="info-text">
         <p>
           Attraverso pochi semplici step potrai avere una valutazione sul tuo
@@ -51,6 +52,7 @@ export default function FormCheck() {
         </p>
       </div>
 
+      {/* Navigation buttons */}
       <div className="action-btns">
         <Link to="/form" className="btn lightblu">
           Inzia ora
@@ -63,6 +65,7 @@ export default function FormCheck() {
         </Link>
       </div>
 
+      {/* Preview of form steps */}
       <div className="steps-info">
         <h4>Cosa ti verrà chiesto</h4>
         <div className="steps-container">

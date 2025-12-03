@@ -94,7 +94,6 @@ export default function AssignmentsAdmin() {
                 <tr>
                   <th>Nome proprietario</th>
                   <th>Prezzo AI</th>
-                  <th>Data</th>
                   <th>Agente assegnato</th>
                   <th>Azioni</th>
                 </tr>
@@ -104,7 +103,6 @@ export default function AssignmentsAdmin() {
                   <tr key={row.id}>
                     <td>{row.nomeProprietario || "-"}</td>
                     <td>{row.prezzoAI || "-"}</td>
-                    <td>{row.dataInserimento || "-"}</td>
                     <td>{row.nomeAgente || "-"}</td>
                     <td>
                       <div className="action-buttons">
@@ -142,11 +140,6 @@ export default function AssignmentsAdmin() {
                 <div className="card-row">
                   <b>Proprietario:</b>
                   <span>{row.nomeProprietario || "-"}</span>
-                </div>
-
-                <div className="card-row">
-                  <b>Data inserimento:</b>
-                  <span>{row.dataInserimento || "-"}</span>
                 </div>
 
                 <div className="card-row">

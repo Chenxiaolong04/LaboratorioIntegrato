@@ -400,7 +400,11 @@
         .table-row {
           border-bottom: 1px solid #eee;
           color: #333;
-          padding: 1rem 0;
+          padding: 1rem;
+
+          @media (min-width: 768px) {
+            padding: 1rem 0;
+          }
 
           &:last-child {
             border-bottom: none;
