@@ -21,7 +21,7 @@ Immobiliaris è un portale digitale dedicato alla valutazione degli immobili sul
 ### Digital Strategist
 - Sara Auriemma (saraauriemma)
 - Beatrice Giletta (beatricegiletta)
-- Luca Omegna (lucaomegna-cmyk)
+- Luca Omegna (lucaomegna-cmyk) - coordinatore gruppo Digital Strategist
 
 ---
 
