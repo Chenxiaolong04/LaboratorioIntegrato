@@ -1,6 +1,6 @@
 # 🏠 Immobiliaris - Portale Immobiliare Digitale
 
-## Progetto laboratorio integrato ITS ICT 2024/2026 (Web Developer - Software Developer - Digital Strategist)
+## Progetto laboratorio integrato ITS ICT 2024/2026 Gruppo 6 SixWave
 
 Immobiliaris è un portale digitale dedicato alla valutazione degli immobili sul territorio piemontese. Il progetto nasce con l’obiettivo di supportare l’agenzia nell’ampliamento verso un pubblico più giovane (35–55 anni), offrendo strumenti moderni, processi automatizzati e un’esperienza utente semplice, veloce e intuitiva.
 
@@ -9,19 +9,19 @@ Immobiliaris è un portale digitale dedicato alla valutazione degli immobili sul
 ## 👥 Membri del Gruppo
 
 ### Web Developer
-- Dragos Nedelcu Andrei
-- Mattia Fiore
-- Rodrigo Aguirre
+- Dragos Nedelcu Andrei (n3dydr4gos) - coordinatore gruppo WEB
+- Mattia Fiore (fiorematti)
+- Rodrigo Aguirre (therealrodry)
 
 ### Software Developer
-- Xiaolong Chen 
-- Simone Crivello
-- Angelo Jimenez
+- Xiaolong Chen (Chenxiaolong04) - coordinatore gruppo Software e Team Leader del progetto
+- Simone Crivello (simonecrivello)
+- Angelo Jimenez (AngJim)
 
 ### Digital Strategist
-- Sara Auriemma
-- Beatrice Giletta
-- Luca Omegna
+- Sara Auriemma (saraauriemma)
+- Beatrice Giletta (beatricegiletta)
+- Luca Omegna (lucaomegna-cmyk)
 
 ---
 
@@ -40,6 +40,54 @@ Immobiliaris è un portale digitale dedicato alla valutazione degli immobili sul
 
 ---
 
+## 📋 Prerequisiti per l'avvio del progetto
+
+- ✅ **JDK v17** (o superiore)
+- ✅ **Maven v3.8+** (o usa il wrapper `mvnw.cmd` incluso)
+- ✅ **MySQL v8.0+** con database e utenti già configurati
+- ✅ **Nodejs v18+ e NPM v9+**
+- ✅ **Vite v5+**
+
+## 🚀 Avvio Rapido
+### 1. Scarica il progetto in formato zip da GitHub o esegui sul terminale questo comando se hai git bash installato:
+```powershell
+git clone https://github.com/Chenxiaolong04/LaboratorioIntegrato.git
+```
+### 2. Dentro alla cartella ./frontend scarica i node modules da terminale:
+```powershell
+cd .\frontend\
+npm install
+```
+### 3. Avvia il progetto in locale con vite
+```powershell
+npm run dev
+```
+### 4. Apri il progetto nel browser
+```powershell
+http://localhost:5173
+```
+
+### 6. Spostati nella cartella ./backend e modifica il file application.properties che si trova in ./backend/src/main/resources/application.properties
+ o crealo se non lo vedi, cambia nome utente e password con i tuoi di mysql
+```powershell
+spring.datasource.username=TUO_USERNAME
+spring.datasource.password=LA_TUA_PASSWORD
+```
+
+### 7. Torna nella cartella ./backend e copia il codice MYSQL dentro al file ScriptDB, dopodichè eseguilo per esempio utilizzando MySQLWorkbench
+
+### 8. Crea una nuova finestra di terminale e spostati nella cartella ./backend del progetto, dopodiche lancia il comando 
+```powershell
+mvnw.cmd spring-boot:run
+```
+
+### 9. Se l'ultimo messaggio nella finestra terminale dove hai eseguito il backend è application started, il backend è attivo e funzionante sulla porta:
+
+```powershell
+http://localhost:8080
+```
+
+
 ## 🛠️ Funzionalità Principali
 
 ### 🔹 Per gli utenti (proprietari)
@@ -57,6 +105,12 @@ Immobiliaris è un portale digitale dedicato alla valutazione degli immobili sul
 - Gestione immobili, incarichi e vendite
 - Statistiche e dati riassuntivi (overview attività)
 
+### 🔹 Per l'agente (dashboard)
+
+- Visualizzazione delle richieste ricevute
+- Stato avanzamento valutazioni
+- Incarichi e vendite assegnati all'agente
+- Statistiche e dati riassuntivi (overview attività)
 ---
 
 ## 🧭 Area Geografica Target
@@ -90,7 +144,6 @@ Automation
 
     /frontend     → codice interfaccia utente e portale pubblico
     /backend      → API, logica server e gestione delle valutazioni
-    /docs         → documentazione e materiali aggiuntivi
 
 ---
 
