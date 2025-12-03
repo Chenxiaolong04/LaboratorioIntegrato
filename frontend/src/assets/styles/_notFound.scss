@@ -1,0 +1,39 @@
+@use "./variables" as var;
+
+.notfound-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+
+  img {
+    width: 100px;
+  }
+
+  h1 {
+    font-size: 6rem;
+    font-weight: bold;
+    color: var.$palette-lightblu;
+  }
+
+  p {
+    font-size: 1.2rem;
+  }
+
+  .back-home {
+    margin-top: 1rem;
+    padding: 0.6rem 1.2rem;
+    background-color: var.$palette-blu;
+    color: #fff;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: 0.2s;
+
+    &:hover {
+      background-color: #176ed8;
+    }
+  }
+}

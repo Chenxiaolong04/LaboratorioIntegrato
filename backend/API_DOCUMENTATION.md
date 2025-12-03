@@ -412,9 +412,6 @@ Restituisce la lista di **contratti conclusi** (stato = "chiuso") con i dettagli
 
 ---
 
-
-
-
 ### GET `/api/admin/valutazioni/solo-ai?offset=0&limit=10`
 **Richiede:** `ROLE_ADMIN`
 
@@ -1419,6 +1416,106 @@ curl http://localhost:8080/api/contratti/1/pdf
 **Workflow:** API Call → Genera PDF → Email Proprietario → Email Agente → Risposta JSON ✅
 
 ---
+
+## 📊 Dashboard Agente
+
+### GET `/api/dashboard/agente`
+**Richiede:** Autenticazione | **Ruolo:** Agente/Admin
+
+Recupera il dashboard completo dell'agente autenticato con statistiche, performance e pipeline.
+
+**Autenticazione:**
+L'agente viene identificato automaticamente dalla email dell'utente loggato. Non è necessario passare alcun parametro.
+
+**Path Parameters:**
+Nessuno
+
+**Response (200 OK):**
+```json
+{
+  "status": "success",
+  "message": "Dashboard caricata",
+  "data": {
+    "valutazioniRichieste": {
+      "numero": 12,
+      "sottotitolo": "+ 3 questo mese",
+      "descrizione": "Valutazioni richieste"
+    },
+    "immobiliAcquisiti": {
+      "numero": 24,
+      "sottotitolo": "+ 8 in esclusiva",
+      "descrizione": "Immobili acquisiti"
+    },
+    "trattativeAttive": {
+      "numero": 6,
+      "sottotitolo": "+ 2 fase finale",
+      "descrizione": "Trattative attive"
+    },
+    "venditeChiuse": {
+      "numero": 18,
+      "sottotitolo": "€ 4.5M valore totale",
+      "descrizione": "Vendite chiuse"
+    },
+    "performance": [
+      {
+        "mese": "JUN",
+        "acquisizioni": 2,
+        "vendite": 1
+      },
+      {
+        "mese": "JUL",
+        "acquisizioni": 3,
+        "vendite": 2
+      }
+    ],
+    "prossimiAttivita": [
+      {
+        "id": 1,
+        "via": "Via Roma 10",
+        "citta": "Milano",
+        "metratura": 120,
+        "proprietario": "Mario Rossi",
+        "stato": "attivo",
+        "prezzo": 350000,
+        "dataRegistrazione": "2025-12-02T14:30:00"
+      }
+    ],
+    "pipeline": {
+      "richiesteInAttesa": 5,
+      "trattativeInCorso": 3,
+      "venditeChiuse": 18
+    },
+    "immobiliPerStato": {
+      "inVendita": 12,
+      "inValutazione": 4,
+      "inTrattativa": 2,
+      "venduti": 18
+    }
+  }
+}
+```
+
+**Response (400 BAD_REQUEST):**
+```json
+{
+  "status": "error",
+  "message": "Errore recupero dashboard: {dettaglio errore}"
+}
+```
+**Response (401 UNAUTHORIZED):**
+```json
+{
+  "status": "error",
+  "message": "Utente non autenticato"
+}
+```
+**Response (404 NOT FOUND):**
+```json
+{
+  "status": "error",
+  "message": "Agente non trovato"
+}
+```
 
 
 

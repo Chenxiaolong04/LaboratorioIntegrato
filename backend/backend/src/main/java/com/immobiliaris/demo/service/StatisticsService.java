@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -538,7 +539,9 @@ public class StatisticsService {
 
             // Dati valutazione
             m.put("prezzoAI", v.getPrezzoAI());
-            m.put("dataValutazione", v.getDataValutazione());
+            // Se dataValutazione è null, usa la data di registrazione dell'immobile
+            LocalDateTime dataToShow = v.getDataValutazione() != null ? v.getDataValutazione() : (v.getImmobile() != null ? v.getImmobile().getDataRegistrazione() : null);
+            m.put("dataValutazione", dataToShow != null ? dataToShow.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")) : null);
             m.put("descrizione", v.getDescrizione());
 
             if (v.getImmobile() != null) {
@@ -857,6 +860,7 @@ public class StatisticsService {
                 .filter(user -> user.getTipoUtente() != null && user.getTipoUtente().getIdTipo() == 2)
                 .map(user -> {
                     Map<String, String> agentMap = new LinkedHashMap<>();
+                    agentMap.put("id", String.valueOf(user.getIdUtente()));
                     agentMap.put("nomeCognome", user.getNome() + " " + user.getCognome());
                     return agentMap;
                 })

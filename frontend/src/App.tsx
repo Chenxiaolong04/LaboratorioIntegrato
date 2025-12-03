@@ -18,6 +18,7 @@ import ContractsAgent from "./pages/private/agentPages/ContractsAgent";
 import AssignmentsAgent from "./pages/private/agentPages/AssignmentsAgent";
 import FormIntro from "./components/FormCheck";
 import { FormProvider } from "./context/FormContext";
+import NotFound from "./pages/public/NotFound";
 
 function App() {
   return (
@@ -65,6 +66,8 @@ function App() {
           <Route path="assignments" element={<AssignmentsAgent />} />
           <Route path="evaluationsAI" element={<EvaluationsAI />} />
         </Route>
+
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </>
   );
