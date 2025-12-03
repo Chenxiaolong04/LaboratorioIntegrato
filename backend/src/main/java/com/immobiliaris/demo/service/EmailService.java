@@ -1,3 +1,22 @@
+/**
+ * Service per gestione invio email.
+ * 
+ * Gestisce:
+ * - Invio email semplice (testo)
+ * - Invio email HTML con immagini inline
+ * - Email riepilogativa valutazione immobile
+ * - Email contratto PDF allegato
+ * 
+ * Configurazione SMTP:
+ * - Host: smtp.gmail.com (o configurato in application.properties)
+ * - Port: 587
+ * - Auth: xiao.chen@edu-its.it (configurato in properties)
+ * - TLS: abilitato
+ * 
+ * @author Sistema IMMOBILIARIS
+ * @version 1.0
+ * @since 2025-12-01
+ */
 package com.immobiliaris.demo.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +37,24 @@ import java.time.format.DateTimeFormatter;
 @Service
 public class EmailService {
 
+    /** Sender SMTP per invio email via Spring Mail */
     @Autowired
     private JavaMailSender mailSender;
 
+    /** Repository valutazioni per recupero dati */
     @Autowired
     private ValutazioneJpaRepository valutazioneJpaRepository;
 
+    /**
+     * Invia email semplice in testo piano.
+     * 
+     * Utilizzo per notifiche non critiche e messaggi semplici.
+     * Email inviata da: xiao.chen@edu-its.it
+     * 
+     * @param to Email destinatario
+     * @param subject Oggetto email
+     * @param text Corpo testo (plain text, non HTML)
+     */
     public void send(String to, String subject, String text) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("xiao.chen@edu-its.it");
@@ -35,10 +66,29 @@ public class EmailService {
     }
 
     /**
-     * Invia mail HTML riepilogativa della valutazione immobile al proprietario
-     *
-     * @param idValutazione ID della valutazione
-     * @throws MessagingException se errore invio mail
+     * Invia email HTML riepilogativa della valutazione immobile al proprietario.
+     * 
+     * Email contiene:
+     * - Logo IMMOBILIARIS inline (immagine PNG)
+     * - Dati immobile (via, città, metratura, stanze, bagni, ecc.)
+     * - Prezzo stimato AI
+     * - Prezzo stimato agente (se disponibile)
+     * - Data valutazione
+     * - Descrizione valutazione
+     * - Footer contatti IMMOBILIARIS
+     * 
+     * Procedura:
+     * 1. Recupera valutazione per ID
+     * 2. Estrae dati immobile e proprietario
+     * 3. Genera HTML formattato
+     * 4. Carica logo da resources/static/logo.png
+     * 5. Invia via SMTP con immagine inline (content-id: logoImage)
+     * 
+     * @param idValutazione ID della valutazione da recapitare
+     * @throws MessagingException se errore SMTP o immagine non trovata
+     * @throws RuntimeException se valutazione o immobile non trovati
+     * 
+     * @see #generaHtmlRecap(String, String, Immobile, Valutazione)
      */
     public void sendValutazioneRecap(Integer idValutazione) throws MessagingException {
         // Recupera la valutazione e l'immobile collegato
@@ -74,7 +124,20 @@ public class EmailService {
     }
 
     /**
-     * Genera il contenuto HTML della mail riepilogativa
+     * Genera il contenuto HTML della mail riepilogativa valutazione.
+     * 
+     * Template HTML con:
+     * - Styling CSS inline
+     * - Logo IMMOBILIARIS inline (cid:logoImage)
+     * - Layout responsive mobile-friendly
+     * - Colori brand IMMOBILIARIS (#21305d, #1e3a56)
+     * - Sezioni: intestazione, proprietario, immobile, prezzi, descrizione, footer
+     * 
+     * @param nome Nome proprietario
+     * @param cognome Cognome proprietario
+     * @param immobile Immobile valutato
+     * @param valutazione Valutazione con prezzi e descrizione
+     * @return String HTML formattato pronto per MimeMessageHelper
      */
     private String generaHtmlRecap(String nome, String cognome, Immobile immobile, Valutazione valutazione) {
         return "<!DOCTYPE html>"

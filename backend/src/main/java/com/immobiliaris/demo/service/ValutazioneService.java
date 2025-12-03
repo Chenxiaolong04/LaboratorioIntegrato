@@ -1,3 +1,22 @@
+/**
+ * Service per gestione valutazioni immobili.
+ * 
+ * Responsabilità:
+ * - Valutazione automatica immobili con algoritmo AI multi-fattoriale
+ * - Calcolo prezzo basato su:
+ *   1. Quotazione base per CAP (tabella Zone)
+ *   2. Coefficiente efficienza funzionale (bagni/stanze vs metratura)
+ *   3. Coefficiente qualitativo (condizioni + tipologia)
+ *   4. Moltiplicatore accessori (garage, terrazzo, giardino, ecc.)
+ *   5. Fattori riscaldamento e piano
+ * 
+ * Formula finale:
+ * Prezzo_AI = (metratura × quotazione_CAP) × C_Funzionale × C_Qualitativo × M_Finale
+ * 
+ * @author Sistema IMMOBILIARIS
+ * @version 1.0
+ * @since 2025-12-01
+ */
 package com.immobiliaris.demo.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,24 +30,46 @@ import com.immobiliaris.demo.repository.ZonaRepository;
 
 @Service
 public class ValutazioneService {
+    
+    /** Repository per operazioni su Valutazioni */
     @Autowired
     private ValutazioneJpaRepository valutazioneJpaRepository;
 
+    /** Repository per stati valutazione (solo_AI, in_verifica, approvata) */
     @Autowired
     private StatoValutazioneRepository statoValutazioneRepository;
     
+    /** Repository per zone CAP e prezzi medi al mq */
     @Autowired
     private ZonaRepository zonaRepository; 
 
     /**
-     * Esegue la valutazione automatica dell'immobile e la salva
+     * Esegue la valutazione automatica dell'immobile e la salva.
+     * 
+     * Procedura:
+     * 1. Crea nuova istanza Valutazione
+     * 2. Assegna immobile
+     * 3. Calcola prezzo AI tramite algoritmo multi-fattoriale
+     * 4. Imposta stato "solo_AI" (nessun agente assegnato)
+     * 5. Salva nel database
+     * 
+     * La valutazione rimane in stato solo_AI finché un agente non la verifica.
+     * 
+     * @param immobile Immobile da valutare
+     * @return Valutazione salvata con prezzoAI calcolato
+     * @throws RuntimeException se stato "solo_AI" non trovato nel database
+     * 
+     * @see #calcolaPrezzoAI(Immobile)
      */
     public Valutazione valutaImmobile(Immobile immobile) {
         Valutazione valutazione = new Valutazione();
         valutazione.setImmobile(immobile);
+        
+        // Calcola prezzo AI con algoritmo avanzato
         int prezzo = calcolaPrezzoAI(immobile);
         valutazione.setPrezzoAI(prezzo);
         
+        // Imposta stato "solo_AI"
         StatoValutazione statoSoloAI = statoValutazioneRepository.findByNome("solo_AI")
             .orElseThrow(() -> new RuntimeException("Stato valutazione 'solo_AI' non trovato"));
         valutazione.setStatoValutazione(statoSoloAI);
@@ -37,10 +78,48 @@ public class ValutazioneService {
     }
 
     /**
-     * Calcola il prezzo stimato AI con logica avanzata.
+     * Calcola il prezzo stimato dall'AI con algoritmo multi-fattoriale.
+     * 
+     * FASE 1: BASE (metratura × quotazione_CAP per zona)
+     * - Recupera prezzo medio al mq dalla tabella Zone per CAP
+     * - Se CAP non mappato, ritorna 0
+     * - Se metratura ≤ 0, ritorna 0
+     * 
+     * FASE 2: C_FUNZIONALE (efficienza bagni e stanze)
+     * - Penalità -5% se bagni < (metratura / 70)
+     * - Penalità -3% se stanze > (metratura / 20)
+     * 
+     * FASE 3: C_QUALITATIVO (condizioni + tipologia)
+     * Condizioni:
+     * - Nuovo: +15%
+     * - Ottimo: +10%
+     * - Buono: 0% (neutro)
+     * - Da ristrutturare: -25%
+     * Tipologia:
+     * - Villa: +30%
+     * - Attico/Loft: +12%
+     * - Appartamento: 0% (neutro)
+     * 
+     * FASE 4: M_FINALE (accessori + riscaldamento + piano)
+     * Accessori:
+     * - Garage: +25% (bonus maggiorato)
+     * - Terrazzo: +12%
+     * - Giardino: +10%
+     * - Ascensore: +8%
+     * - Balcone: +5%
+     * - Cantina: +3%
+     * Riscaldamento:
+     * - Teleriscaldamento: +8%
+     * - Autonomo: +5%
+     * - Centralizzato: -3%
+     * Piano:
+     * - Villa multipiano (piano > 1): +10% fisso
+     * - Appartamento/Loft/Attico: +2% per piano
+     * 
+     * @param immobile Immobile da valutare
+     * @return Prezzo stimato in euro (intero), oppure 0 se invalido
      */
     private int calcolaPrezzoAI(Immobile immobile) {
-        
         // --- 1. Raccolta Dati Essenziali e Quotazione Base ---
         
         Integer metratura = immobile.getMetratura();
@@ -53,6 +132,7 @@ public class ValutazioneService {
 
         if (metratura == null || metratura <= 0) return 0;
         
+        // Recupera quotazione base dal CAP
         String cap = immobile.getCap();
         Double quotazioneBase = zonaRepository.findByCap(cap)
             .map(zona -> zona.getPrezzoMedioMq().doubleValue())
