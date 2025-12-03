@@ -2,10 +2,22 @@ import { useState } from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 
 interface FAQ {
+  /**
+   * The frequently asked question text.
+   */
   question: string;
+
+  /**
+   * The answer associated with the question.
+   */
   answer: string;
 }
 
+/**
+ * List of frequently asked questions rendered in the FAQ component.
+ * Each item contains a question and its corresponding answer.
+ * @type {FAQ[]}
+ */
 const faqs: FAQ[] = [
   {
     question: "Qual è la procedura per acquistare un immobile?",
@@ -29,9 +41,23 @@ const faqs: FAQ[] = [
   },
 ];
 
+/**
+ * FAQ component displaying a list of expandable questions.
+ * Clicking a question toggles the visibility of its answer.
+ *
+ * @component
+ * @returns {JSX.Element} A section containing a list of frequently asked questions.
+ */
 export default function FAQ() {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
+  /**
+   * Toggles the selected FAQ item. If the same question is clicked twice,
+   * it collapses by resetting the active index to null.
+   *
+   * @function
+   * @param {number} index - Index of the clicked FAQ item.
+   */
   const toggleFAQ = (index: number) => {
     setActiveIndex(activeIndex === index ? null : index);
   };
@@ -43,6 +69,7 @@ export default function FAQ() {
         <h2 className="faq-title-desktop">
           Le risposte che ti guidano ad una vendita perfetta
         </h2>
+
         <div className="faq-container">
           <div className="faq-items">
             {faqs.map((item, index) => (
@@ -55,12 +82,14 @@ export default function FAQ() {
                   <h4>
                     {index + 1}. {item.question}
                   </h4>
+
                   {activeIndex === index ? (
                     <FaChevronUp size={20} className="icon-up" />
                   ) : (
                     <FaChevronDown size={20} className="icon-down" />
                   )}
                 </div>
+
                 {activeIndex === index && (
                   <p className="faq-answer">{item.answer}</p>
                 )}

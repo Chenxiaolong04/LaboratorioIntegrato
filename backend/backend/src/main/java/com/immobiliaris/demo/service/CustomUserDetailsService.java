@@ -42,15 +42,11 @@ public class CustomUserDetailsService implements UserDetailsService {
         if (tipoNome == null) {
             return "ROLE_USER";
         }
-        switch (tipoNome.toLowerCase()) {
-            case "amministratore":
-                return "ROLE_ADMIN";
-            case "agente":
-                return "ROLE_AGENT";
-            case "cliente":
-                return "ROLE_USER";
-            default:
-                return "ROLE_USER";
-        }
+        return switch (tipoNome.toLowerCase()) {
+            case "amministratore" -> "ROLE_ADMIN";
+            case "agente" -> "ROLE_AGENT";
+            case "cliente" -> "ROLE_USER";
+            default -> "ROLE_USER";
+        };
     }
 }

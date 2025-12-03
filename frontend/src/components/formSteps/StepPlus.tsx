@@ -7,10 +7,20 @@ import GiardinoImg from "../../assets/img/form-img/giardino.webp";
 import GarageImg from "../../assets/img/form-img/garage.webp";
 import AscensoreImg from "../../assets/img/form-img/ascensore.webp";
 import CantinaImg from "../../assets/img/form-img/cantina.webp";
+import type { SaveImmobileBody } from "../../services/api";
 
 export interface StepPlusRef {
   validate: () => boolean;
 }
+
+export const FEATURE_MAP: Record<string, keyof SaveImmobileBody> = {
+  Balcone: "balcone",
+  Terrazzo: "terrazzo",
+  "Giardino privato": "giardino",
+  "Box garage": "garage",
+  Ascensore: "ascensore",
+  Cantina: "cantina",
+};
 
 const FEATURES = [
   { text: "Balcone", img: BalconeImg },

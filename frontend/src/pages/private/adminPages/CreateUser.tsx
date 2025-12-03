@@ -83,103 +83,109 @@ export default function CreateUser() {
   };
 
   return (
-    <section className="create-user">
-      <h2>Crea un profilo</h2>
+    <section className="create-user-container">
+      <div className="create-user">
+        <h2>Crea un profilo</h2>
 
-      <form onSubmit={handleSubmit} className="create-user-form">
-        <InputGroup
-          label="Nome"
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-          required={true}
-          placeholder="Inserisci il nome"
-        />
+        <form onSubmit={handleSubmit} className="create-user-form">
+          <InputGroup
+            label="Nome"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            required={true}
+            placeholder="Inserisci il nome"
+          />
 
-        <InputGroup
-          label="Cognome"
-          name="surname"
-          value={formData.surname}
-          onChange={handleChange}
-          required={true}
-          placeholder="Inserisci il cognome"
-        />
+          <InputGroup
+            label="Cognome"
+            name="surname"
+            value={formData.surname}
+            onChange={handleChange}
+            required={true}
+            placeholder="Inserisci il cognome"
+          />
 
-        <InputGroup
-          label="Email"
-          name="email"
-          type="email"
-          value={formData.email}
-          onChange={handleChange}
-          required={true}
-          placeholder="Inserisci l'email"
-        />
+          <InputGroup
+            label="Email"
+            name="email"
+            type="email"
+            value={formData.email}
+            onChange={handleChange}
+            required={true}
+            placeholder="Inserisci l'email"
+          />
 
-        <InputGroup
-          label="Password"
-          name="password"
-          type="password"
-          value={formData.password}
-          onChange={handleChange}
-          required={true}
-          placeholder="Inserisci la password"
-        />
+          <InputGroup
+            label="Password"
+            name="password"
+            type="password"
+            value={formData.password}
+            onChange={handleChange}
+            required={true}
+            placeholder="Inserisci la password"
+          />
 
-        <InputGroup
-          label="Telefono"
-          name="telefono"
-          type="tel"
-          value={formData.telefono}
-          onChange={handleChange}
-          required={true}
-          placeholder="Inserisci il numero di telefono"
-        />
+          <InputGroup
+            label="Telefono"
+            name="telefono"
+            type="tel"
+            value={formData.telefono}
+            onChange={handleChange}
+            required={true}
+            placeholder="Inserisci il numero di telefono"
+          />
 
-        <div className="input-group">
-          <label htmlFor="role">Ruolo *</label>
-          <select
-            id="role"
-            name="tipoUtente"
-            value={formData.tipoUtente.role}
-            onChange={(e) => {
-              const value = e.target.value;
+          <div className="input-group">
+            <label htmlFor="role">Ruolo *</label>
+            <select
+              id="role"
+              name="tipoUtente"
+              value={formData.tipoUtente.role}
+              onChange={(e) => {
+                const value = e.target.value;
 
-              setFormData((prev) => ({
-                ...prev,
-                tipoUtente:
-                  value === "ADMIN"
-                    ? { idTipo: 1, nome: "Admin", role: "ADMIN" }
-                    : { idTipo: 2, nome: "Agente Immobiliare", role: "AGENTE" },
-              }));
-            }}
-            className="input-form"
-            required
-          >
-            <option value="ADMIN">Admin</option>
-            <option value="AGENTE">Agente Immobiliare</option>
-          </select>
-        </div>
-
-        <Button type="submit" className="blu">
-          Crea Utente
-        </Button>
-      </form>
-
-      {showModal && (
-        <div className="modal-overlay" onClick={() => setShowModal(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <FaCheckCircle size={150} color="#348AA7" />
-            <p>{modalMessage}</p>
-
-            <Button
-              onClick={() => setShowModal(false)}
-              className="modal-btn blu"
+                setFormData((prev) => ({
+                  ...prev,
+                  tipoUtente:
+                    value === "ADMIN"
+                      ? { idTipo: 1, nome: "Admin", role: "ADMIN" }
+                      : {
+                          idTipo: 2,
+                          nome: "Agente Immobiliare",
+                          role: "AGENTE",
+                        },
+                }));
+              }}
+              className="input-form"
+              required
             >
-              Chiudi
-            </Button>
+              <option value="ADMIN">Admin</option>
+              <option value="AGENTE">Agente Immobiliare</option>
+            </select>
           </div>
-        </div>
-      )}
+
+          <Button type="submit" className="blu">
+            Crea Utente
+          </Button>
+        </form>
+
+        {showModal && (
+          <div className="modal-overlay" onClick={() => setShowModal(false)}>
+            <div className="modal" onClick={(e) => e.stopPropagation()}>
+              <FaCheckCircle size={150} color="#348AA7" />
+              <p>{modalMessage}</p>
+
+              <Button
+                onClick={() => setShowModal(false)}
+                className="modal-btn blu"
+              >
+                Chiudi
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
     </section>
   );
 }

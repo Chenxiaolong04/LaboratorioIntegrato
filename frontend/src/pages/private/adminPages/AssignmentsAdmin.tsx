@@ -5,9 +5,11 @@ import { FaX } from "react-icons/fa6";
 import {
   deleteIncarichi,
   getIncarichi,
+  generateContractFromValutazione,
   type Incarichi,
 } from "../../../services/api";
 import Loader from "../../../components/Loader";
+import {} from "../../../services/api";
 
 export default function AssignmentsAdmin() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -54,6 +56,23 @@ export default function AssignmentsAdmin() {
     (c.nomeProprietario || "").toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  async function handleGenerateContract(id: number) {
+    if (!confirm("Generare il contratto e inviarlo via email?")) return;
+
+    try {
+      const res = await generateContractFromValutazione(id);
+
+      alert(
+        `✔ Contratto generato e inviato!\n\n` +
+          `Email proprietario: ${res.destinatari.proprietario}\n` +
+          `Email agente: ${res.destinatari.agente}`
+      );
+    } catch (error: unknown) {
+      console.error(error);
+      alert("Errore durante la generazione del contratto");
+    }
+  }
+
   return (
     <div className="dashboard-container">
       {loading && incarichi.length === 0 ? (
@@ -75,7 +94,6 @@ export default function AssignmentsAdmin() {
                 <tr>
                   <th>Nome proprietario</th>
                   <th>Prezzo AI</th>
-                  <th>Data</th>
                   <th>Agente assegnato</th>
                   <th>Azioni</th>
                 </tr>
@@ -85,7 +103,6 @@ export default function AssignmentsAdmin() {
                   <tr key={row.id}>
                     <td>{row.nomeProprietario || "-"}</td>
                     <td>{row.prezzoAI || "-"}</td>
-                    <td>{row.dataInserimento || "-"}</td>
                     <td>{row.nomeAgente || "-"}</td>
                     <td>
                       <div className="action-buttons">
@@ -99,6 +116,7 @@ export default function AssignmentsAdmin() {
                         <Button
                           className="blu"
                           title="Genera contratto dall'incarico"
+                          onClick={() => handleGenerateContract(row.id)}
                         >
                           Genera contratto
                         </Button>
@@ -125,11 +143,6 @@ export default function AssignmentsAdmin() {
                 </div>
 
                 <div className="card-row">
-                  <b>Data inserimento:</b>
-                  <span>{row.dataInserimento || "-"}</span>
-                </div>
-
-                <div className="card-row">
                   <b>Agente assegnato:</b>
                   <span>{row.nomeAgente || "-"}</span>
                 </div>
@@ -141,6 +154,13 @@ export default function AssignmentsAdmin() {
                     onClick={() => setSelectedIncarico(row)}
                   >
                     Dettagli
+                  </Button>
+                  <Button
+                    className="blu"
+                    title="Genera contratto dall'incarico"
+                    onClick={() => handleGenerateContract(row.id)}
+                  >
+                    Genera contratto
                   </Button>
                   <Button
                     className="red"

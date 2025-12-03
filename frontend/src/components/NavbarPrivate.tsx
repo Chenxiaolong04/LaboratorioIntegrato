@@ -59,9 +59,9 @@ export default function NavbarPrivate() {
             {isAdmin && (
               <>
                 <li><Link to={"/admin"}>Dashboard</Link></li>
+                <li><Link to={"/admin/properties"}>Immobili</Link></li>
                 <li><Link to={"/admin/evaluationsAI"}>Valutazioni AI</Link></li>
                 <li><Link to={"/admin/assignments"}>Incarichi</Link></li>
-                <li><Link to={"/"}>Immobili</Link></li>
                 <li><Link to={"/admin/contracts"}>Vendite</Link></li>
                 <li><Link to={"/admin/users"}>Gestione Utenti</Link></li>
                 <li><Link to={"/admin/create-user"}>Registra Utenti</Link></li>
@@ -69,10 +69,9 @@ export default function NavbarPrivate() {
             )}
             {isAgente && (
               <>
-                <li><Link to={"/agente"}>Dashboard</Link></li>
-                <li><Link to={"/agente/contracts"}>I miei contratti</Link></li>
-                <li><Link to={"/agente/assignments"}>I miei incarichi</Link></li>
-                <li><Link to={"/agente/evaluationsAI"}>Le mie valutazioni AI</Link></li>
+                <li><Link to={"/agent"}>Dashboard</Link></li>
+                <li><Link to={"/agent/contracts"}>Contratti</Link></li>
+                <li><Link to={"/agent/assignments"}>Incarichi</Link></li>
               </>
             )}
           </ul>
@@ -93,7 +92,7 @@ export default function NavbarPrivate() {
                 <li><Link to={"/admin"} onClick={handleLinkClick}>Dashboard</Link></li>
                 <li><Link to={"/admin/evaluationsAI"} onClick={handleLinkClick}>Valutazioni AI</Link></li>
                 <li><Link to={"/admin/assignments"} onClick={handleLinkClick}>Incarichi</Link></li>
-                <li><Link to={"*"} onClick={handleLinkClick} >Immobili</Link></li>
+                <li><Link to={"/admin/properties"} onClick={handleLinkClick} >Immobili</Link></li>
                 <li><Link to={"/admin/contracts"} onClick={handleLinkClick}>Vendite</Link></li>
                 <li><Link to={"/admin/users"} onClick={handleLinkClick}>Gestione Utenti</Link></li>
                 <li><Link to={"/admin/create-user"} onClick={handleLinkClick}>Registra Utenti</Link></li>
@@ -101,10 +100,9 @@ export default function NavbarPrivate() {
             )}
             {isAgente && (
               <>
-                <li><Link to={"/agente"} onClick={handleLinkClick}>Dashboard</Link></li>
-                <li><Link to={"/agente/contracts"} onClick={handleLinkClick}>I miei contratti</Link></li>
-                <li><Link to={"/agente/assignments"} onClick={handleLinkClick}>I miei incarichi</Link></li>
-                <li><Link to={"/agente/evaluationsAI"} onClick={handleLinkClick}>Le mie valutazioni AI</Link></li>
+                <li><Link to={"/agent"} onClick={handleLinkClick}>Dashboard</Link></li>
+                <li><Link to={"/agent/contracts"} onClick={handleLinkClick}>I miei contratti</Link></li>
+                <li><Link to={"/agent/assignments"} onClick={handleLinkClick}>I miei incarichi</Link></li>
               </>
             )}
           </ul>

@@ -7,6 +7,7 @@ import {
   FaEnvelope,
   FaMapLocationDot,
 } from "react-icons/fa6";
+import { Link } from "react-router-dom";
 
 export default function Footer() {
   return (
@@ -73,10 +74,13 @@ export default function Footer() {
               <a href="/">Home</a>
             </li>
             <li>
-              <a href="/chi-siamo">Chi siamo</a>
+              <a href="#chi-siamo">Chi siamo</a>
             </li>
             <li>
-              <a href="/contatti">Contatti</a>
+              <a href="#contatti">Contatti</a>
+            </li>
+            <li>
+              <Link to="/login">Area riservata</Link>
             </li>
           </ul>
         </nav>
@@ -103,10 +107,10 @@ export default function Footer() {
             <li>
               <FaEnvelope size={28} />
               <a
-                href="mailto:wneognwi@gmail.com"
-                aria-label="Invia un'email a wneognwi@gmail.com"
+                href="mailto:immobiliaris@gmail.com"
+                aria-label="Invia un'email a immobiliaris@gmail.com"
               >
-                wneognwi@gmail.com
+                immobiliaris@gmail.com
               </a>
             </li>
             <li>

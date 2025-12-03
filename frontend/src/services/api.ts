@@ -1,6 +1,4 @@
-
 const BASE_URL = "http://localhost:8080/api";
-
 
 interface RequestOptions<TBody = unknown> {
   method?: string;
@@ -8,7 +6,6 @@ interface RequestOptions<TBody = unknown> {
   body?: TBody;
   token?: string;
 }
-
 
 /**
  * Funzione generica per effettuare richieste API.
@@ -22,7 +19,6 @@ export async function apiFetch<TResponse, TBody = unknown>(
 ): Promise<TResponse> {
   const { method = "GET", body, token } = options;
 
-
   const res = await fetch(`${BASE_URL}${endpoint}`, {
     method,
     headers: {
@@ -33,16 +29,13 @@ export async function apiFetch<TResponse, TBody = unknown>(
     credentials: "include",
   });
 
-
   if (!res.ok) {
     const errorText = await res.text();
     throw new Error(errorText || `Errore ${res.status}`);
   }
 
-
   return res.json() as Promise<TResponse>;
 }
-
 
 export type LoginResponse = {
   username: string;
@@ -50,7 +43,6 @@ export type LoginResponse = {
   success: boolean;
   message: string;
 };
-
 
 export async function loginUser(
   email: string,
@@ -65,33 +57,51 @@ export async function loginUser(
   );
 }
 
-
-export type Immobile = {
-  tipo: string;
-  nomeProprietario: string;
-  dataInserimento: string;
-  agenteAssegnato: string | null;
-  id: number;
-  via: string;
-  citta: string;
-};
-
-
 export type AdminDashboardData = {
   statistics: {
+    totaleImmobili: number;
+    immobiliInVerifica: number;
     contrattiConclusi: number;
-    valutazioniInCorso: number;
-    valutazioniConAI: number;
-    contrattiConclusiMensili: number;
-    valutazioniInCorsoMensili: number;
-    valutazioniConAIMensili: number;
+    fatturatoTotale: number;
+    immobiliRegistratiMensili: number;
+    immobiliRegistratiSettimanali: number;
+    totaleAgenti: number;
+    agentiStage: number;
   };
-  immobili: Immobile[];
-  nextOffset: number;
-  hasMore: boolean;
-  pageSize: number;
+  contrattiPerMese: {
+    mese: string;
+    numeroContratti: number;
+    totalePrezzoImmobili: number;
+  }[];
+  top3Agenti: {
+    nomeAgente: string;
+    numeroContratti: number;
+    fatturato: number;
+  }[];
+  agenti: {
+    nome: string;
+    cognome: string;
+    contrattiConclusi: number;
+    immobiliInGestione: number;
+    fatturato: number;
+  }[];
+  tempoAIaPresaInCarico: {
+    giorni: number;
+    ore: number;
+    minuti: number;
+    secondi: number;
+    totaleSecondi: number;
+  };
+  tempoPresaInCaricoaContratto: {
+    giorni: number;
+    ore: number;
+    minuti: number;
+    secondi: number;
+    totaleSecondi: number;
+  };
+  valutazionePerformance: "eccellente" | "ottimo" | "buono" | "standard";
+  immobiliPerTipo: Record<string, number>;
 };
-
 
 export async function getAdminDashboard(
   offset = 0,
@@ -105,6 +115,87 @@ export async function getAdminDashboard(
   );
 }
 
+export type Immobile = {
+  id: number;
+  via: string;
+  citta: string;
+  cap: string;
+  provincia: string;
+  tipologia: string;
+  metratura: number;
+  condizioni: string;
+  stanze: number;
+  bagni: number | null;
+  riscaldamento: string | null;
+  piano: number;
+  ascensore: boolean;
+  garage: boolean;
+  giardino: boolean;
+  balcone: boolean;
+  terrazzo: boolean;
+  cantina: boolean;
+  prezzo: number;
+  descrizione: string;
+  dataRegistrazione: string;
+  statoImmobile: string;
+  nomeProprietario: string;
+  emailProprietario: string;
+  telefonoProprietario: string;
+  prezzoAI: number | null;
+  prezzoUmano: number | null;
+  dataValutazione: string | null;
+  descrizioneValutazione: string | null;
+  statoValutazione: string | null;
+  agenteAssegnato: string | null;
+};
+
+export async function getImmobili(
+  offset = 0,
+  limit = 12
+): Promise<{
+  immobili: Immobile[];
+  nextOffset: number;
+  hasMore: boolean;
+  pageSize: number;
+  total: number;
+}> {
+  return apiFetch(`/admin/immobili?offset=${offset}&limit=${limit}`, {
+    method: "GET",
+  });
+}
+
+export async function assignAgenteToValutazione(
+  valutazioneId: number,
+  idAgente: number
+): Promise<{ success: boolean; message: string }> {
+  return apiFetch<{ success: boolean; message: string }>(
+    `/admin/valutazioni/solo-ai/${valutazioneId}/assegna-agente`,
+    {
+      method: "PUT",
+      body: { idAgente },
+    }
+  );
+}
+
+export interface GenerateContractResponse {
+  success: boolean;
+  message: string;
+  destinatari: {
+    proprietario: string;
+    agente: string;
+  };
+  valutazioneId: number;
+  contrattoId: number;
+}
+
+export async function generateContractFromValutazione(
+  idValutazione: number
+): Promise<GenerateContractResponse> {
+  return apiFetch<GenerateContractResponse>(
+    `/contratti/valutazione/${idValutazione}/pdf`,
+    { method: "GET" }
+  );
+}
 
 export type AgenteDashboardData = {
   statistics: {
@@ -121,7 +212,6 @@ export type AgenteDashboardData = {
   pageSize: number;
 };
 
-
 export async function getAgenteDashboard(
   offset: number = 0,
   limit: number = 10
@@ -134,21 +224,18 @@ export async function getAgenteDashboard(
   );
 }
 
-
-
-
 export type TipoUtente = {
   idTipo: number;
   nome: string;
   role: string;
 };
 
-
 export type Users = {
   idUtente: number;
   nome: string;
   cognome: string;
   email: string;
+  password: string;
   telefono: string;
   via: string;
   citta: string;
@@ -157,11 +244,9 @@ export type Users = {
   tipoUtente: TipoUtente;
 };
 
-
 export async function getUsers(): Promise<Users[]> {
   return apiFetch<Users[]>(`/users`, { method: "GET" });
 }
-
 
 export type RegisterUserRequest = {
   nome: string;
@@ -171,7 +256,6 @@ export type RegisterUserRequest = {
   telefono: string;
   tipoUtente: TipoUtente;
 };
-
 
 export async function registerUser(
   nome: string,
@@ -194,9 +278,6 @@ export async function registerUser(
   });
 }
 
-
-
-
 export type UpdateUserRequest = {
   nome?: string;
   cognome?: string;
@@ -207,7 +288,6 @@ export type UpdateUserRequest = {
   tipoUtente?: { idTipo?: number; nome?: string; role?: string };
 };
 
-
 export async function updateUser(
   id: number,
   updatedUser: UpdateUserRequest
@@ -217,9 +297,6 @@ export async function updateUser(
     body: updatedUser,
   });
 }
-
-
-
 
 export type ContrattoChiuso = {
   numeroContratto: string;
@@ -233,14 +310,12 @@ export type ContrattoChiuso = {
   citta: string | null;
 };
 
-
 export type ContrattiResponse = {
   contratti: ContrattoChiuso[];
   nextOffset: number;
   hasMore: boolean;
   pageSize: number;
 };
-
 
 export async function getContrattiChiusi(
   offset = 0,
@@ -251,7 +326,6 @@ export async function getContrattiChiusi(
     { method: "GET" }
   );
 }
-
 
 export async function getContrattiChiusiByAgente(
   offset: number = 0,
@@ -264,13 +338,11 @@ export async function getContrattiChiusiByAgente(
   );
 }
 
-
 export interface ValutazioneAI {
   id: number;
   prezzoAI: number | null;
   dataValutazione: string;
   descrizione: string | null;
-
 
   tipo: string | null;
   via: string | null;
@@ -290,23 +362,24 @@ export interface ValutazioneAI {
   cantina: boolean | null;
   riscaldamento: string | null;
 
-
   nomeProprietario: string | null;
   emailProprietario: string | null;
   telefonoProprietario: string | null;
 
-
   dataInserimento: string | null;
 }
 
+type Agent = {
+  nomeCognome: string;
+};
 
 export interface ValutazioniAIResponse {
   valutazioni: ValutazioneAI[];
+  agents: Agent[];
   nextOffset: number;
   hasMore: boolean;
   pageSize: number;
 }
-
 
 export async function getValutazioniSoloAI(
   offset = 0,
@@ -318,19 +391,16 @@ export async function getValutazioniSoloAI(
   );
 }
 
-
 export async function deleteValutazioneAI(id: number) {
   return apiFetch(`/admin/valutazioni/solo-ai/${id}`, {
     method: "DELETE",
   });
 }
 
-
 export interface AssignIncaricoRequest {
   agenteId: string;
   agenteNome: string;
 }
-
 
 export async function assignIncaricoToMe(
   valutazioneId: number,
@@ -349,7 +419,6 @@ export async function assignIncaricoToMe(
   );
 }
 
-
 export interface Incarichi {
   id: number;
   prezzoAI: number | null;
@@ -358,10 +427,8 @@ export interface Incarichi {
   statoValutazione: string | null;
   descrizione: string | null;
 
-
   nomeAgente: string | null;
   emailAgente: string | null;
-
 
   tipo: string | null;
   via: string | null;
@@ -381,15 +448,12 @@ export interface Incarichi {
   cantina: boolean | null;
   riscaldamento: string | null;
 
-
   nomeProprietario: string | null;
   emailProprietario: string | null;
   telefonoProprietario: string | null;
 
-
   dataInserimento: string | null;
 }
-
 
 export interface incarichiResponse {
   valutazioni: Incarichi[];
@@ -397,7 +461,6 @@ export interface incarichiResponse {
   hasMore: boolean;
   pageSize: number;
 }
-
 
 export async function getIncarichi(
   offset = 0,
@@ -410,7 +473,6 @@ export async function getIncarichi(
     }
   );
 }
-
 
 export async function getIncarichiByAgente(
   offset: number = 0,
@@ -425,7 +487,6 @@ export async function getIncarichiByAgente(
   );
 }
 
-
 export async function deleteIncarichi(id: number) {
   return apiFetch<{ success: boolean; message: string }>(
     `/admin/valutazioni/in-verifica/${id}`,
@@ -433,4 +494,70 @@ export async function deleteIncarichi(id: number) {
       method: "DELETE",
     }
   );
+}
+
+export interface AddressSuggestion {
+  displayName: string;
+  via: string;
+  citta: string;
+  cap: string;
+  civico: string;
+  lat: number;
+  lon: number;
+}
+
+export interface AddressValidationResponse {
+  valid: boolean;
+  suggestions: AddressSuggestion[];
+}
+
+export async function validateAddress(
+  via: string,
+  citta: string
+): Promise<AddressValidationResponse> {
+  return apiFetch<AddressValidationResponse, { via: string; citta: string }>(
+    "/address/validate",
+    {
+      method: "POST",
+      body: { via, citta },
+    }
+  );
+}
+
+export interface SaveImmobileBody {
+  via: string;
+  citta: string;
+  cap: string;
+  tipologia: string;
+  metratura: number;
+  condizioni: string;
+  stanze: number;
+  bagni: number;
+  riscaldamento: string;
+  piano: number;
+  ascensore: boolean;
+  garage: boolean;
+  giardino: boolean;
+  balcone: boolean;
+  terrazzo: boolean;
+  cantina: boolean;
+  nome: string;
+  cognome: string;
+  email: string;
+  telefono: string;
+}
+
+export interface SaveImmobileResponse {
+  success: boolean;
+  id: string;
+  message: string;
+}
+
+export async function saveImmobile(
+  data: SaveImmobileBody
+): Promise<SaveImmobileResponse> {
+  return apiFetch<SaveImmobileResponse, SaveImmobileBody>("/immobili/save", {
+    method: "POST",
+    body: data,
+  });
 }

@@ -1,8 +1,6 @@
 package com.immobiliaris.demo.config;
 
 import com.immobiliaris.demo.service.CustomUserDetailsService;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,14 +8,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.web.cors.CorsConfigurationSource;
-
-import java.io.IOException;
 
 @Configuration
 public class SecurityConfig {
@@ -34,21 +29,18 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        AuthenticationSuccessHandler successHandler = new AuthenticationSuccessHandler() {
-            @Override
-            public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-                boolean isAdmin = authentication.getAuthorities().stream()
-                        .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-                boolean isAgent = authentication.getAuthorities().stream()
-                        .anyMatch(a -> a.getAuthority().equals("ROLE_AGENT"));
+        AuthenticationSuccessHandler successHandler = (request, response, authentication) -> {
+            boolean isAdmin = authentication.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+            boolean isAgent = authentication.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_AGENT"));
 
-                if (isAdmin) {
-                    response.sendRedirect("/admin");
-                } else if (isAgent) {
-                    response.sendRedirect("/agent");
-                } else {
-                    response.sendRedirect("/");
-                }
+            if (isAdmin) {
+                response.sendRedirect("/admin");
+            } else if (isAgent) {
+                response.sendRedirect("/agent");
+            } else {
+                response.sendRedirect("/");
             }
         };
 
@@ -56,7 +48,8 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(this.corsConfigurationSource))
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/api/auth/**", "/api/mail/**", "/login", "/error", "/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
+                .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs", "/v3/api-docs/**", "/api-docs", "/api-docs/**").permitAll()
+                .requestMatchers("/", "/api/auth/**", "/api/mail/**", "/api/address/**", "/api/map/**", "/api/immobili/save", "/api/valutazioni/**", "/api/contratti/**", "/login", "/error", "/css/**", "/js/**", "/images/**", "/webjars/**", "/h2-console", "/h2-console/**").permitAll()
                 .requestMatchers("/api/users/register").hasRole("ADMIN")
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/agent/**").hasRole("AGENT")
@@ -64,26 +57,25 @@ public class SecurityConfig {
                 .requestMatchers("/agent/**").hasRole("AGENT")
                 .anyRequest().authenticated()
             )
+            .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()))
             .formLogin(form -> form
-                .loginPage("/error")  // Reindirizza a /error invece di /login
+                .loginPage("/error")
                 .usernameParameter("email")
                 .passwordParameter("password")
                 .successHandler(successHandler)
                 .permitAll()
             )
             .logout(logout -> logout
-                .logoutSuccessUrl("/error")  // Dopo logout vai a /error
+                .logoutSuccessUrl("/error")
                 .permitAll()
             )
             .exceptionHandling(ex -> ex
                 .accessDeniedPage("/error")
                 .authenticationEntryPoint((request, response, authException) -> {
-                    // Non reindirizzare le API REST, ritorna 401
                     String requestUri = request.getRequestURI();
                     if (requestUri.startsWith("/api/")) {
                         response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
                     } else {
-                        // Per le pagine HTML, vai a /error
                         response.sendRedirect("/error");
                     }
                 })
