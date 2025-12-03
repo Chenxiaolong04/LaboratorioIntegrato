@@ -7,15 +7,20 @@ import org.springframework.web.bind.annotation.*;
 import com.immobiliaris.demo.repository.*;
 import com.immobiliaris.demo.entity.*;
 import com.immobiliaris.demo.dto.DashboardDTO;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.*;
-import java.security.Principal;
 
 @RestController
 @RequestMapping("/api/dashboard")
 @CrossOrigin(origins = "*")
+@Tag(name = "Dashboard", description = "API Dashboard Agente")
 public class DashboardApiController {
     
     @Autowired
@@ -70,19 +75,13 @@ public class DashboardApiController {
         }
     }
     
-    @GetMapping("/agente/{agenteId}/attivita")
-    public ResponseEntity<?> getProssimiAttivitaPaginati(@PathVariable Long agenteId, 
-                                                         @RequestParam(defaultValue = "0") int page) {
-        try {
-            List<DashboardDTO.ImmobileItem> attivita = getProssimiAttivita(agenteId, page);
-            return ResponseEntity.ok(new Response("success", "Attività caricate", attivita));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new Response("error", "Errore caricamento attività: " + e.getMessage(), null));
-        }
-    }
-    
     @GetMapping("/agente")
+    @Operation(summary = "Dashboard agente", description = "Recupera dashboard completo agente autenticato")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Dashboard caricata"),
+        @ApiResponse(responseCode = "401", description = "Non autenticato"),
+        @ApiResponse(responseCode = "404", description = "Agente non trovato")
+    })
     public ResponseEntity<?> getDashboard(Principal principal) {
         try {
             if(principal == null) {

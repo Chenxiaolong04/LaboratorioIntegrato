@@ -48,7 +48,8 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(this.corsConfigurationSource))
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/api/auth/**", "/api/mail/**", "/api/address/**", "/api/map/**", "/api/immobili/save", "/api/valutazioni/**", "/api/contratti/**", "/login", "/error", "/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
+                .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs", "/v3/api-docs/**", "/api-docs", "/api-docs/**").permitAll()
+                .requestMatchers("/", "/api/auth/**", "/api/mail/**", "/api/address/**", "/api/map/**", "/api/immobili/save", "/api/valutazioni/**", "/api/contratti/**", "/login", "/error", "/css/**", "/js/**", "/images/**", "/webjars/**", "/h2-console", "/h2-console/**").permitAll()
                 .requestMatchers("/api/users/register").hasRole("ADMIN")
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/agent/**").hasRole("AGENT")
@@ -56,6 +57,7 @@ public class SecurityConfig {
                 .requestMatchers("/agent/**").hasRole("AGENT")
                 .anyRequest().authenticated()
             )
+            .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()))
             .formLogin(form -> form
                 .loginPage("/error")
                 .usernameParameter("email")
