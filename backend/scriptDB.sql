@@ -238,8 +238,31 @@ INSERT INTO zone (nome_quartiere, cap, prezzo_medio_mq) VALUES
 ('Barca', '10156', 1400),
 ('Bertolla', '10156', 1600),
 ('Falchera', '10156', 1200),
-('Villaretto', '10156', 1300);
-
+('Villaretto', '10156', 1300),
+('Cuneo Centro Storico', '12100', 2400),
+('Cuneo Altipiano', '12100', 2100),
+('Cuneo San Paolo', '12100', 1800),
+('Cuneo Donatello/Gramsci', '12100', 1600),
+('Madonna dell''Olmo', '12100', 1550),
+('Borgo San Giuseppe', '12100', 1450),
+('Confreria', '12100', 1500),
+('San Rocco Castagnaretta', '12100', 1700),
+('Asti Centro Storico', '14100', 1750),
+('Asti Corso Torino/Corso Dante', '14100', 1500),
+('Asti Zona Nord/Ospedale', '14100', 1350),
+('Asti San Fedele/Torretta', '14100', 1100),
+('Asti Praia', '14100', 1000),
+('Asti Bellavista', '14100', 1250),
+('Castiglione/Quarto', '14100', 1100),
+('Alessandria Centro', '15121', 1350),
+('Alessandria Orti', '15121', 1100),
+('Alessandria Pista', '15121', 1150),
+('Alessandria Borgo Rovereto', '15121', 1000),
+('Alessandria Europa/Galimberti', '15122', 1100),
+('Spinetta Marengo', '15122', 800),
+('Alessandria Cristo', '15126', 950),
+('Alessandria Cabanette', '15126', 900),
+('Valle San Bartolomeo', '15127', 1050);
 
 
 
