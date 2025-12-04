@@ -1126,6 +1126,9 @@ java -jar target/demo-0.0.1-SNAPSHOT.jar
 - **Backend API:** http://localhost:8080
 - **Swagger UI:** http://localhost:8080/swagger-ui/index.html
 - **H2 Console (test):** http://localhost:8080/h2-console
+- 
+### Creazione del DB
+Copiare il file che si chiama scriptDB.sql in un DBMS e avviarlo
 
 ---
 
